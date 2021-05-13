@@ -8,4 +8,8 @@
     <ProjectReference Include="..\WenYan.Server.Core\WenYan.Server.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UsersApp\" />
+  </ItemGroup>
+
 </Project>
