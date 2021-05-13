@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.Web.Entry", "WenYan.Server.Web.Entry.csproj", "{0979F485-70DF-46A1-B787-38ADA7E3FE2C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.Core", "..\WenYan.Server.Core\WenYan.Server.Core.csproj", "{3FE7EF3F-F42D-4675-BA2C-D4D52042FDA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.Application", "..\WenYan.Server.Application\WenYan.Server.Application.csproj", "{66494A01-AB67-4B43-AF32-1CC87BDCA825}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.EntityFramework.Core", "..\WenYan.Server.EntityFramework.Core\WenYan.Server.EntityFramework.Core.csproj", "{AA6D4276-5FE2-4459-B5BF-6A556E4A7FE9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.Database.Migrations", "..\WenYan.Server.Database.Migrations\WenYan.Server.Database.Migrations.csproj", "{7A551505-50B5-41DB-A0B0-FBC2029AEAF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Server.Web.Core", "..\WenYan.Server.Web.Core\WenYan.Server.Web.Core.csproj", "{8C287B13-8154-442F-8C2E-002A7C6B627E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0979F485-70DF-46A1-B787-38ADA7E3FE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0979F485-70DF-46A1-B787-38ADA7E3FE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0979F485-70DF-46A1-B787-38ADA7E3FE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0979F485-70DF-46A1-B787-38ADA7E3FE2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE7EF3F-F42D-4675-BA2C-D4D52042FDA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE7EF3F-F42D-4675-BA2C-D4D52042FDA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE7EF3F-F42D-4675-BA2C-D4D52042FDA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE7EF3F-F42D-4675-BA2C-D4D52042FDA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66494A01-AB67-4B43-AF32-1CC87BDCA825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66494A01-AB67-4B43-AF32-1CC87BDCA825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66494A01-AB67-4B43-AF32-1CC87BDCA825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66494A01-AB67-4B43-AF32-1CC87BDCA825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA6D4276-5FE2-4459-B5BF-6A556E4A7FE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA6D4276-5FE2-4459-B5BF-6A556E4A7FE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA6D4276-5FE2-4459-B5BF-6A556E4A7FE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA6D4276-5FE2-4459-B5BF-6A556E4A7FE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A551505-50B5-41DB-A0B0-FBC2029AEAF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A551505-50B5-41DB-A0B0-FBC2029AEAF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A551505-50B5-41DB-A0B0-FBC2029AEAF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A551505-50B5-41DB-A0B0-FBC2029AEAF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C287B13-8154-442F-8C2E-002A7C6B627E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C287B13-8154-442F-8C2E-002A7C6B627E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C287B13-8154-442F-8C2E-002A7C6B627E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C287B13-8154-442F-8C2E-002A7C6B627E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A7CEF82-8938-40E5-B25F-8E0D33349016}
+	EndGlobalSection
+EndGlobal
