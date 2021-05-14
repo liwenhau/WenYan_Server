@@ -4,12 +4,12 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WenYan.Server.Core\WenYan.Server.Core.csproj" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>WenYan.Server.Application.xml</DocumentationFile>
+  </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UsersApp\" />
+    <ProjectReference Include="..\WenYan.Server.Core\WenYan.Server.Core.csproj" />
   </ItemGroup>
 
 </Project>
