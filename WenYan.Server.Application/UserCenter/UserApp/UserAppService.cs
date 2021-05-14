@@ -47,7 +47,7 @@ namespace WenYan.Server.Application.UserCenter
         /// <returns></returns>
         public async Task<UserDto> GetAsync(Guid id)
         {
-            var user= await _userRepository.FindOrDefaultAsync(id);
+            var user= await _userRepository.FirstOrDefaultAsync(x=>x.Id== id);
             return user.Adapt<UserDto>();
         }
     }

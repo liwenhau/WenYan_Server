@@ -19,6 +19,73 @@
             主键id
             </summary>
         </member>
+        <member name="T:WenYan.Server.Application.UserCenter.LoginInput">
+            <summary>
+            用户登录信息
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginInput.Account">
+            <summary>
+            账号
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginInput.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginInput.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="T:WenYan.Server.Application.UserCenter.LoginOutput">
+            <summary>
+            登录返回信息
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.Id">
+            <summary>
+            用户Id
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.Account">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.AccessToken">
+            <summary>
+            Token
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.Nickname">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.Photo">
+            <summary>
+            头像（OSS地址）
+            </summary>
+        </member>
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.SigninedTime">
+            <summary>
+            最近登录时间
+            </summary>
+        </member>
+        <member name="T:WenYan.Server.Application.UserCenter.IAuthorizeAppService">
+            <summary>
+            授权服务接口
+            </summary>
+        </member>
+        <member name="M:WenYan.Server.Application.UserCenter.IAuthorizeAppService.LoginAsync(WenYan.Server.Application.UserCenter.LoginInput)">
+            <summary>
+            登录
+            </summary>
+            <param name="input">登录信息</param>
+            <returns></returns>
+        </member>
         <member name="T:WenYan.Server.Application.UserCenter.CreateUserDto">
             <summary>
             新增用户信息
@@ -157,6 +224,12 @@
             <summary>
             用户服务
             </summary>    
+        </member>
+        <member name="M:WenYan.Server.Application.UserCenter.UserAppService.#ctor(Furion.DatabaseAccessor.IRepository{WenYan.Server.Core.User})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="userRepository">用户仓储</param>
         </member>
         <member name="M:WenYan.Server.Application.UserCenter.UserAppService.CreateAsync(WenYan.Server.Application.UserCenter.CreateUserDto)">
             <summary>
