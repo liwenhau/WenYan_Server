@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
+using Serilog;
+using Serilog.Events;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace WenYan.Server
 {
@@ -21,7 +20,17 @@ namespace WenYan.Server
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.Inject().UseStartup<Startup>();
+                    webBuilder.Inject()
+                    .UseStartup<Startup>()
+                    //日志
+                    .UseSerilogDefault(config =>
+                    {
+                        string date = DateTime.Now.ToString("yyyy-MM-dd");//按时间创建文件夹
+                        config.WriteTo.File($"_log/{date}/application.log", 
+                            restrictedToMinimumLevel: LogEventLevel.Information,
+                            rollingInterval: RollingInterval.Day,
+                            encoding: Encoding.UTF8);
+                    });
                 });
     }
 }

@@ -2,17 +2,17 @@
 using Furion.DataEncryption;
 using Furion.FriendlyException;
 
+using Mapster;
+
 using Microsoft.Extensions.Logging;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using WenYan.Server.Core;
 
-namespace WenYan.Server.Application.UserCenter.AuthorizeApp
+namespace WenYan.Server.Application.UserCenter
 {
     /// <summary>
     /// 授权服务
@@ -48,7 +48,9 @@ namespace WenYan.Server.Application.UserCenter.AuthorizeApp
                 _ = user ?? throw Oops.Oh("用户信息不存在");
                 // 更新登录时间
                 user.LastLoginTime = DateTimeOffset.Now;
-
+                _logger.LogInformation($"用户{0}登录,时间：{1}", input.Email ?? user.LastLoginTime.ToString());
+                var output = user.Adapt<LoginOutput>();
+                // 生成 token
             }
             return new LoginOutput { };
         }

@@ -19,6 +19,25 @@
             主键id
             </summary>
         </member>
+        <member name="T:WenYan.Server.Application.UserCenter.AuthorizeAppService">
+            <summary>
+            授权服务
+            </summary>
+        </member>
+        <member name="M:WenYan.Server.Application.UserCenter.AuthorizeAppService.#ctor(Furion.DatabaseAccessor.IRepository{WenYan.Server.Core.User},Microsoft.Extensions.Logging.ILogger{WenYan.Server.Core.User})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="userRepository"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:WenYan.Server.Application.UserCenter.AuthorizeAppService.LoginAsync(WenYan.Server.Application.UserCenter.LoginInput)">
+            <summary>
+            登录
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
         <member name="T:WenYan.Server.Application.UserCenter.LoginInput">
             <summary>
             用户登录信息
