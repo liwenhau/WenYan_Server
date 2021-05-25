@@ -19,6 +19,7 @@ namespace WenYan.Server.Web.Core
             services.AddCorsAccessor();
 
             services.AddControllers().AddInject();
+            services.AddJwt();
         }
 
         //配置应用请求处理管道

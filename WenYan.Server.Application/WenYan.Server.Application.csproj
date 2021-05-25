@@ -12,4 +12,10 @@
     <ProjectReference Include="..\WenYan.Server.Core\WenYan.Server.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="applicationsetting.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -34,6 +34,7 @@ namespace WenYan.Server.Application.UserCenter
         public async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             var user = input.Adapt<User>();
+            user.Id = Guid.NewGuid();
             //密码MD5加密
             user.Password = MD5Encryption.Encrypt(input.Password);
             await _userRepository.InsertAsync(user);

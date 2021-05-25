@@ -1,0 +1,26 @@
+﻿{
+  "SpecificationDocumentSettings": {
+    "DocExpansionState": "None",
+    "DocumentTitle": "WenYan.Server",
+    "GroupOpenApiInfos": [
+      {
+        "Group": "Default",
+        "Title": "闻言接口文档",
+        "Description": "分享你喜欢的文字",
+        "Version": "1.0.0"
+      }
+    ]
+  },
+  "JWTSettings": {
+    "ValidateIssuerSigningKey": true, // 是否验证密钥，bool 类型，默认true
+    "IssuerSigningKey": "4376fcd158cf7d6b76327c5dfdd5aaf19c55c475dfee8ddb04a04507f7cb8407", // 密钥，string 类型，必须是复杂密钥，长度大于16
+    "ValidateIssuer": true, // 是否验证签发方，bool 类型，默认true
+    "ValidIssuer": "WenYan_Server", // 签发方，string 类型
+    "ValidateAudience": true, // 是否验证签收方，bool 类型，默认true
+    "ValidAudience": "WenYan_Server", // 签收方，string 类型
+    "ValidateLifetime": true, // 是否验证过期时间，bool 类型，默认true，建议true
+    "ExpiredTime": 20, // 过期时间，long 类型，单位分钟，默认20分钟
+    "ClockSkew": 5, // 过期时间容错值，long 类型，单位秒，默认 5秒
+    "Algorithm": "HS256" // 加密算法，string 类型，默认 SecurityAlgorithms.HmacSha256
+  }
+}

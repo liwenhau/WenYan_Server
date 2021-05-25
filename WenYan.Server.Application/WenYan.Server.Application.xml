@@ -24,7 +24,7 @@
             授权服务
             </summary>
         </member>
-        <member name="M:WenYan.Server.Application.UserCenter.AuthorizeAppService.#ctor(Furion.DatabaseAccessor.IRepository{WenYan.Server.Core.User},Microsoft.Extensions.Logging.ILogger{WenYan.Server.Core.User})">
+        <member name="M:WenYan.Server.Application.UserCenter.AuthorizeAppService.#ctor(Furion.DatabaseAccessor.IRepository{WenYan.Server.Core.User},Microsoft.Extensions.Logging.ILogger{WenYan.Server.Core.User},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             构造函数
             </summary>
