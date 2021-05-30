@@ -1,5 +1,5 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=WenYan;User=sa;Password=wenyanserver;MultipleActiveResultSets=True;"
+    "DefaultConnection": "Server=localhost;Database=WenYan;User=sa;Password=123456;MultipleActiveResultSets=True;"
   }
 }

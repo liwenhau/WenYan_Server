@@ -88,7 +88,7 @@
             头像（OSS地址）
             </summary>
         </member>
-        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.SigninedTime">
+        <member name="P:WenYan.Server.Application.UserCenter.LoginOutput.LastLoginTime">
             <summary>
             最近登录时间
             </summary>

@@ -14,7 +14,7 @@ namespace WenYan.Server.Application.UserCenter
         /// <summary>
         /// 用户Id
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// 用户名
@@ -39,6 +39,6 @@ namespace WenYan.Server.Application.UserCenter
         /// <summary>
         /// 最近登录时间
         /// </summary>
-        public DateTimeOffset SigninedTime { get; set; }
+        public DateTimeOffset LastLoginTime { get; set; }
     }
 }

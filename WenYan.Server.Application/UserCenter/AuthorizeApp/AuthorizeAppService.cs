@@ -66,7 +66,7 @@ namespace WenYan.Server.Application.UserCenter
                 // 设置请求报文头
                 _httpContextAccessor.HttpContext.Response.Headers["x-access-token"] = refreshToken;
                 output.AccessToken = accessToken;
-                _logger.LogInformation($"用户{0}登录,时间：{1}", input.Email ?? input.Account, user.LastLoginTime.ToString());
+                _logger.LogInformation($"用户{input.Email ?? input.Account}登录,时间：{user.LastLoginTime}");
             }
             return output;
         }
