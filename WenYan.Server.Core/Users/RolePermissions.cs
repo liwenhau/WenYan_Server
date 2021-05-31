@@ -5,19 +5,19 @@ using System;
 namespace WenYan.Server.Core
 {
     /// <summary>
-    /// 用户角色中间表
+    /// 角色权限中间表
     /// </summary>
-    public class UserRole : Entity<Guid>
+    public class RolePermissions:Entity<Guid>
     {
         /// <summary>
-        /// 用户Id
+        /// 权限Id
         /// </summary>
-        public Guid UserId { get; set; }
+        public Guid PermissionsId { get; set; }
 
         /// <summary>
         /// 一对一引用
         /// </summary>
-        public User User { get; set; }
+        public Permissions Permissions { get; set; }
 
         /// <summary>
         /// 角色Id
