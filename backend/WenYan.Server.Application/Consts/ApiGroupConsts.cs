@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WenYan.Server.Application
+﻿namespace WenYan.Server.Application
 {
     /// <summary>
     /// 接口分组定义

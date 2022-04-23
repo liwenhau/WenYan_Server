@@ -108,7 +108,6 @@ namespace WenYan.Server.Core
         {
             Enabled = true;
             CreatedTime = DateTimeOffset.Now;
-            IsDeleted = false;
         }
     }
 }
