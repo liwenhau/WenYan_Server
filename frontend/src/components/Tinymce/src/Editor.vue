@@ -6,15 +6,22 @@
       @done="handleDone"
       v-if="showImageUpload"
       v-show="editorRef"
+      :disabled="disabled"
     />
-    <textarea :id="tinymceId" ref="elRef" :style="{ visibility: 'hidden' }"></textarea>
+    <textarea
+      :id="tinymceId"
+      ref="elRef"
+      :style="{ visibility: 'hidden' }"
+      v-if="!initOptions.inline"
+    ></textarea>
+    <slot v-else></slot>
   </div>
 </template>
 
 <script lang="ts">
+  import type { Editor, RawEditorSettings } from 'tinymce';
   import tinymce from 'tinymce/tinymce';
   import 'tinymce/themes/silver';
-
   import 'tinymce/icons/default/icons';
   import 'tinymce/plugins/advlist';
   import 'tinymce/plugins/anchor';
@@ -53,14 +60,11 @@
     ref,
     unref,
     watch,
-    onUnmounted,
     onDeactivated,
+    onBeforeUnmount,
   } from 'vue';
-
   import ImgUpload from './ImgUpload.vue';
-
   import { toolbar, plugins } from './tinymce';
-
   import { buildShortUUID } from '/@/utils/uuid';
   import { bindHandlers } from './helper';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
@@ -71,7 +75,7 @@
 
   const tinymceProps = {
     options: {
-      type: Object as PropType<any>,
+      type: Object as PropType<Partial<RawEditorSettings>>,
       default: {},
     },
     value: {
@@ -94,7 +98,6 @@
       required: false,
       default: 400,
     },
-
     width: {
       type: [Number, String] as PropType<string | number>,
       required: false,
@@ -111,9 +114,9 @@
     components: { ImgUpload },
     inheritAttrs: false,
     props: tinymceProps,
-    emits: ['change', 'update:modelValue'],
+    emits: ['change', 'update:modelValue', 'inited', 'init-error'],
     setup(props, { emit, attrs }) {
-      const editorRef = ref();
+      const editorRef = ref<Nullable<Editor>>(null);
       const fullscreen = ref(false);
       const tinymceId = ref<string>(buildShortUUID('tiny-vue'));
       const elRef = ref<Nullable<HTMLElement>>(null);
@@ -141,7 +144,7 @@
         return ['zh_CN', 'en'].includes(lang) ? lang : 'zh_CN';
       });
 
-      const initOptions = computed(() => {
+      const initOptions = computed((): RawEditorSettings => {
         const { height, options, toolbar, plugins } = props;
         const publicPath = import.meta.env.VITE_PUBLIC_PATH || '/';
         return {
@@ -156,16 +159,27 @@
           default_link_target: '_blank',
           link_title: false,
           object_resizing: false,
+          auto_focus: true,
           skin: skinName.value,
           skin_url: publicPath + 'resource/tinymce/skins/ui/' + skinName.value,
           content_css:
             publicPath + 'resource/tinymce/skins/ui/' + skinName.value + '/content.min.css',
           ...options,
-          setup: (editor: any) => {
+          setup: (editor: Editor) => {
             editorRef.value = editor;
-            editor.on('init', (e: Event) => initSetup(e));
+            editor.on('init', (e) => initSetup(e));
           },
         };
+      });
+
+      const disabled = computed(() => {
+        const { options } = props;
+        const getdDisabled = options && Reflect.get(options, 'readonly');
+        const editor = unref(editorRef);
+        if (editor) {
+          editor.setMode(getdDisabled ? 'readonly' : 'design');
+        }
+        return getdDisabled ?? false;
       });
 
       watch(
@@ -176,11 +190,13 @@
             return;
           }
           editor.setMode(attrs.disabled ? 'readonly' : 'design');
-        }
+        },
       );
 
       onMountedOrActivated(() => {
-        tinymceId.value = buildShortUUID('tiny-vue');
+        if (!initOptions.value.inline) {
+          tinymceId.value = buildShortUUID('tiny-vue');
+        }
         nextTick(() => {
           setTimeout(() => {
             initEditor();
@@ -188,7 +204,7 @@
         });
       });
 
-      onUnmounted(() => {
+      onBeforeUnmount(() => {
         destory();
       });
 
@@ -198,7 +214,7 @@
 
       function destory() {
         if (tinymce !== null) {
-          tinymce?.remove?.(unref(editorRef));
+          tinymce?.remove?.(unref(initOptions).selector!);
         }
       }
 
@@ -207,10 +223,17 @@
         if (el) {
           el.style.visibility = '';
         }
-        tinymce.init(unref(initOptions));
+        tinymce
+          .init(unref(initOptions))
+          .then((editor) => {
+            emit('inited', editor);
+          })
+          .catch((err) => {
+            emit('init-error', err);
+          });
       }
 
-      function initSetup(e: Event) {
+      function initSetup(e) {
         const editor = unref(editorRef);
         if (!editor) {
           return;
@@ -241,7 +264,7 @@
           () => props.modelValue,
           (val: string, prevVal: string) => {
             setValue(editor, val, prevVal);
-          }
+          },
         );
 
         watch(
@@ -251,7 +274,7 @@
           },
           {
             immediate: true,
-          }
+          },
         );
 
         editor.on(normalizedEvents ? normalizedEvents : 'change keyup undo redo', () => {
@@ -270,8 +293,9 @@
         if (!editor) {
           return;
         }
+        editor.execCommand('mceInsertContent', false, getUploadingImgName(name));
         const content = editor?.getContent() ?? '';
-        setValue(editor, `${content}\n${getUploadingImgName(name)}`);
+        setValue(editor, content);
       }
 
       function handleDone(name: string, url: string) {
@@ -299,6 +323,7 @@
         handleDone,
         editorRef,
         fullscreen,
+        disabled,
       };
     },
   });

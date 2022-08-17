@@ -9,7 +9,7 @@
     :closeFunc="handleCloseFunc"
     :maskClosable="false"
     :keyboard="false"
-    wrapClassName="upload-modal"
+    class="upload-modal"
     :okButtonProps="getOkButtonProps"
     :cancelButtonProps="{ disabled: isUploadingRef }"
   >
@@ -31,6 +31,7 @@
         :accept="getStringAccept"
         :multiple="multiple"
         :before-upload="beforeUpload"
+        :show-upload-list="false"
         class="upload-modal-toolbar__btn"
       >
         <a-button type="primary">
@@ -50,17 +51,17 @@
   import { useUploadType } from './useUpload';
   import { useMessage } from '/@/hooks/web/useMessage';
   //   types
-  import { FileItem, UploadResultStatus } from './types';
+  import { FileItem, UploadResultStatus } from './typing';
   import { basicProps } from './props';
   import { createTableColumns, createActionColumn } from './data';
   // utils
-  import { checkFileType, checkImgType, getBase64WithFile } from './helper';
+  import { checkImgType, getBase64WithFile } from './helper';
   import { buildUUID } from '/@/utils/uuid';
   import { isFunction } from '/@/utils/is';
   import { warn } from '/@/utils/log';
-  import FileList from './FileList';
-
+  import FileList from './FileList.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
+
   export default defineComponent({
     components: { BasicModal, Upload, Alert, FileList },
     props: {
@@ -70,21 +71,21 @@
         default: () => [],
       },
     },
-    emits: ['change', 'register'],
+    emits: ['change', 'register', 'delete'],
     setup(props, { emit }) {
-      const { t } = useI18n();
-
-      //   是否正在上传
-      const isUploadingRef = ref(false);
-      const fileListRef = ref<FileItem[]>([]);
       const state = reactive<{ fileList: FileItem[] }>({
         fileList: [],
       });
 
+      //   是否正在上传
+      const isUploadingRef = ref(false);
+      const fileListRef = ref<FileItem[]>([]);
+      const { accept, helpText, maxNumber, maxSize } = toRefs(props);
+
+      const { t } = useI18n();
       const [register, { closeModal }] = useModalInner();
 
-      const { accept, helpText, maxNumber, maxSize } = toRefs(props);
-      const { getAccept, getStringAccept, getHelpText } = useUploadType({
+      const { getStringAccept, getHelpText } = useUploadType({
         acceptRef: accept,
         helpTextRef: helpText,
         maxNumberRef: maxNumber,
@@ -102,7 +103,7 @@
 
       const getOkButtonProps = computed(() => {
         const someSuccess = fileListRef.value.some(
-          (item) => item.status === UploadResultStatus.SUCCESS
+          (item) => item.status === UploadResultStatus.SUCCESS,
         );
         return {
           disabled: isUploadingRef.value || fileListRef.value.length === 0 || !someSuccess,
@@ -111,7 +112,7 @@
 
       const getUploadBtnText = computed(() => {
         const someError = fileListRef.value.some(
-          (item) => item.status === UploadResultStatus.ERROR
+          (item) => item.status === UploadResultStatus.ERROR,
         );
         return isUploadingRef.value
           ? t('component.upload.uploading')
@@ -124,18 +125,12 @@
       function beforeUpload(file: File) {
         const { size, name } = file;
         const { maxSize } = props;
-        const accept = unref(getAccept);
         // 设置最大值，则判断
         if (maxSize && file.size / 1024 / 1024 >= maxSize) {
           createMessage.error(t('component.upload.maxSizeMultiple', [maxSize]));
           return false;
         }
 
-        // 设置类型,则判断
-        if (accept.length > 0 && !checkFileType(file, accept)) {
-          createMessage.error!(t('component.upload.acceptUpload', [accept.join(',')]));
-          return false;
-        }
         const commonItem = {
           uuid: buildUUID(),
           file,
@@ -162,10 +157,12 @@
         }
         return false;
       }
+
       // 删除
       function handleRemove(record: FileItem) {
         const index = fileListRef.value.findIndex((item) => item.uuid === record.uuid);
         index !== -1 && fileListRef.value.splice(index, 1);
+        emit('delete', record);
       }
 
       // 预览
@@ -185,13 +182,17 @@
           item.status = UploadResultStatus.UPLOADING;
           const { data } = await props.api?.(
             {
-              ...(props.uploadParams || {}),
+              data: {
+                ...(props.uploadParams || {}),
+              },
               file: item.file,
+              name: props.name,
+              filename: props.filename,
             },
             function onUploadProgress(progressEvent: ProgressEvent) {
               const complete = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
               item.percent = complete;
-            }
+            },
           );
           item.status = UploadResultStatus.SUCCESS;
           item.responseData = data;
@@ -223,7 +224,7 @@
           const data = await Promise.all(
             uploadFileList.map((item) => {
               return uploadApiByItem(item);
-            })
+            }),
           );
           isUploadingRef.value = false;
           // 生产环境:抛出错误
@@ -263,7 +264,7 @@
       }
 
       // 点击关闭：则所有操作不保存，包括上传的
-      function handleCloseFunc() {
+      async function handleCloseFunc() {
         if (!isUploadingRef.value) {
           fileListRef.value = [];
           return true;
@@ -274,8 +275,8 @@
       }
 
       return {
-        columns: createTableColumns(),
-        actionColumn: createActionColumn(handleRemove),
+        columns: createTableColumns() as any[],
+        actionColumn: createActionColumn(handleRemove) as any,
         register,
         closeModal,
         getHelpText,

@@ -58,12 +58,8 @@ export default defineComponent({
       getThemeColor,
     } = useRootSetting();
 
-    const {
-      getOpenPageLoading,
-      getBasicTransition,
-      getEnableTransition,
-      getOpenNProgress,
-    } = useTransitionSetting();
+    const { getOpenPageLoading, getBasicTransition, getEnableTransition, getOpenNProgress } =
+      useTransitionSetting();
 
     const {
       getIsHorizontal,
@@ -405,7 +401,7 @@ export default defineComponent({
         {...attrs}
         title={t('layout.setting.drawerTitle')}
         width={330}
-        wrapClassName="setting-drawer"
+        class="setting-drawer"
       >
         {unref(getShowDarkModeToggle) && <Divider>{() => t('layout.setting.darkMode')}</Divider>}
         {unref(getShowDarkModeToggle) && <AppDarkModeToggle class="mx-auto" />}

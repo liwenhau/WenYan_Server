@@ -1,39 +1,9 @@
-<template>
-  <div :class="prefixCls">
-    <div v-show="!isEdit" :class="`${prefixCls}__normal`" @click="handleEdit">
-      {{ getValues || '&nbsp;' }}
-      <FormOutlined :class="`${prefixCls}__normal-icon`" v-if="!column.editRow" />
-    </div>
-
-    <div v-if="isEdit" :class="`${prefixCls}__wrapper`" v-click-outside="onClickOutside">
-      <CellComponent
-        v-bind="getComponentProps"
-        :component="getComponent"
-        :style="getWrapperStyle"
-        :popoverVisible="getRuleVisible"
-        :rule="getRule"
-        :ruleMessage="ruleMessage"
-        :class="getWrapperClass"
-        size="small"
-        ref="elRef"
-        @change="handleChange"
-        @options-change="handleOptionsChange"
-        @pressEnter="handleEnter"
-      />
-      <div :class="`${prefixCls}__action`" v-if="!getRowEditable">
-        <CheckOutlined :class="[`${prefixCls}__icon`, 'mx-2']" @click="handleSubmit" />
-        <CloseOutlined :class="`${prefixCls}__icon `" @click="handleCancel" />
-      </div>
-    </div>
-  </div>
-</template>
-<script lang="ts">
+<script lang="tsx">
   import type { CSSProperties, PropType } from 'vue';
+  import { computed, defineComponent, nextTick, ref, toRaw, unref, watchEffect } from 'vue';
   import type { BasicColumn } from '../../types/table';
   import type { EditRecordRow } from './index';
-
-  import { defineComponent, ref, unref, nextTick, computed, watchEffect, toRaw } from 'vue';
-  import { FormOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons-vue';
+  import { CheckOutlined, CloseOutlined, FormOutlined } from '@ant-design/icons-vue';
   import { CellComponent } from './CellComponent';
 
   import { useDesign } from '/@/hooks/web/useDesign';
@@ -42,12 +12,15 @@
   import clickOutside from '/@/directives/clickOutside';
 
   import { propTypes } from '/@/utils/propTypes';
-  import { isString, isBoolean, isFunction, isNumber, isArray } from '/@/utils/is';
+  import { isArray, isBoolean, isFunction, isNumber, isString } from '/@/utils/is';
   import { createPlaceholderMessage } from './helper';
+  import { omit, pick, set } from 'lodash-es';
+  import { treeToList } from '/@/utils/helper/treeHelper';
+  import { Spin } from 'ant-design-vue';
 
   export default defineComponent({
     name: 'EditableCell',
-    components: { FormOutlined, CloseOutlined, CheckOutlined, CellComponent },
+    components: { FormOutlined, CloseOutlined, CheckOutlined, CellComponent, Spin },
     directives: {
       clickOutside,
     },
@@ -74,6 +47,7 @@
       const optionsRef = ref<LabelValueOptions>([]);
       const currentValueRef = ref<any>(props.value);
       const defaultValueRef = ref<any>(props.value);
+      const spinning = ref<boolean>(false);
 
       const { prefixCls } = useDesign('editable-cell');
 
@@ -90,13 +64,6 @@
       });
 
       const getComponentProps = computed(() => {
-        const compProps = props.column?.editComponentProps ?? {};
-        const component = unref(getComponent);
-        const apiSelectProps: Recordable = {};
-        if (component === 'ApiSelect') {
-          apiSelectProps.cache = true;
-        }
-
         const isCheckValue = unref(getIsCheckComp);
 
         const valueField = isCheckValue ? 'checked' : 'value';
@@ -104,16 +71,49 @@
 
         const value = isCheckValue ? (isNumber(val) && isBoolean(val) ? val : !!val) : val;
 
+        let compProps = props.column?.editComponentProps ?? {};
+        const { record, column, index } = props;
+
+        if (isFunction(compProps)) {
+          compProps = compProps({ text: val, record, column, index }) ?? {};
+        }
+        const component = unref(getComponent);
+        const apiSelectProps: Recordable = {};
+        if (component === 'ApiSelect') {
+          apiSelectProps.cache = true;
+        }
+        upEditDynamicDisabled(record, column, value);
         return {
+          size: 'small',
+          getPopupContainer: () => unref(table?.wrapRef.value) ?? document.body,
           placeholder: createPlaceholderMessage(unref(getComponent)),
           ...apiSelectProps,
           ...compProps,
           [valueField]: value,
-        };
+          disabled: unref(getDisable),
+        } as any;
       });
-
+      function upEditDynamicDisabled(record, column, value) {
+        if (!record) return false;
+        const { key, dataIndex } = column;
+        if (!key && !dataIndex) return;
+        const dataKey = (dataIndex || key) as string;
+        set(record, dataKey, value);
+      }
+      const getDisable = computed(() => {
+        const { editDynamicDisabled } = props.column;
+        let disabled = false;
+        if (isBoolean(editDynamicDisabled)) {
+          disabled = editDynamicDisabled;
+        }
+        if (isFunction(editDynamicDisabled)) {
+          const { record } = props;
+          disabled = editDynamicDisabled({ record });
+        }
+        return disabled;
+      });
       const getValues = computed(() => {
-        const { editComponentProps, editValueMap } = props.column;
+        const { editValueMap } = props.column;
 
         const value = unref(currentValueRef);
 
@@ -126,7 +126,8 @@
           return value;
         }
 
-        const options: LabelValueOptions = editComponentProps?.options ?? (unref(optionsRef) || []);
+        const options: LabelValueOptions =
+          unref(getComponentProps)?.options ?? (unref(optionsRef) || []);
         const option = options.find((item) => `${item.value}` === `${value}`);
 
         return option?.label ?? value;
@@ -153,6 +154,7 @@
 
       watchEffect(() => {
         defaultValueRef.value = props.value;
+        currentValueRef.value = props.value;
       });
 
       watchEffect(() => {
@@ -176,13 +178,17 @@
         const component = unref(getComponent);
         if (!e) {
           currentValueRef.value = e;
-        } else if (e?.target && Reflect.has(e.target, 'value')) {
-          currentValueRef.value = (e as ChangeEvent).target.value;
         } else if (component === 'Checkbox') {
           currentValueRef.value = (e as ChangeEvent).target.checked;
-        } else if (isString(e) || isBoolean(e) || isNumber(e)) {
+        } else if (component === 'Switch') {
+          currentValueRef.value = e;
+        } else if (e?.target && Reflect.has(e.target, 'value')) {
+          currentValueRef.value = (e as ChangeEvent).target.value;
+        } else if (isString(e) || isBoolean(e) || isNumber(e) || isArray(e)) {
           currentValueRef.value = e;
         }
+        const onChange = unref(getComponentProps)?.onChange;
+        if (onChange && isFunction(onChange)) onChange(...arguments);
 
         table.emit?.('edit-change', {
           column: props.column,
@@ -201,8 +207,7 @@
           if (isBoolean(editRule) && !currentValue && !isNumber(currentValue)) {
             ruleVisible.value = true;
             const component = unref(getComponent);
-            const message = createPlaceholderMessage(component);
-            ruleMessage.value = message;
+            ruleMessage.value = createPlaceholderMessage(component);
             return false;
           }
           if (isFunction(editRule)) {
@@ -227,15 +232,46 @@
           if (!isPass) return false;
         }
 
-        const { column, index } = props;
+        const { column, index, record } = props;
+        if (!record) return false;
         const { key, dataIndex } = column;
         const value = unref(currentValueRef);
-        if (!key || !dataIndex) return;
+        if (!key && !dataIndex) return;
 
         const dataKey = (dataIndex || key) as string;
 
-        const record = await table.updateTableData(index, dataKey, value);
-        needEmit && table.emit?.('edit-end', { record, index, key, value });
+        if (!record.editable) {
+          const { getBindValues } = table;
+
+          const { beforeEditSubmit, columns } = unref(getBindValues);
+
+          if (beforeEditSubmit && isFunction(beforeEditSubmit)) {
+            spinning.value = true;
+            const keys: string[] = columns
+              .map((_column) => _column.dataIndex)
+              .filter((field) => !!field) as string[];
+            let result: any = true;
+            try {
+              result = await beforeEditSubmit({
+                record: pick(record, keys),
+                index,
+                key: dataKey as string,
+                value,
+              });
+            } catch (e) {
+              result = false;
+            } finally {
+              spinning.value = false;
+            }
+            if (result === false) {
+              return;
+            }
+          }
+        }
+
+        set(record, dataKey, value);
+        //const record = await table.updateTableData(index, dataKey, value);
+        needEmit && table.emit?.('edit-end', { record, index, key: dataKey, value });
         isEdit.value = false;
       }
 
@@ -246,10 +282,21 @@
         handleSubmit();
       }
 
+      function handleSubmitClick() {
+        handleSubmit();
+      }
+
       function handleCancel() {
         isEdit.value = false;
         currentValueRef.value = defaultValueRef.value;
-        table.emit?.('edit-cancel', unref(currentValueRef));
+        const { column, index, record } = props;
+        const { key, dataIndex } = column;
+        table.emit?.('edit-cancel', {
+          record,
+          index,
+          key: dataIndex || key,
+          value: unref(currentValueRef),
+        });
       }
 
       function onClickOutside() {
@@ -263,9 +310,23 @@
         }
       }
 
-      // only ApiSelect
+      // only ApiSelect or TreeSelect
       function handleOptionsChange(options: LabelValueOptions) {
-        optionsRef.value = options;
+        const { replaceFields } = unref(getComponentProps);
+        const component = unref(getComponent);
+        if (component === 'ApiTreeSelect') {
+          const { title = 'title', value = 'value', children = 'children' } = replaceFields || {};
+          let listOptions: Recordable[] = treeToList(options, { children });
+          listOptions = listOptions.map((item) => {
+            return {
+              label: item[title],
+              value: item[value],
+            };
+          });
+          optionsRef.value = listOptions as LabelValueOptions;
+        } else {
+          optionsRef.value = options;
+        }
       }
 
       function initCbs(cbs: 'submitCbs' | 'validCbs' | 'cancelCbs', handle: Fn) {
@@ -282,6 +343,10 @@
         initCbs('validCbs', handleSubmiRule);
         initCbs('cancelCbs', handleCancel);
 
+        if (props.column.dataIndex) {
+          if (!props.record.editValueRefs) props.record.editValueRefs = {};
+          props.record.editValueRefs[props.column.dataIndex as any] = currentValueRef;
+        }
         /* eslint-disable  */
         props.record.onCancelEdit = () => {
           isArray(props.record?.cancelCbs) && props.record?.cancelCbs.forEach((fn) => fn());
@@ -289,13 +354,7 @@
         /* eslint-disable */
         props.record.onSubmitEdit = async () => {
           if (isArray(props.record?.submitCbs)) {
-            const validFns = (props.record?.validCbs || []).map((fn) => fn());
-
-            const res = await Promise.all(validFns);
-
-            const pass = res.every((item) => !!item);
-
-            if (!pass) return;
+            if (!props.record?.onValid?.()) return;
             const submitFns = props.record?.submitCbs || [];
             submitFns.forEach((fn) => fn(false, false));
             table.emit?.('edit-row-end');
@@ -325,8 +384,62 @@
         getRowEditable,
         getValues,
         handleEnter,
-        // getSize,
+        handleSubmitClick,
+        spinning,
       };
+    },
+    render() {
+      return (
+        <div class={this.prefixCls}>
+          <div
+            v-show={!this.isEdit}
+            class={{ [`${this.prefixCls}__normal`]: true, 'ellipsis-cell': this.column.ellipsis }}
+            onClick={this.handleEdit}
+          >
+            <div class="cell-content" title={this.column.ellipsis ? this.getValues ?? '' : ''}>
+              {this.column.editRender
+                ? this.column.editRender({
+                    text: this.value,
+                    record: this.record as Recordable,
+                    column: this.column,
+                    index: this.index,
+                  })
+                : this.getValues
+                ? this.getValues
+                : '\u00A0'}
+            </div>
+            {!this.column.editRow && <FormOutlined class={`${this.prefixCls}__normal-icon`} />}
+          </div>
+          {this.isEdit && (
+            <Spin spinning={this.spinning}>
+              <div class={`${this.prefixCls}__wrapper`} v-click-outside={this.onClickOutside}>
+                <CellComponent
+                  {...this.getComponentProps}
+                  component={this.getComponent}
+                  style={this.getWrapperStyle}
+                  popoverVisible={this.getRuleVisible}
+                  rule={this.getRule}
+                  ruleMessage={this.ruleMessage}
+                  class={this.getWrapperClass}
+                  ref="elRef"
+                  onChange={this.handleChange}
+                  onOptionsChange={this.handleOptionsChange}
+                  onPressEnter={this.handleEnter}
+                />
+                {!this.getRowEditable && (
+                  <div class={`${this.prefixCls}__action`}>
+                    <CheckOutlined
+                      class={[`${this.prefixCls}__icon`, 'mx-2']}
+                      onClick={this.handleSubmitClick}
+                    />
+                    <CloseOutlined class={`${this.prefixCls}__icon `} onClick={this.handleCancel} />
+                  </div>
+                )}
+              </div>
+            </Spin>
+          )}
+        </div>
+      );
     },
   });
 </script>
@@ -385,6 +498,16 @@
         svg {
           color: @primary-color;
         }
+      }
+    }
+
+    .ellipsis-cell {
+      .cell-content {
+        overflow-wrap: break-word;
+        word-break: break-word;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
 

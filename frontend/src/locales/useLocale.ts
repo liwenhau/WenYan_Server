@@ -3,22 +3,15 @@
  */
 import type { LocaleType } from '/#/config';
 
-import moment from 'moment';
-
 import { i18n } from './setupI18n';
 import { useLocaleStoreWithOut } from '/@/store/modules/locale';
 import { unref, computed } from 'vue';
+import { loadLocalePool, setHtmlPageLang } from './helper';
 
 interface LangModule {
   message: Recordable;
-  momentLocale: Recordable;
-  momentLocaleName: string;
-}
-
-const loadLocalePool: LocaleType[] = [];
-
-export function setLoadLocalePool(cb: (loadLocalePool: LocaleType[]) => void) {
-  cb(loadLocalePool);
+  dateLocale: Recordable;
+  dateLocaleName: string;
 }
 
 function setI18nLanguage(locale: LocaleType) {
@@ -30,7 +23,7 @@ function setI18nLanguage(locale: LocaleType) {
     (i18n.global.locale as any).value = locale;
   }
   localeStore.setLocaleInfo({ locale });
-  document.querySelector('html')?.setAttribute('lang', locale);
+  setHtmlPageLang(locale);
 }
 
 export function useLocale() {
@@ -58,10 +51,9 @@ export function useLocale() {
     const langModule = ((await import(`./lang/${locale}.ts`)) as any).default as LangModule;
     if (!langModule) return;
 
-    const { message, momentLocale, momentLocaleName } = langModule;
+    const { message } = langModule;
 
     globalI18n.setLocaleMessage(locale, message);
-    moment.updateLocale(momentLocaleName, momentLocale);
     loadLocalePool.push(locale);
 
     setI18nLanguage(locale);

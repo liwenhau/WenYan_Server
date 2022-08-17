@@ -6,8 +6,9 @@
     <Popover
       placement="bottomLeft"
       trigger="click"
-      @visibleChange="handleVisibleChange"
+      @visible-change="handleVisibleChange"
       :overlayClassName="`${prefixCls}__cloumn-list`"
+      :getPopupContainer="getPopupContainer"
     >
       <template #title>
         <div :class="`${prefixCls}__popover-title`">
@@ -41,13 +42,17 @@
         <ScrollContainer>
           <CheckboxGroup v-model:value="checkedList" @change="onChange" ref="columnListRef">
             <template v-for="item in plainOptions" :key="item.value">
-              <div :class="`${prefixCls}__check-item`">
-                <DragOutlined class="table-coulmn-drag-icon" />
+              <div :class="`${prefixCls}__check-item`" v-if="!('ifShow' in item && !item.ifShow)">
+                <DragOutlined class="table-column-drag-icon" />
                 <Checkbox :value="item.value">
                   {{ item.label }}
                 </Checkbox>
 
-                <Tooltip placement="bottomLeft" :mouseLeaveDelay="0.4">
+                <Tooltip
+                  placement="bottomLeft"
+                  :mouseLeaveDelay="0.4"
+                  :getPopupContainer="getPopupContainer"
+                >
                   <template #title>
                     {{ t('component.table.settingFixedLeft') }}
                   </template>
@@ -64,7 +69,11 @@
                   />
                 </Tooltip>
                 <Divider type="vertical" />
-                <Tooltip placement="bottomLeft" :mouseLeaveDelay="0.4">
+                <Tooltip
+                  placement="bottomLeft"
+                  :mouseLeaveDelay="0.4"
+                  :getPopupContainer="getPopupContainer"
+                >
                   <template #title>
                     {{ t('component.table.settingFixedRight') }}
                   </template>
@@ -90,6 +99,7 @@
   </Tooltip>
 </template>
 <script lang="ts">
+  import type { BasicColumn, ColumnChangeParam } from '../../types/table';
   import {
     defineComponent,
     ref,
@@ -101,24 +111,23 @@
     computed,
   } from 'vue';
   import { Tooltip, Popover, Checkbox, Divider } from 'ant-design-vue';
+  import type { CheckboxChangeEvent } from 'ant-design-vue/lib/checkbox/interface';
   import { SettingOutlined, DragOutlined } from '@ant-design/icons-vue';
   import { Icon } from '/@/components/Icon';
   import { ScrollContainer } from '/@/components/Container';
-
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useTableContext } from '../../hooks/useTableContext';
   import { useDesign } from '/@/hooks/web/useDesign';
-  import { useSortable } from '/@/hooks/web/useSortable';
-
-  import { isNullAndUnDef } from '/@/utils/is';
-  import { getPopupContainer } from '/@/utils';
-  import { omit } from 'lodash-es';
-
-  import type { BasicColumn } from '../../types/table';
+  // import { useSortable } from '/@/hooks/web/useSortable';
+  import { isFunction, isNullAndUnDef } from '/@/utils/is';
+  import { getPopupContainer as getParentContainer } from '/@/utils';
+  import { cloneDeep, omit } from 'lodash-es';
+  import Sortablejs from 'sortablejs';
+  import type Sortable from 'sortablejs';
 
   interface State {
-    indeterminate: boolean;
     checkAll: boolean;
+    isInit?: boolean;
     checkedList: string[];
     defaultCheckList: string[];
   }
@@ -142,8 +151,9 @@
       Divider,
       Icon,
     },
+    emits: ['columns-change'],
 
-    setup() {
+    setup(_, { emit, attrs }) {
       const { t } = useI18n();
       const table = useTableContext();
 
@@ -151,14 +161,13 @@
       let inited = false;
 
       const cachePlainOptions = ref<Options[]>([]);
-      const plainOptions = ref<Options[]>([]);
+      const plainOptions = ref<Options[] | any>([]);
 
       const plainSortOptions = ref<Options[]>([]);
 
       const columnListRef = ref<ComponentRef>(null);
 
       const state = reactive<State>({
-        indeterminate: false,
         checkAll: true,
         checkedList: [],
         defaultCheckList: [],
@@ -174,10 +183,12 @@
       });
 
       watchEffect(() => {
-        const columns = table.getColumns();
-        if (columns.length) {
-          init();
-        }
+        setTimeout(() => {
+          const columns = table.getColumns();
+          if (columns.length && !state.isInit) {
+            init();
+          }
+        }, 0);
       });
 
       watchEffect(() => {
@@ -202,7 +213,7 @@
         const columns = getColumns();
 
         const checkList = table
-          .getColumns()
+          .getColumns({ ignoreAction: true })
           .map((item) => {
             if (item.defaultHidden) {
               return '';
@@ -228,43 +239,50 @@
             }
           });
         }
+        state.isInit = true;
         state.checkedList = checkList;
       }
 
       // checkAll change
-      function onCheckAllChange(e: ChangeEvent) {
-        state.indeterminate = false;
+      function onCheckAllChange(e: CheckboxChangeEvent) {
         const checkList = plainOptions.value.map((item) => item.value);
         if (e.target.checked) {
           state.checkedList = checkList;
-          table.setColumns(checkList);
+          setColumns(checkList);
         } else {
           state.checkedList = [];
-          table.setColumns([]);
+          setColumns([]);
         }
       }
 
+      const indeterminate = computed(() => {
+        const len = plainOptions.value.length;
+        let checkedLen = state.checkedList.length;
+        unref(checkIndex) && checkedLen--;
+        return checkedLen > 0 && checkedLen < len;
+      });
+
       // Trigger when check/uncheck a column
       function onChange(checkedList: string[]) {
-        const len = plainOptions.value.length;
-        state.indeterminate = !!checkedList.length && checkedList.length < len;
+        const len = plainSortOptions.value.length;
         state.checkAll = checkedList.length === len;
-
         const sortList = unref(plainSortOptions).map((item) => item.value);
         checkedList.sort((prev, next) => {
           return sortList.indexOf(prev) - sortList.indexOf(next);
         });
-        table.setColumns(checkedList);
+        setColumns(checkedList);
       }
 
+      let sortable: Sortable;
+      let sortableOrder: string[] = [];
       // reset columns
       function reset() {
         state.checkedList = [...state.defaultCheckList];
         state.checkAll = true;
-        state.indeterminate = false;
         plainOptions.value = unref(cachePlainOptions);
         plainSortOptions.value = unref(cachePlainOptions);
-        table.setColumns(table.getCacheColumns());
+        setColumns(table.getCacheColumns());
+        sortable.sort(sortableOrder);
       }
 
       // Open the pop-up window for drag and drop initialization
@@ -273,18 +291,21 @@
         nextTick(() => {
           const columnListEl = unref(columnListRef);
           if (!columnListEl) return;
-          const el = columnListEl.$el;
+          const el = columnListEl.$el as any;
           if (!el) return;
           // Drag and drop sort
-          const { initSortable } = useSortable(el, {
-            handle: '.table-coulmn-drag-icon ',
+          sortable = Sortablejs.create(unref(el), {
+            animation: 500,
+            delay: 400,
+            delayOnTouchOnly: true,
+            handle: '.table-column-drag-icon ',
             onEnd: (evt) => {
               const { oldIndex, newIndex } = evt;
               if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
                 return;
               }
               // Sort column
-              const columns = getColumns();
+              const columns = cloneDeep(plainSortOptions.value);
 
               if (oldIndex > newIndex) {
                 columns.splice(newIndex, 0, columns[oldIndex]);
@@ -295,24 +316,29 @@
               }
 
               plainSortOptions.value = columns;
-              plainOptions.value = columns;
-              table.setColumns(columns);
+
+              setColumns(
+                columns
+                  .map((col: Options) => col.value)
+                  .filter((value: string) => state.checkedList.includes(value)),
+              );
             },
           });
-          initSortable();
+          // 记录原始order 序列
+          sortableOrder = sortable.toArray();
           inited = true;
         });
       }
 
       // Control whether the serial number column is displayed
-      function handleIndexCheckChange(e: ChangeEvent) {
+      function handleIndexCheckChange(e: CheckboxChangeEvent) {
         table.setProps({
           showIndexColumn: e.target.checked,
         });
       }
 
       // Control whether the check box is displayed
-      function handleSelectCheckChange(e: ChangeEvent) {
+      function handleSelectCheckChange(e: CheckboxChangeEvent) {
         table.setProps({
           rowSelection: e.target.checked ? defaultRowSelection : undefined,
         });
@@ -332,13 +358,34 @@
         if (isFixed && !item.width) {
           item.width = 100;
         }
-        table.setCacheColumnsByField?.(item.dataIndex, { fixed: isFixed });
+        table.setCacheColumnsByField?.(item.dataIndex as string, { fixed: isFixed });
+        setColumns(columns);
+      }
+
+      function setColumns(columns: BasicColumn[] | string[]) {
         table.setColumns(columns);
+        const data: ColumnChangeParam[] = unref(plainSortOptions).map((col) => {
+          const visible =
+            columns.findIndex(
+              (c: BasicColumn | string) =>
+                c === col.value || (typeof c !== 'string' && c.dataIndex === col.value),
+            ) !== -1;
+          return { dataIndex: col.value, fixed: col.fixed, visible };
+        });
+
+        emit('columns-change', data);
+      }
+
+      function getPopupContainer() {
+        return isFunction(attrs.getPopupContainer)
+          ? attrs.getPopupContainer()
+          : getParentContainer();
       }
 
       return {
         t,
         ...toRefs(state),
+        indeterminate,
         onCheckAllChange,
         onChange,
         plainOptions,
@@ -360,7 +407,7 @@
 <style lang="less">
   @prefix-cls: ~'@{namespace}-basic-column-setting';
 
-  .table-coulmn-drag-icon {
+  .table-column-drag-icon {
     margin: 0 5px;
     cursor: move;
   }
@@ -390,7 +437,7 @@
 
     &__fixed-left,
     &__fixed-right {
-      color: rgba(0, 0, 0, 0.45);
+      color: rgb(0 0 0 / 45%);
       cursor: pointer;
 
       &.active,

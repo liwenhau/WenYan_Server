@@ -3,7 +3,7 @@ export interface BasicPageParams {
   pageSize: number;
 }
 
-export interface BasicFetchResult<T extends any> {
-  items: T;
+export interface BasicFetchResult<T> {
+  items: T[];
   total: number;
 }

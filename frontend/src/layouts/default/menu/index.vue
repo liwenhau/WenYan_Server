@@ -60,7 +60,7 @@
       const { getIsMobile } = useAppInject();
 
       const getComputedMenuMode = computed(() =>
-        unref(getIsMobile) ? MenuModeEnum.INLINE : props.menuMode || unref(getMenuMode)
+        unref(getIsMobile) ? MenuModeEnum.INLINE : props.menuMode || unref(getMenuMode),
       );
 
       const getComputedMenuTheme = computed(() => props.theme || unref(getMenuTheme));
@@ -76,13 +76,11 @@
         );
       });
 
-      const getWrapperStyle = computed(
-        (): CSSProperties => {
-          return {
-            height: `calc(100% - ${unref(getIsShowLogo) ? '48px' : '0px'})`,
-          };
-        }
-      );
+      const getWrapperStyle = computed((): CSSProperties => {
+        return {
+          height: `calc(100% - ${unref(getIsShowLogo) ? '48px' : '0px'})`,
+        };
+      });
 
       const getLogoClass = computed(() => {
         return [
@@ -148,11 +146,11 @@
           <SimpleMenu {...menuProps} isSplitMenu={unref(getSplit)} items={menus} />
         ) : (
           <BasicMenu
-            {...menuProps}
+            {...(menuProps as any)}
             isHorizontal={props.isHorizontal}
             type={unref(getMenuType)}
             showLogo={unref(getIsShowLogo)}
-            mode={unref(getComputedMenuMode)}
+            mode={unref(getComputedMenuMode as any)}
             items={menus}
           />
         );
@@ -191,7 +189,7 @@
     &--mobile {
       .@{logo-prefix-cls} {
         &__title {
-          opacity: 1;
+          opacity: 100%;
         }
       }
     }

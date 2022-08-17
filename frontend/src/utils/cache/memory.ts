@@ -58,12 +58,17 @@ export class Memory<T = any, V = any> {
       return value;
     }
     const now = new Date().getTime();
-    item.time = now + this.alive;
+    /**
+     * Prevent overflow of the setTimeout Maximum delay value
+     * Maximum delay value 2,147,483,647 ms
+     * https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#maximum_delay_value
+     */
+    item.time = expires > now ? expires : now + expires;
     item.timeoutId = setTimeout(
       () => {
         this.remove(key);
       },
-      expires > now ? expires - now : expires
+      expires > now ? expires - now : expires,
     );
 
     return value;
@@ -80,7 +85,7 @@ export class Memory<T = any, V = any> {
 
   resetCache(cache: { [K in keyof T]: Cache }) {
     Object.keys(cache).forEach((key) => {
-      const k = (key as any) as keyof T;
+      const k = key as any as keyof T;
       const item = cache[k];
       if (item && item.time) {
         const now = new Date().getTime();

@@ -14,13 +14,31 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref, unref } from 'vue';
-  import XLSX from 'xlsx';
+  import * as XLSX from 'xlsx';
+  import { dateUtil } from '/@/utils/dateUtil';
 
-  import type { ExcelData } from './types';
+  import type { ExcelData } from './typing';
   export default defineComponent({
     name: 'ImportExcel',
+    props: {
+      // 日期时间格式。如果不提供或者提供空值，将返回原始Date对象
+      dateFormat: {
+        type: String,
+      },
+      // 时区调整。实验性功能，仅为了解决读取日期时间值有偏差的问题。目前仅提供了+08:00时区的偏差修正值
+      // https://github.com/SheetJS/sheetjs/issues/1470#issuecomment-501108554
+      timeZone: {
+        type: Number,
+        default: 8,
+      },
+      // 是否直接返回选中文件
+      isReturnFile: {
+        type: Boolean,
+        default: false,
+      },
+    },
     emits: ['success', 'error'],
-    setup(_, { emit }) {
+    setup(props, { emit }) {
       const inputRef = ref<HTMLInputElement | null>(null);
       const loadingRef = ref<Boolean>(false);
 
@@ -51,10 +69,28 @@
        */
       function getExcelData(workbook: XLSX.WorkBook) {
         const excelData: ExcelData[] = [];
+        const { dateFormat, timeZone } = props;
         for (const sheetName of workbook.SheetNames) {
           const worksheet = workbook.Sheets[sheetName];
           const header: string[] = getHeaderRow(worksheet);
-          const results = XLSX.utils.sheet_to_json(worksheet);
+          let results = XLSX.utils.sheet_to_json(worksheet, {
+            raw: true,
+            dateNF: dateFormat, //Not worked
+          }) as object[];
+          results = results.map((row: object) => {
+            for (let field in row) {
+              if (row[field] instanceof Date) {
+                if (timeZone === 8) {
+                  row[field].setSeconds(row[field].getSeconds() + 43);
+                }
+                if (dateFormat) {
+                  row[field] = dateUtil(row[field]).format(dateFormat);
+                }
+              }
+            }
+            return row;
+          });
+
           excelData.push({
             header,
             results,
@@ -76,7 +112,7 @@
           reader.onload = async (e) => {
             try {
               const data = e.target && e.target.result;
-              const workbook = XLSX.read(data, { type: 'array' });
+              const workbook = XLSX.read(data, { type: 'array', cellDates: true });
               // console.log(workbook);
               /* DO SOMETHING WITH workbook HERE */
               const excelData = getExcelData(workbook);
@@ -109,6 +145,10 @@
         const files = e && (e.target as HTMLInputElement).files;
         const rawFile = files && files[0]; // only setting files[0]
         if (!rawFile) return;
+        if (props.isReturnFile) {
+          emit('success', rawFile);
+          return;
+        }
         upload(rawFile);
       }
 

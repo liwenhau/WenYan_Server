@@ -4,7 +4,7 @@
       <span>{{ t('component.table.settingDens') }}</span>
     </template>
 
-    <Dropdown placement="bottomCenter" :trigger="['click']" :getPopupContainer="getPopupContainer">
+    <Dropdown placement="bottom" :trigger="['click']" :getPopupContainer="getPopupContainer">
       <ColumnHeightOutlined />
       <template #overlay>
         <Menu @click="handleTitleClick" selectable v-model:selectedKeys="selectedKeysRef">
@@ -24,11 +24,9 @@
 </template>
 <script lang="ts">
   import type { SizeType } from '../../types/table';
-
   import { defineComponent, ref } from 'vue';
   import { Tooltip, Dropdown, Menu } from 'ant-design-vue';
   import { ColumnHeightOutlined } from '@ant-design/icons-vue';
-
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useTableContext } from '../../hooks/useTableContext';
   import { getPopupContainer } from '/@/utils';

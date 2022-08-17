@@ -7,6 +7,7 @@ import {
   ThemeEnum,
   RouterTransitionEnum,
   SettingButtonPositionEnum,
+  SessionTimeoutProcessingEnum,
 } from '/@/enums/appEnum';
 import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting';
 import { primaryColor } from '../../build/config/themeConfig';
@@ -23,10 +24,13 @@ const setting: ProjectConfig = {
   settingButtonPosition: SettingButtonPositionEnum.AUTO,
 
   // Permission mode
-  permissionMode: PermissionModeEnum.ROLE,
+  permissionMode: PermissionModeEnum.ROUTE_MAPPING,
 
   // Permission-related cache is stored in sessionStorage or localStorage
   permissionCacheType: CacheTypeEnum.LOCAL,
+
+  // Session timeout processing
+  sessionTimeoutProcessing: SessionTimeoutProcessingEnum.ROUTE_JUMP,
 
   // color
   themeColor: primaryColor,
@@ -79,6 +83,8 @@ const setting: ProjectConfig = {
     fixed: true,
     // Menu collapse
     collapsed: false,
+    // When sider hide because of the responsive layout
+    siderHidden: false,
     // Whether to display the menu name when folding the menu
     collapsedShowTitle: false,
     // Whether it can be dragged
@@ -130,7 +136,7 @@ const setting: ProjectConfig = {
   // Transition Setting
   transitionSetting: {
     //  Whether to open the page switching animation
-    // The disabled state will also disable pageLoadinng
+    // The disabled state will also disable pageLoading
     enable: true,
 
     // Route basic switching animation

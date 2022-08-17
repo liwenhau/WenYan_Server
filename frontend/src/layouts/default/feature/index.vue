@@ -5,7 +5,7 @@
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
   import { useDesign } from '/@/hooks/web/useDesign';
-  import { useUserStoreWidthOut } from '/@/store/modules/user';
+  import { useUserStoreWithOut } from '/@/store/modules/user';
 
   import { SettingButtonPositionEnum } from '/@/enums/appEnum';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
@@ -22,8 +22,8 @@
     setup() {
       const { getUseOpenBackTop, getShowSettingButton, getSettingButtonPosition, getFullContent } =
         useRootSetting();
-      const userStore = useUserStoreWidthOut();
-      const { prefixCls } = useDesign('setting-drawer-fearure');
+      const userStore = useUserStoreWithOut();
+      const { prefixCls } = useDesign('setting-drawer-feature');
       const { getShowHeader } = useHeaderSetting();
 
       const getIsSessionTimeout = computed(() => userStore.getSessionTimeout);
@@ -59,7 +59,7 @@
 </template>
 
 <style lang="less">
-  @prefix-cls: ~'@{namespace}-setting-drawer-fearure';
+  @prefix-cls: ~'@{namespace}-setting-drawer-feature';
 
   .@{prefix-cls} {
     position: absolute;

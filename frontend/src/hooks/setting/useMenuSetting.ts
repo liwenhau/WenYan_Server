@@ -54,7 +54,7 @@ export function useMenuSetting() {
   const getTopMenuAlign = computed(() => appStore.getMenuSetting.topMenuAlign);
 
   const getCloseMixSidebarOnChange = computed(
-    () => appStore.getMenuSetting.closeMixSidebarOnChange
+    () => appStore.getMenuSetting.closeMixSidebarOnChange,
   );
 
   const getIsSidebarType = computed(() => unref(getMenuType) === MenuTypeEnum.SIDEBAR);
@@ -101,8 +101,12 @@ export function useMenuSetting() {
   });
 
   const getMiniWidthNumber = computed(() => {
-    const { collapsedShowTitle } = appStore.getMenuSetting;
-    return collapsedShowTitle ? SIDE_BAR_SHOW_TIT_MINI_WIDTH : SIDE_BAR_MINI_WIDTH;
+    const { collapsedShowTitle, siderHidden } = appStore.getMenuSetting;
+    return siderHidden
+      ? 0
+      : collapsedShowTitle
+      ? SIDE_BAR_SHOW_TIT_MINI_WIDTH
+      : SIDE_BAR_MINI_WIDTH;
   });
 
   const getCalcContentWidth = computed(() => {

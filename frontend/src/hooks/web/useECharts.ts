@@ -1,39 +1,39 @@
 import type { EChartsOption } from 'echarts';
 import type { Ref } from 'vue';
-
 import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 import { tryOnUnmounted } from '@vueuse/core';
 import { unref, nextTick, watch, computed, ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '/@/hooks/event/useEventListener';
 import { useBreakpoint } from '/@/hooks/event/useBreakpoint';
-
 import echarts from '/@/utils/lib/echarts';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
 
 export function useECharts(
   elRef: Ref<HTMLDivElement>,
-  theme: 'light' | 'dark' | 'default' = 'light'
+  theme: 'light' | 'dark' | 'default' = 'default',
 ) {
-  const { getDarkMode } = useRootSetting();
+  const { getDarkMode: getSysDarkMode } = useRootSetting();
+
+  const getDarkMode = computed(() => {
+    return theme === 'default' ? getSysDarkMode.value : theme;
+  });
   let chartInstance: echarts.ECharts | null = null;
   let resizeFn: Fn = resize;
-  const cacheOptions = ref<EChartsOption>({});
+  const cacheOptions = ref({}) as Ref<EChartsOption>;
   let removeResizeFn: Fn = () => {};
 
   resizeFn = useDebounceFn(resize, 200);
 
-  const getOptions = computed(
-    (): EChartsOption => {
-      if (getDarkMode.value !== 'dark') {
-        return cacheOptions.value;
-      }
-      return {
-        backgroundColor: 'transparent',
-        ...cacheOptions.value,
-      };
+  const getOptions = computed(() => {
+    if (getDarkMode.value !== 'dark') {
+      return cacheOptions.value as EChartsOption;
     }
-  );
+    return {
+      backgroundColor: 'transparent',
+      ...cacheOptions.value,
+    } as EChartsOption;
+  });
 
   function initCharts(t = theme) {
     const el = unref(elRef);
@@ -79,7 +79,12 @@ export function useECharts(
   }
 
   function resize() {
-    chartInstance?.resize();
+    chartInstance?.resize({
+      animation: {
+        duration: 300,
+        easing: 'quadraticIn',
+      },
+    });
   }
 
   watch(
@@ -90,7 +95,7 @@ export function useECharts(
         initCharts(theme as 'default');
         setOptions(cacheOptions.value);
       }
-    }
+    },
   );
 
   tryOnUnmounted(() => {
@@ -100,9 +105,17 @@ export function useECharts(
     chartInstance = null;
   });
 
+  function getInstance(): echarts.ECharts | null {
+    if (!chartInstance) {
+      initCharts(getDarkMode.value as 'default');
+    }
+    return chartInstance;
+  }
+
   return {
     setOptions,
     resize,
     echarts,
+    getInstance,
   };
 }

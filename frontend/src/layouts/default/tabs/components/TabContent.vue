@@ -1,5 +1,11 @@
 <template>
-  <Dropdown :dropMenuList="getDropMenuList" :trigger="getTrigger" @menuEvent="handleMenuEvent">
+  <Dropdown
+    :dropMenuList="getDropMenuList"
+    :trigger="getTrigger"
+    placement="bottom"
+    overlayClassName="multiple-tabs__dropdown"
+    @menu-event="handleMenuEvent"
+  >
     <div :class="`${prefixCls}__info`" @contextmenu="handleContext" v-if="getIsTabs">
       <span class="ml-1">{{ getTitle }}</span>
     </div>
@@ -43,11 +49,13 @@
 
       const getIsTabs = computed(() => !props.isExtra);
 
-      const getTrigger = computed(() => (unref(getIsTabs) ? ['contextmenu'] : ['click']));
+      const getTrigger = computed((): ('contextmenu' | 'click' | 'hover')[] =>
+        unref(getIsTabs) ? ['contextmenu'] : ['click'],
+      );
 
       const { getDropMenuList, handleMenuEvent, handleContextMenu } = useTabDropdown(
         props as TabContentProps,
-        getIsTabs
+        getIsTabs,
       );
 
       function handleContext(e) {

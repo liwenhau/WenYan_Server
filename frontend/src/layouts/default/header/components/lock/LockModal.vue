@@ -53,6 +53,9 @@
           {
             field: 'password',
             label: t('layout.header.lockScreenPassword'),
+            colProps: {
+              span: 24,
+            },
             component: 'InputPassword',
             required: true,
           },
@@ -94,8 +97,8 @@
   .@{prefix-cls} {
     &__entry {
       position: relative;
-      height: 240px;
-      padding: 130px 30px 60px 30px;
+      //height: 240px;
+      padding: 130px 30px 30px;
       border-radius: 10px;
     }
 

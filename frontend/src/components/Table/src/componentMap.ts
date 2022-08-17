@@ -1,5 +1,4 @@
 import type { Component } from 'vue';
-
 import {
   Input,
   Select,
@@ -8,18 +7,19 @@ import {
   Switch,
   DatePicker,
   TimePicker,
+  AutoComplete,
 } from 'ant-design-vue';
-
 import type { ComponentType } from './types/componentType';
-import { ApiSelect } from '/@/components/Form';
+import { ApiSelect, ApiTreeSelect } from '/@/components/Form';
 
 const componentMap = new Map<ComponentType, Component>();
 
 componentMap.set('Input', Input);
 componentMap.set('InputNumber', InputNumber);
-
 componentMap.set('Select', Select);
 componentMap.set('ApiSelect', ApiSelect);
+componentMap.set('AutoComplete', AutoComplete);
+componentMap.set('ApiTreeSelect', ApiTreeSelect);
 componentMap.set('Switch', Switch);
 componentMap.set('Checkbox', Checkbox);
 componentMap.set('DatePicker', DatePicker);

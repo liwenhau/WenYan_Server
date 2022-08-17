@@ -1,36 +1,21 @@
 <template>
   <div :class="`${prefixCls}`">
-    <AppSearchKeyItem :class="`${prefixCls}__item`" icon="ant-design:enter-outlined" />
+    <AppSearchKeyItem :class="`${prefixCls}-item`" icon="ant-design:enter-outlined" />
     <span>{{ t('component.app.toSearch') }}</span>
-
-    <AppSearchKeyItem :class="`${prefixCls}__item`" icon="ion:arrow-up-outline" />
-    <AppSearchKeyItem :class="`${prefixCls}__item`" icon="ion:arrow-down-outline" />
+    <AppSearchKeyItem :class="`${prefixCls}-item`" icon="ion:arrow-up-outline" />
+    <AppSearchKeyItem :class="`${prefixCls}-item`" icon="ion:arrow-down-outline" />
     <span>{{ t('component.app.toNavigate') }}</span>
-    <AppSearchKeyItem :class="`${prefixCls}__item`" icon="mdi:keyboard-esc" />
-
+    <AppSearchKeyItem :class="`${prefixCls}-item`" icon="mdi:keyboard-esc" />
     <span>{{ t('common.closeText') }}</span>
   </div>
 </template>
 
-<script lang="ts">
-  import { defineComponent } from 'vue';
-
+<script lang="ts" setup>
   import AppSearchKeyItem from './AppSearchKeyItem.vue';
-
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useI18n } from '/@/hooks/web/useI18n';
-  export default defineComponent({
-    name: 'AppSearchFooter',
-    components: { AppSearchKeyItem },
-    setup() {
-      const { prefixCls } = useDesign('app-search-footer');
-      const { t } = useI18n();
-      return {
-        prefixCls,
-        t,
-      };
-    },
-  });
+  const { prefixCls } = useDesign('app-search-footer');
+  const { t } = useI18n();
 </script>
 <style lang="less" scoped>
   @prefix-cls: ~'@{namespace}-app-search-footer';
@@ -48,7 +33,7 @@
     align-items: center;
     flex-shrink: 0;
 
-    &__item {
+    &-item {
       display: flex;
       width: 20px;
       height: 18px;
@@ -57,7 +42,7 @@
       background-color: linear-gradient(-225deg, #d5dbe4, #f8f8f8);
       border-radius: 2px;
       box-shadow: inset 0 -2px 0 0 #cdcde6, inset 0 0 1px 1px #fff,
-        0 1px 2px 1px rgba(30, 35, 90, 0.4);
+        0 1px 2px 1px rgb(30 35 90 / 40%);
       align-items: center;
       justify-content: center;
 

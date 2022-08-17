@@ -1,20 +1,16 @@
 <script lang="tsx">
   import type { PropType, Ref } from 'vue';
-  import type { FormActionType, FormProps } from '../types/form';
-  import type { FormSchema } from '../types/form';
+  import { computed, defineComponent, toRefs, unref } from 'vue';
+  import type { FormActionType, FormProps, FormSchema } from '../types/form';
   import type { ValidationRule } from 'ant-design-vue/lib/form/Form';
   import type { TableActionType } from '/@/components/Table';
-
-  import { defineComponent, computed, unref, toRefs } from 'vue';
-  import { Form, Col } from 'ant-design-vue';
+  import { Col, Divider, Form } from 'ant-design-vue';
   import { componentMap } from '../componentMap';
   import { BasicHelp } from '/@/components/Basic';
-
   import { isBoolean, isFunction, isNull } from '/@/utils/is';
   import { getSlot } from '/@/utils/helper/tsxHelper';
   import { createPlaceholderMessage, setComponentRuleType } from '../helper';
-  import { upperFirst, cloneDeep } from 'lodash-es';
-
+  import { cloneDeep, upperFirst } from 'lodash-es';
   import { useItemLabelWidth } from '../hooks/useLabelWidth';
   import { useI18n } from '/@/hooks/web/useI18n';
 
@@ -76,11 +72,17 @@
 
       const getComponentsProps = computed(() => {
         const { schema, tableAction, formModel, formActionType } = props;
-        const { componentProps = {} } = schema;
-        if (!isFunction(componentProps)) {
-          return componentProps;
+        let { componentProps = {} } = schema;
+        if (isFunction(componentProps)) {
+          componentProps = componentProps({ schema, tableAction, formModel, formActionType }) ?? {};
         }
-        return componentProps({ schema, tableAction, formModel, formActionType }) ?? {};
+        if (schema.component === 'Divider') {
+          componentProps = Object.assign({ type: 'horizontal' }, componentProps, {
+            orientation: 'left',
+            plain: true,
+          });
+        }
+        return componentProps as Recordable;
       });
 
       const getDisable = computed(() => {
@@ -91,7 +93,6 @@
         if (isBoolean(dynamicDisabled)) {
           disabled = dynamicDisabled;
         }
-
         if (isFunction(dynamicDisabled)) {
           disabled = dynamicDisabled(unref(getValues));
         }
@@ -176,12 +177,25 @@
 
         const getRequired = isFunction(required) ? required(unref(getValues)) : required;
 
-        if ((!rules || rules.length === 0) && getRequired) {
-          rules = [{ required: getRequired, validator }];
+        /*
+         * 1、若设置了required属性，又没有其他的rules，就创建一个验证规则；
+         * 2、若设置了required属性，又存在其他的rules，则只rules中不存在required属性时，才添加验证required的规则
+         *     也就是说rules中的required，优先级大于required
+         */
+        if (getRequired) {
+          if (!rules || rules.length === 0) {
+            rules = [{ required: getRequired, validator }];
+          } else {
+            const requiredIndex: number = rules.findIndex((rule) => Reflect.has(rule, 'required'));
+
+            if (requiredIndex === -1) {
+              rules.push({ required: getRequired, validator });
+            }
+          }
         }
 
         const requiredRuleIndex: number = rules.findIndex(
-          (rule) => Reflect.has(rule, 'required') && !Reflect.has(rule, 'validator')
+          (rule) => Reflect.has(rule, 'required') && !Reflect.has(rule, 'validator'),
         );
 
         if (requiredRuleIndex !== -1) {
@@ -229,9 +243,10 @@
         const eventKey = `on${upperFirst(changeEvent)}`;
 
         const on = {
-          [eventKey]: (e: Nullable<Recordable>) => {
+          [eventKey]: (...args: Nullable<Recordable>[]) => {
+            const [e] = args;
             if (propsData[eventKey]) {
-              propsData[eventKey](e);
+              propsData[eventKey](...args);
             }
             const target = e ? e.target : null;
             const value = target ? (isCheck ? target.checked : target.value) : e;
@@ -276,7 +291,6 @@
           : {
               default: () => renderComponentContent,
             };
-
         return <Comp {...compAttr}>{compSlot}</Comp>;
       }
 
@@ -304,50 +318,59 @@
       }
 
       function renderItem() {
-        const { itemProps, slot, render, field, suffix } = props.schema;
+        const { itemProps, slot, render, field, suffix, component } = props.schema;
         const { labelCol, wrapperCol } = unref(itemLabelWidthProp);
         const { colon } = props.formProps;
 
-        const getContent = () => {
-          return slot
-            ? getSlot(slots, slot, unref(getValues))
-            : render
-            ? render(unref(getValues))
-            : renderComponent();
-        };
+        if (component === 'Divider') {
+          return (
+            <Col span={24}>
+              <Divider {...unref(getComponentsProps)}>{renderLabelHelpMessage()}</Divider>
+            </Col>
+          );
+        } else {
+          const getContent = () => {
+            return slot
+              ? getSlot(slots, slot, unref(getValues))
+              : render
+              ? render(unref(getValues))
+              : renderComponent();
+          };
 
-        const showSuffix = !!suffix;
+          const showSuffix = !!suffix;
+          const getSuffix = isFunction(suffix) ? suffix(unref(getValues)) : suffix;
 
-        const getSuffix = isFunction(suffix) ? suffix(unref(getValues)) : suffix;
-
-        return (
-          <Form.Item
-            name={field}
-            colon={colon}
-            class={{ 'suffix-item': showSuffix }}
-            {...(itemProps as Recordable)}
-            label={renderLabelHelpMessage()}
-            rules={handleRules()}
-            labelCol={labelCol}
-            wrapperCol={wrapperCol}
-          >
-            <>
-              {getContent()}
-              {showSuffix && <span class="suffix">{getSuffix}</span>}
-            </>
-          </Form.Item>
-        );
+          return (
+            <Form.Item
+              name={field}
+              colon={colon}
+              class={{ 'suffix-item': showSuffix }}
+              {...(itemProps as Recordable)}
+              label={renderLabelHelpMessage()}
+              rules={handleRules()}
+              labelCol={labelCol}
+              wrapperCol={wrapperCol}
+            >
+              <div style="display:flex">
+                <div style="flex:1;">{getContent()}</div>
+                {showSuffix && <span class="suffix">{getSuffix}</span>}
+              </div>
+            </Form.Item>
+          );
+        }
       }
+
       return () => {
         const { colProps = {}, colSlot, renderColContent, component } = props.schema;
-        if (!componentMap.has(component)) return null;
+        if (!componentMap.has(component)) {
+          return null;
+        }
 
         const { baseColProps = {} } = props.formProps;
-
         const realColProps = { ...baseColProps, ...colProps };
         const { isIfShow, isShow } = getShow();
-
         const values = unref(getValues);
+
         const getContent = () => {
           return colSlot
             ? getSlot(slots, colSlot, values)

@@ -4,17 +4,17 @@
       <div :class="getClass" @click.stop v-if="visible">
         <div :class="`${prefixCls}-content`" v-click-outside="handleClose">
           <div :class="`${prefixCls}-input__wrapper`">
-            <Input
+            <a-input
               :class="`${prefixCls}-input`"
               :placeholder="t('common.searchText')"
+              ref="inputRef"
               allow-clear
               @change="handleSearch"
             >
               <template #prefix>
-                <!-- <Icon icon="ion:search"/> -->
                 <SearchOutlined />
               </template>
-            </Input>
+            </a-input>
             <span :class="`${prefixCls}-cancel`" @click="handleClose">
               {{ t('common.cancelText') }}
             </span>
@@ -56,84 +56,62 @@
     </transition>
   </Teleport>
 </template>
-<script lang="ts">
-  import { defineComponent, computed, unref, ref } from 'vue';
 
+<script lang="ts" setup>
+  import { computed, unref, ref, watch, nextTick } from 'vue';
   import { SearchOutlined } from '@ant-design/icons-vue';
-  import { Input } from 'ant-design-vue';
   import AppSearchFooter from './AppSearchFooter.vue';
   import Icon from '/@/components/Icon';
-
-  import clickOutside from '/@/directives/clickOutside';
-
+  // @ts-ignore
+  import vClickOutside from '/@/directives/clickOutside';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useRefs } from '/@/hooks/core/useRefs';
   import { useMenuSearch } from './useMenuSearch';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useAppInject } from '/@/hooks/web/useAppInject';
 
-  import { propTypes } from '/@/utils/propTypes';
-
-  export default defineComponent({
-    name: 'AppSearchModal',
-    components: { Icon, SearchOutlined, AppSearchFooter, Input },
-    directives: {
-      clickOutside,
-    },
-    props: {
-      visible: propTypes.bool,
-    },
-    emits: ['close'],
-    setup(_, { emit }) {
-      const scrollWrap = ref<ElRef>(null);
-      const { prefixCls } = useDesign('app-search-modal');
-      const { t } = useI18n();
-      const [refs, setRefs] = useRefs();
-      const { getIsMobile } = useAppInject();
-
-      const {
-        handleSearch,
-        searchResult,
-        keyword,
-        activeIndex,
-        handleEnter,
-        handleMouseenter,
-      } = useMenuSearch(refs, scrollWrap, emit);
-
-      const getIsNotData = computed(() => {
-        return !keyword || unref(searchResult).length === 0;
-      });
-
-      const getClass = computed(() => {
-        return [
-          prefixCls,
-          {
-            [`${prefixCls}--mobile`]: unref(getIsMobile),
-          },
-        ];
-      });
-
-      function handleClose() {
-        searchResult.value = [];
-        emit('close');
-      }
-
-      return {
-        t,
-        prefixCls,
-        getClass,
-        handleSearch,
-        searchResult,
-        activeIndex,
-        getIsNotData,
-        handleEnter,
-        setRefs,
-        scrollWrap,
-        handleMouseenter,
-        handleClose,
-      };
-    },
+  const props = defineProps({
+    visible: { type: Boolean },
   });
+
+  const emit = defineEmits(['close']);
+
+  const scrollWrap = ref(null);
+  const inputRef = ref<Nullable<HTMLElement>>(null);
+
+  const { t } = useI18n();
+  const { prefixCls } = useDesign('app-search-modal');
+  const [refs, setRefs] = useRefs();
+  const { getIsMobile } = useAppInject();
+
+  const { handleSearch, searchResult, keyword, activeIndex, handleEnter, handleMouseenter } =
+    useMenuSearch(refs, scrollWrap, emit);
+
+  const getIsNotData = computed(() => !keyword || unref(searchResult).length === 0);
+
+  const getClass = computed(() => {
+    return [
+      prefixCls,
+      {
+        [`${prefixCls}--mobile`]: unref(getIsMobile),
+      },
+    ];
+  });
+
+  watch(
+    () => props.visible,
+    (visible: boolean) => {
+      visible &&
+        nextTick(() => {
+          unref(inputRef)?.focus();
+        });
+    },
+  );
+
+  function handleClose() {
+    searchResult.value = [];
+    emit('close');
+  }
 </script>
 <style lang="less" scoped>
   @prefix-cls: ~'@{namespace}-app-search-modal';
@@ -147,7 +125,7 @@
     width: 100%;
     height: 100%;
     padding-top: 50px;
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgb(0 0 0 / 25%);
     justify-content: center;
 
     &--mobile {
@@ -181,7 +159,7 @@
 
         &__item {
           &-enter {
-            opacity: 0 !important;
+            opacity: 0% !important;
           }
         }
       }
@@ -190,16 +168,16 @@
     &-content {
       position: relative;
       width: 632px;
-      margin: 0 auto auto auto;
+      margin: 0 auto auto;
       background-color: @component-background;
       border-radius: 16px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 25%);
       flex-direction: column;
     }
 
     &-input__wrapper {
       display: flex;
-      padding: 14px 14px 0 14px;
+      padding: 14px 14px 0;
       justify-content: space-between;
       align-items: center;
     }
@@ -267,7 +245,7 @@
           background-color: @primary-color;
 
           .@{prefix-cls}-list__item-enter {
-            opacity: 1;
+            opacity: 100%;
           }
         }
 
@@ -281,7 +259,7 @@
 
         &-enter {
           width: 30px;
-          opacity: 0;
+          opacity: 0%;
         }
       }
     }

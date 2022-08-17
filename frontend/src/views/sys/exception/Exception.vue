@@ -1,19 +1,14 @@
 <script lang="tsx">
   import type { PropType } from 'vue';
-
   import { Result, Button } from 'ant-design-vue';
   import { defineComponent, ref, computed, unref } from 'vue';
-
   import { ExceptionEnum } from '/@/enums/exceptionEnum';
-
   import notDataSvg from '/@/assets/svg/no-data.svg';
   import netWorkSvg from '/@/assets/svg/net-error.svg';
-
   import { useRoute } from 'vue-router';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useGo, useRedo } from '/@/hooks/web/usePage';
-
   import { PageEnum } from '/@/enums/pageEnum';
 
   interface MapValue {
@@ -64,11 +59,9 @@
         return Number(routeStatus) || status;
       });
 
-      const getMapValue = computed(
-        (): MapValue => {
-          return unref(statusMapRef).get(unref(getStatus)) as MapValue;
-        }
-      );
+      const getMapValue = computed((): MapValue => {
+        return unref(statusMapRef).get(unref(getStatus)) as MapValue;
+      });
 
       const backLoginI18n = t('sys.exception.backLogin');
       const backHomeI18n = t('sys.exception.backHome');

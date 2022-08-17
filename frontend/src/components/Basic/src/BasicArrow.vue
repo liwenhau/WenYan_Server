@@ -7,44 +7,44 @@
     <Icon icon="ion:chevron-forward" :style="$attrs.iconStyle" />
   </span>
 </template>
-<script lang="ts">
-  import { defineComponent, computed } from 'vue';
-
+<script lang="ts" setup>
+  import { computed } from 'vue';
+  import { Icon } from '/@/components/Icon';
   import { useDesign } from '/@/hooks/web/useDesign';
 
-  import { propTypes } from '/@/utils/propTypes';
+  const props = defineProps({
+    /**
+     * Arrow expand state
+     */
+    expand: { type: Boolean },
+    /**
+     * Arrow up by default
+     */
+    up: { type: Boolean },
+    /**
+     * Arrow down by default
+     */
+    down: { type: Boolean },
+    /**
+     * Cancel padding/margin for inline
+     */
+    inset: { type: Boolean },
+  });
 
-  import { Icon } from '/@/components/Icon';
+  const { prefixCls } = useDesign('basic-arrow');
 
-  export default defineComponent({
-    name: 'BasicArrow',
-    components: { Icon },
-    props: {
-      expand: propTypes.bool,
-      top: propTypes.bool,
-      bottom: propTypes.bool,
-      inset: propTypes.bool,
-    },
-    setup(props) {
-      const { prefixCls } = useDesign('basic-arrow');
-
-      const getClass = computed(() => {
-        const { expand, top, bottom, inset } = props;
-        return [
-          prefixCls,
-          {
-            [`${prefixCls}--active`]: expand,
-            top,
-            inset,
-            bottom,
-          },
-        ];
-      });
-
-      return {
-        getClass,
-      };
-    },
+  // get component class
+  const getClass = computed(() => {
+    const { expand, up, down, inset } = props;
+    return [
+      prefixCls,
+      {
+        [`${prefixCls}--active`]: expand,
+        up,
+        inset,
+        down,
+      },
+    ];
   });
 </script>
 <style lang="less" scoped>
@@ -65,19 +65,19 @@
       line-height: 0px;
     }
 
-    &.top {
+    &.up {
       transform: rotate(-90deg);
     }
 
-    &.bottom {
+    &.down {
       transform: rotate(90deg);
     }
 
-    &.top.@{prefix-cls}--active {
+    &.up.@{prefix-cls}--active {
       transform: rotate(90deg);
     }
 
-    &.bottom.@{prefix-cls}--active {
+    &.down.@{prefix-cls}--active {
       transform: rotate(-90deg);
     }
   }

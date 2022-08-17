@@ -1,5 +1,5 @@
 import type { PropType } from 'vue';
-import { FileBasicColumn } from './types';
+import { FileBasicColumn } from './typing';
 
 export const basicProps = {
   helpText: {
@@ -33,6 +33,14 @@ export const basicProps = {
     type: Function as PropType<PromiseFn>,
     default: null,
     required: true,
+  },
+  name: {
+    type: String as PropType<string>,
+    default: 'file',
+  },
+  filename: {
+    type: String as PropType<string>,
+    default: null,
   },
 };
 
