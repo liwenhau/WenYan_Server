@@ -1,7 +1,7 @@
 <template>
   <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
-    <DeptTree class="w-1/4 xl:w-1/5" @select="handleSelect" />
-    <BasicTable @register="registerTable" class="w-3/4 xl:w-4/5" :searchInfo="searchInfo">
+    <!-- <DeptTree class="w-1/4 xl:w-1/5" @select="handleSelect" /> -->
+    <BasicTable @register="registerTable" :searchInfo="searchInfo">
       <template #toolbar>
         <a-button type="primary" @click="handleCreate">新增账号</a-button>
       </template>
@@ -43,7 +43,7 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { getAccountList } from '/@/api/demo/system';
   import { PageWrapper } from '/@/components/Page';
-  import DeptTree from './DeptTree.vue';
+  // import DeptTree from './DeptTree.vue';
 
   import { useModal } from '/@/components/Modal';
   import AccountModal from './AccountModal.vue';
@@ -53,7 +53,7 @@
 
   export default defineComponent({
     name: 'AccountManagement',
-    components: { BasicTable, PageWrapper, DeptTree, AccountModal, TableAction },
+    components: { BasicTable, PageWrapper, AccountModal, TableAction },
     setup() {
       const go = useGo();
       const [registerModal, { openModal }] = useModal();

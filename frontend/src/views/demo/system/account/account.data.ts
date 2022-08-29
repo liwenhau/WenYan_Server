@@ -4,6 +4,11 @@ import { FormSchema } from '/@/components/Table';
 
 export const columns: BasicColumn[] = [
   {
+    title: '头像',
+    dataIndex: 'avatar',
+    width: 120,
+  },
+  {
     title: '用户名',
     dataIndex: 'account',
     width: 120,
@@ -29,7 +34,7 @@ export const columns: BasicColumn[] = [
     width: 200,
   },
   {
-    title: '备注',
+    title: '名片',
     dataIndex: 'remark',
   },
 ];
