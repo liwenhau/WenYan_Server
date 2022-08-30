@@ -17,10 +17,10 @@
     </template>
     <div class="pt-4 m-4 desc-wrap">
       <template v-if="currentKey == 'detail'">
-        <div v-for="i in 10" :key="i">这是用户{{ userId }}资料Tab</div>
+        <div :key="i">这是用户{{ userId }}资料Tab</div>
       </template>
       <template v-if="currentKey == 'logs'">
-        <div v-for="i in 10" :key="i">这是用户{{ userId }}操作日志Tab</div>
+        <div :key="i">这是用户{{ currentKey }}操作日志Tab</div>
       </template>
     </div>
   </PageWrapper>

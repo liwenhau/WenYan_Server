@@ -2,6 +2,7 @@ import { getAllRoleList, isAccountExist } from '/@/api/demo/system';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 
+//用户列表
 export const columns: BasicColumn[] = [
   {
     title: '头像',
@@ -39,6 +40,7 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+//查找
 export const searchFormSchema: FormSchema[] = [
   {
     field: 'account',
@@ -54,12 +56,13 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
+//异步添加
 export const accountFormSchema: FormSchema[] = [
   {
     field: 'account',
     label: '用户名',
     component: 'Input',
-    helpMessage: ['本字段演示异步验证', '不能输入带有admin的用户名'],
+    //helpMessage: ['本字段演示异步验证', '不能输入带有admin的用户名'],
     rules: [
       {
         required: true,
@@ -83,7 +86,7 @@ export const accountFormSchema: FormSchema[] = [
     label: '密码',
     component: 'InputPassword',
     required: true,
-    ifShow: false,
+    ifShow: true,
   },
   {
     label: '角色',
@@ -96,20 +99,20 @@ export const accountFormSchema: FormSchema[] = [
     },
     required: true,
   },
-  {
-    field: 'dept',
-    label: '所属部门',
-    component: 'TreeSelect',
-    componentProps: {
-      fieldNames: {
-        label: 'deptName',
-        key: 'id',
-        value: 'id',
-      },
-      getPopupContainer: () => document.body,
-    },
-    required: true,
-  },
+  // {
+  //   field: 'dept',
+  //   label: '所属部门',
+  //   component: 'TreeSelect',
+  //   componentProps: {
+  //     fieldNames: {
+  //       label: 'deptName',
+  //       key: 'id',
+  //       value: 'id',
+  //     },
+  //     getPopupContainer: () => document.body,
+  //   },
+  //   required: true,
+  // },
   {
     field: 'nickname',
     label: '昵称',
