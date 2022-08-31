@@ -13,7 +13,7 @@
       <AppLogo :alwaysShowTitle="true" />
     </span>
 
-    <div class="container relative h-full py-2 mx-auto sm:px-10">
+    <div id="top" class="container relative h-full py-2 mx-auto sm:px-10">
       <div class="flex h-full">
         <div class="hidden min-h-full pl-4 mr-4 xl:flex xl:flex-col xl:w-6/12">
           <AppLogo class="-enter-x" />
@@ -102,7 +102,7 @@
       }
 
       .app-iconify {
-        color: #fff;
+        color: #000;
       }
     }
 
@@ -130,8 +130,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      margin-left: -48%;
-      background-image: url(/@/assets/svg/login-bg.svg);
+      background-image: url("/@/assets/svg/login-bg.svg");
       background-position: 100%;
       background-repeat: no-repeat;
       background-size: auto 100%;
@@ -148,7 +147,7 @@
 
       &__title {
         font-size: 16px;
-        color: #fff;
+        color: #0a61bd;
       }
 
       img {
@@ -164,7 +163,7 @@
 
         &__title {
           font-size: 24px;
-          color: #fff;
+          color: #0a61bd;
         }
 
         img {
