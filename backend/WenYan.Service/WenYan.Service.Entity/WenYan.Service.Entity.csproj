@@ -31,6 +31,6 @@
     <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WenYan.Util\WenYan.Service.Util.csproj" />
+    <ProjectReference Include="..\WenYan..Service.Util\WenYan.Service.Util.csproj" />
   </ItemGroup>
 </Project>

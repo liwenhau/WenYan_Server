@@ -5,13 +5,13 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Api", "WenYan.Service.Api\WenYan.Service.Api.csproj", "{A9AD7599-782D-4EE3-9CB4-3982BA3C5C7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Entity", "WenYan.Entity\WenYan.Service.Entity.csproj", "{7BB923E5-E1BB-47BC-86D4-FEF8F3FADF71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Entity", "WenYan.Service.Entity\WenYan.Service.Entity.csproj", "{7BB923E5-E1BB-47BC-86D4-FEF8F3FADF71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Util", "WenYan.Util\WenYan.Service.Util.csproj", "{C73FCC71-5CF9-4CF3-9399-08180BB7D663}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Util", "WenYan.Service.Util\WenYan.Service.Util.csproj", "{C73FCC71-5CF9-4CF3-9399-08180BB7D663}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.Models", "WenYan.Service.Models\WenYan.Service.Models.csproj", "{EAB2DE7C-4B5A-4BEF-ACD5-65B884C2B03B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.IBusiness", "IBusiness\WenYan.Service.IBusiness.csproj", "{33EE897E-2672-44E0-9E23-2EFEB651DF6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WenYan.Service.IBusiness", "WenYan.Service.IBusiness\WenYan.Service.IBusiness.csproj", "{33EE897E-2672-44E0-9E23-2EFEB651DF6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WenYan.Service.Business", "WenYan.Service.Business\WenYan.Service.Business.csproj", "{1C310FD5-6215-4E76-BBBC-95DBA93736F7}"
 EndProject
