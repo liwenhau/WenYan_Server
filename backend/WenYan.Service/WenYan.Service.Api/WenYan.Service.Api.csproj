@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DatabaseType>Sqlite</DatabaseType>
+    <UserSecretsId>00000000-0000-0000-0000-00000000000</UserSecretsId>
+  </PropertyGroup>
+  
+  <!--条件编译-->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DatabaseType);</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Folder Include="Controllers\Sys\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.22" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+  <!--全局Using引用-->
+  <ItemGroup>
+    <Using Include="WenYan.Service.Entity" />
+    <Using Include="WenYan.Service.Util" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.AspNetCore.Mvc" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\IBusiness\WenYan.Service.IBusiness.csproj" />
+    <ProjectReference Include="..\WenYan.Entity\WenYan.Service.Entity.csproj" />
+    <ProjectReference Include="..\WenYan.Service.Business\WenYan.Service.Business.csproj" />
+    <ProjectReference Include="..\WenYan.Util\WenYan.Service.Util.csproj" />
+  </ItemGroup>
+
+</Project>

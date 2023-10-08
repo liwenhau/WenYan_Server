@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WenYan.Entity\WenYan.Service.Entity.csproj" />
+    <ProjectReference Include="..\WenYan.Service.Models\WenYan.Service.Models.csproj" />
+  </ItemGroup>
+  <!--全局Using引用-->
+  <ItemGroup>
+    <Using Include="WenYan.Service.Models" />
+    <Using Include="WenYan.Service.Entity" />
+  </ItemGroup>
+</Project>
