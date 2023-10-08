@@ -31,10 +31,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\IBusiness\WenYan.Service.IBusiness.csproj" />
-    <ProjectReference Include="..\WenYan.Entity\WenYan.Service.Entity.csproj" />
+    <ProjectReference Include="..\WenYan.Service.IBusiness\WenYan.Service.IBusiness.csproj" />
+    <ProjectReference Include="..\WenYan.Service.Entity\WenYan.Service.Entity.csproj" />
     <ProjectReference Include="..\WenYan.Service.Business\WenYan.Service.Business.csproj" />
-    <ProjectReference Include="..\WenYan.Util\WenYan.Service.Util.csproj" />
+    <ProjectReference Include="..\WenYan.Service.Util\WenYan.Service.Util.csproj" />
   </ItemGroup>
 
 </Project>

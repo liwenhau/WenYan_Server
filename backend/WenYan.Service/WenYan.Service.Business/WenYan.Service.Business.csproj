@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IBusiness\WenYan.Service.IBusiness.csproj" />
+    <ProjectReference Include="..\WenYan.Service.IBusiness\WenYan.Service.IBusiness.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="WenYan.Service.Models" />
