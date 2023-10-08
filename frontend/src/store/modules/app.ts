@@ -1,108 +1,75 @@
-import type {
-  ProjectConfig,
-  HeaderSetting,
-  MenuSetting,
-  TransitionSetting,
-  MultiTabsSetting,
-} from '/#/config';
-import type { BeforeMiniState } from '/#/store';
+import { defineStore } from 'pinia'
+import { generate, getRgbStr } from '@arco-design/color'
+import defaultSettings from '@/config/setting.json'
+import type { TabModeType, animateModeType } from '@/config/option'
 
-import { defineStore } from 'pinia';
-import { store } from '/@/store';
-
-import { ThemeEnum } from '/@/enums/appEnum';
-import { APP_DARK_MODE_KEY_, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
-import { Persistent } from '/@/utils/cache/persistent';
-import { darkMode } from '/@/settings/designSetting';
-import { resetRouter } from '/@/router';
-import { deepMerge } from '/@/utils';
-
-interface AppState {
-  darkMode?: ThemeEnum;
-  // Page loading status
-  pageLoading: boolean;
-  // project config
-  projectConfig: ProjectConfig | null;
-  // When the window shrinks, remember some states, and restore these states when the window is restored
-  beforeMiniInfo: BeforeMiniState;
+interface ThemeState {
+  theme: 'light' | 'dark'
+  themeColor: string
+  header: boolean
+  footer: boolean
+  menu: boolean
+  hideMenu: boolean
+  menuWidth: number
+  menuCollapse: boolean
+  tab: boolean
+  tabMode: TabModeType
+  animate: boolean
+  animateMode: animateModeType
+  menuFromServer: boolean
 }
-let timeId: TimeoutHandle;
+
+const storageAppSetting = JSON.parse(localStorage.getItem('AppSetting') || '{}')
+
 export const useAppStore = defineStore({
-  id: 'app',
-  state: (): AppState => ({
-    darkMode: undefined,
-    pageLoading: false,
-    projectConfig: Persistent.getLocal(PROJ_CFG_KEY),
-    beforeMiniInfo: {},
-  }),
+  id: 'App',
+  state: (): ThemeState => ({ ...defaultSettings, ...storageAppSetting }),
   getters: {
-    getPageLoading(): boolean {
-      return this.pageLoading;
-    },
-    getDarkMode(): 'light' | 'dark' | string {
-      return this.darkMode || localStorage.getItem(APP_DARK_MODE_KEY_) || darkMode;
-    },
-
-    getBeforeMiniInfo(): BeforeMiniState {
-      return this.beforeMiniInfo;
-    },
-
-    getProjectConfig(): ProjectConfig {
-      return this.projectConfig || ({} as ProjectConfig);
-    },
-
-    getHeaderSetting(): HeaderSetting {
-      return this.getProjectConfig.headerSetting;
-    },
-    getMenuSetting(): MenuSetting {
-      return this.getProjectConfig.menuSetting;
-    },
-    getTransitionSetting(): TransitionSetting {
-      return this.getProjectConfig.transitionSetting;
-    },
-    getMultiTabsSetting(): MultiTabsSetting {
-      return this.getProjectConfig.multiTabsSetting;
-    },
+    // 页面切换动画类名
+    transitionName: (state) => (state.animate ? state.animateMode : '')
   },
   actions: {
-    setPageLoading(loading: boolean): void {
-      this.pageLoading = loading;
-    },
-
-    setDarkMode(mode: ThemeEnum): void {
-      this.darkMode = mode;
-      localStorage.setItem(APP_DARK_MODE_KEY_, mode);
-    },
-
-    setBeforeMiniInfo(state: BeforeMiniState): void {
-      this.beforeMiniInfo = state;
-    },
-
-    setProjectConfig(config: DeepPartial<ProjectConfig>): void {
-      this.projectConfig = deepMerge(this.projectConfig || {}, config);
-      Persistent.setLocal(PROJ_CFG_KEY, this.projectConfig);
-    },
-
-    async resetAllState() {
-      resetRouter();
-      Persistent.clearAll();
-    },
-    async setPageLoadingAction(loading: boolean): Promise<void> {
-      if (loading) {
-        clearTimeout(timeId);
-        // Prevent flicker
-        timeId = setTimeout(() => {
-          this.setPageLoading(loading);
-        }, 50);
+    // 切换主题  暗黑模式|简白模式
+    toggleTheme(dark: boolean) {
+      if (dark) {
+        this.theme = 'dark'
+        document.body.setAttribute('arco-theme', 'dark')
       } else {
-        this.setPageLoading(loading);
-        clearTimeout(timeId);
+        this.theme = 'light'
+        document.body.removeAttribute('arco-theme')
       }
+      this.setThemeColor(this.themeColor)
     },
-  },
-});
-
-// Need to be used outside the setup
-export function useAppStoreWithOut() {
-  return useAppStore(store);
-}
+    // 设置主题色
+    setThemeColor(color: string) {
+      if (!color) return
+      this.themeColor = color
+      const list = generate(this.themeColor, { list: true, dark: this.theme === 'dark' })
+      list.forEach((color: string, index: number) => {
+        const rgbStr = getRgbStr(color)
+        document.body.style.setProperty(`--primary-${index + 1}`, rgbStr)
+      })
+      localStorage.setItem('AppSetting', JSON.stringify(this.$state))
+    },
+    // 设置页签可见
+    setTabVisible(visible: boolean) {
+      this.tab = visible
+      localStorage.setItem('AppSetting', JSON.stringify(this.$state))
+    },
+    // 设置页签的样式类型
+    setTabMode(mode: TabModeType) {
+      this.tabMode = mode
+      localStorage.setItem('AppSetting', JSON.stringify(this.$state))
+    },
+    // 设置是否使用过渡动画
+    setAnimateVisible(visible: boolean) {
+      this.animate = visible
+      localStorage.setItem('AppSetting', JSON.stringify(this.$state))
+    },
+    // 设置页面过渡动画类型
+    setAnimateMode(mode: animateModeType) {
+      this.animateMode = mode
+      localStorage.setItem('AppSetting', JSON.stringify(this.$state))
+    }
+  }
+})

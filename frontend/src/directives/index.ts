@@ -1,11 +1,9 @@
-/**
- * Configure and register global directives
- */
-import type { App } from 'vue';
-import { setupPermissionDirective } from './permission';
-import { setupLoadingDirective } from './loading';
+import type { App } from 'vue'
+import permission from './permission'
+import loading from './v-loading'
 
-export function setupGlobDirectives(app: App) {
-  setupPermissionDirective(app);
-  setupLoadingDirective(app);
+export default {
+  install(Vue: App) {
+    Vue.directive('permission', permission), Vue.directive('loading', loading)
+  }
 }

@@ -1,21 +1,11 @@
 <template>
-  <ConfigProvider :locale="getAntdLocale">
-    <AppProvider>
-      <RouterView />
-    </AppProvider>
-  </ConfigProvider>
+  <a-config-provider update-at-scroll>
+    <router-view></router-view>
+
+    <template #loading>
+      <img src="/static/images/loading.gif" style="width: 30px" />
+    </template>
+  </a-config-provider>
 </template>
 
-<script lang="ts" setup>
-  import { ConfigProvider } from 'ant-design-vue';
-  import { AppProvider } from '/@/components/Application';
-  import { useTitle } from '/@/hooks/web/useTitle';
-  import { useLocale } from '/@/locales/useLocale';
-
-  import 'dayjs/locale/zh-cn';
-  // support Multi-language
-  const { getAntdLocale } = useLocale();
-
-  // Listening to page changes and dynamically changing site titles
-  useTitle();
-</script>
+<script setup lang="ts" name="App"></script>

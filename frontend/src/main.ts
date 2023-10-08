@@ -1,61 +1,52 @@
-import 'virtual:windi-base.css';
-import 'virtual:windi-components.css';
-import '/@/design/index.less';
-import 'virtual:windi-utilities.css';
-// Register icon sprite
-import 'virtual:svg-icons-register';
-import App from './App.vue';
-import { createApp } from 'vue';
-import { initAppConfigStore } from '/@/logics/initAppConfig';
-import { setupErrorHandle } from '/@/logics/error-handle';
-import { router, setupRouter } from '/@/router';
-import { setupRouterGuard } from '/@/router/guard';
-import { setupStore } from '/@/store';
-import { setupGlobDirectives } from '/@/directives';
-import { setupI18n } from '/@/locales/setupI18n';
-import { registerGlobComp } from '/@/components/registerGlobComp';
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
-async function bootstrap() {
-  const app = createApp(App);
+import App from './App.vue'
+import router from './router'
 
-  // Configure store
-  // 配置 store
-  setupStore(app);
+// 引入 Arco Design 组件库以及自定义主题
+import ArcoVue from '@arco-design/web-vue'
+import '@/styles/arco-ui/index.less'
+// import '@arco-themes/vue-gi-demo/index.less'
+// import '@arco-design/web-vue/dist/arco.css'
 
-  // Initialize internal system configuration
-  // 初始化内部系统配置
-  initAppConfigStore();
+// 额外引入 Arco Design Icon图标库
+import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 
-  // Register global components
-  // 注册全局组件
-  registerGlobComp(app);
+// 自定义过渡动画
+import '@/styles/css/transition.css'
+// 导入全局scss主文件
+import '@/styles/index.scss'
 
-  // Multilingual configuration
-  // 多语言配置
-  // Asynchronous case: language files may be obtained from the server side
-  // 异步案例：语言文件可能从服务器端获取
-  await setupI18n(app);
+// 支持SVG
+import 'virtual:svg-icons-register'
 
-  // Configure routing
-  // 配置路由
-  setupRouter(app);
+// 自定义指令
+import directives from './directives'
 
-  // router-guard
-  // 路由守卫
-  setupRouterGuard(router);
+// 解决 json-editor-vue3 报错
+import 'jsoneditor'
 
-  // Register global directive
-  // 注册全局指令
-  setupGlobDirectives(app);
+import Vue3Lottie from 'vue3-lottie'
+import 'vue3-lottie/dist/style.css'
 
-  // Configure global error handling
-  // 配置全局错误处理
-  setupErrorHandle(app);
+const app = createApp(App)
 
-  // https://next.router.vuejs.org/api/#isready
-  // await router.isReady();
+app.use(router)
+app.use(createPinia())
+app.use(ArcoVue)
+app.use(ArcoVueIcon)
+app.use(directives)
+app.use(Vue3Lottie)
 
-  app.mount('#app');
-}
+// 全局注册自定义组件(注：一定要定义组件的name！！！)
+// 注意：目前已使用unplugin-vue-components插件实现自定义组件自动导入
 
-bootstrap();
+// const GiComponents = import.meta.globEager('/src/components/*.vue')
+// const files = Object.assign(GiComponents)
+// Object.keys(files).forEach((item) => {
+//   const component = files[item]?.default
+//   app.component(component.name, component)
+// })
+
+app.mount('#app')

@@ -1,115 +1,81 @@
-import type { UserConfig, ConfigEnv } from 'vite';
-import pkg from './package.json';
-import dayjs from 'dayjs';
-import { loadEnv } from 'vite';
-import { resolve } from 'path';
-import { generateModifyVars } from './build/generate/generateModifyVars';
-import { createProxy } from './build/vite/proxy';
-import { wrapperEnv } from './build/utils';
-import { createVitePlugins } from './build/vite/plugin';
-import { OUTPUT_DIR } from './build/constant';
+import { fileURLToPath, URL } from 'url'
 
-function pathResolve(dir: string) {
-  return resolve(process.cwd(), '.', dir);
-}
+import { defineConfig, loadEnv } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
+import VueSetupExtend from 'vite-plugin-vue-setup-extend'
+import { viteMockServe } from 'vite-plugin-mock'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import Components from 'unplugin-vue-components/vite'
+import path from 'path'
 
-const { dependencies, devDependencies, name, version } = pkg;
-const __APP_INFO__ = {
-  pkg: { dependencies, devDependencies, name, version },
-  lastBuildTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-};
-
-export default ({ command, mode }: ConfigEnv): UserConfig => {
-  const root = process.cwd();
-
-  const env = loadEnv(mode, root);
-
-  // The boolean type read by loadEnv is a string. This function can be converted to boolean type
-  const viteEnv = wrapperEnv(env);
-
-  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
-
-  const isBuild = command === 'build';
-
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
   return {
-    base: VITE_PUBLIC_PATH,
-    root,
+    plugins: [
+      vue(),
+      vueJsx(),
+      VueSetupExtend(),
+      Components({
+        // 指定组件位置, 默认是src/components 自动导入自定义组件
+        dirs: ['src/components'],
+        extensions: ['vue'],
+        // 配置文件生成位置
+        dts: 'src/components.d.ts'
+      }),
+      createSvgIconsPlugin({
+        // 指定需要缓存的图标文件夹
+        iconDirs: [path.resolve(process.cwd(), 'src/icons')],
+        // 指定symbolId格式
+        symbolId: 'icon-[dir]-[name]'
+      }),
+      viteMockServe({
+        mockPath: 'mock',
+        localEnabled: command === 'serve',
+        prodEnabled: command !== 'serve' && true,
+        // 这样可以控制关闭mock的时候不让mock打包到最终代码内
+        injectCode: `
+          import { setupProdMockServer } from '../mock/index';
+          setupProdMockServer();
+        `
+      })
+    ],
     resolve: {
-      alias: [
-        {
-          find: 'vue-i18n',
-          replacement: 'vue-i18n/dist/vue-i18n.cjs.js',
-        },
-        // /@/xxxx => src/xxxx
-        {
-          find: /\/@\//,
-          replacement: pathResolve('src') + '/',
-        },
-        // /#/xxxx => types/xxxx
-        {
-          find: /\/#\//,
-          replacement: pathResolve('types') + '/',
-        },
-      ],
+      alias: {
+        '~': fileURLToPath(new URL('./', import.meta.url)),
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
     },
-    server: {
-      https: true,
-      // Listening on all local IPs
-      host: true,
-      port: VITE_PORT,
-      // Load proxy configuration from .env
-      proxy: createProxy(VITE_PROXY),
-    },
-    esbuild: {
-      pure: VITE_DROP_CONSOLE ? ['console.log', 'debugger'] : [],
-    },
-    build: {
-      target: 'es2015',
-      cssTarget: 'chrome80',
-      outDir: OUTPUT_DIR,
-      // minify: 'terser',
-      /**
-       * 当 minify=“minify:'terser'” 解开注释
-       * Uncomment when minify="minify:'terser'"
-       */
-      // terserOptions: {
-      //   compress: {
-      //     keep_infinity: true,
-      //     drop_console: VITE_DROP_CONSOLE,
-      //   },
-      // },
-      // Turning off brotliSize display can slightly reduce packaging time
-      brotliSize: false,
-      chunkSizeWarningLimit: 2000,
-    },
-    define: {
-      // setting vue-i18-next
-      // Suppress warning
-      __INTLIFY_PROD_DEVTOOLS__: false,
-      __APP_INFO__: JSON.stringify(__APP_INFO__),
-    },
-
+    base: '/gi-demo/',
+    // 引入sass全局样式变量
     css: {
       preprocessorOptions: {
-        less: {
-          modifyVars: generateModifyVars(),
-          javascriptEnabled: true,
-        },
+        scss: {
+          additionalData: `@import "@/styles/var.scss";`
+        }
+      }
+    },
+    server: {
+      proxy: {
+        '/api': {
+          target: env.VITE_APP_BASE_URL, // 后台服务器地址
+          changeOrigin: true, // 是否允许不同源
+          secure: false, // 支持https
+          rewrite: (path) => path.replace(/^\/api/, '/api')
+        }
+      }
+    },
+    // 构建
+    build: {
+      outDir: 'dist', // 指定打包路径，默认为项目根目录下的 dist 目录
+      terserOptions: {
+        compress: {
+          keep_infinity: true, // 防止 Infinity 被压缩成 1/0，这可能会导致 Chrome 上的性能问题
+          drop_console: true, // 生产环境去除 console
+          drop_debugger: true // 生产环境去除 debugger
+        }
       },
-    },
-
-    // The vite plugin used by the project. The quantity is large, so it is separately extracted and managed
-    plugins: createVitePlugins(viteEnv, isBuild),
-
-    optimizeDeps: {
-      // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
-      include: [
-        '@vue/runtime-core',
-        '@vue/shared',
-        '@iconify/iconify',
-        'ant-design-vue/es/locale/zh_CN',
-        'ant-design-vue/es/locale/en_US',
-      ],
-    },
-  };
-};
+      chunkSizeWarningLimit: 1500 // chunk 大小警告的限制（以 kbs 为单位）
+    }
+  }
+})

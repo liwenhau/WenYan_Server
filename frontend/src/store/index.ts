@@ -1,10 +1,11 @@
-import type { App } from 'vue';
-import { createPinia } from 'pinia';
+import { createPinia } from 'pinia'
+import { useAppStore } from './modules/app'
+import { useNavTabStore } from './modules/navtab'
+import { useUserStore } from './modules/user'
+import { useMenuStore } from './modules/menu'
+import { useFileStore } from './modules/file'
 
-const store = createPinia();
+const pinia = createPinia()
 
-export function setupStore(app: App<Element>) {
-  app.use(store);
-}
-
-export { store };
+export { useAppStore, useNavTabStore, useUserStore, useMenuStore, useFileStore }
+export default pinia
