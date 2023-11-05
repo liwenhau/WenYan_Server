@@ -13,7 +13,7 @@
         /// <summary>
         /// 创建人
         /// </summary>
-        public K CreateUserId { get; set; }
+        public K? CreateUserId { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>
@@ -21,7 +21,7 @@
         /// <summary>
         /// 修改人
         /// </summary>
-        public K ModifyUserId { get; set; }
+        public K? ModifyUserId { get; set; }
         /// <summary>
         /// 修改时间
         /// </summary>

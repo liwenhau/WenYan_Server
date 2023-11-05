@@ -51,7 +51,7 @@
             #endregion
 
             #region 备注
-            builder.HasComment("组织架构");
+            builder.ToTable(t => t.HasComment("组织架构"));
             builder.Property(p => p.ParentId).HasComment("上级组织");
             builder.Property(p => p.Name).HasComment("名称");
             builder.Property(p => p.Code).HasComment("编码");

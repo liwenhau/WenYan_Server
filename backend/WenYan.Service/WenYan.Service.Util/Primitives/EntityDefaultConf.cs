@@ -14,6 +14,10 @@
         /// </summary>
         public const int DefMiddleColLen = 100;
         /// <summary>
+        /// 默认链接长度
+        /// </summary>
+        public const int DefUrlColLen = 256;
+        /// <summary>
         /// 默认大字段长度
         /// </summary>
         public const int DefLargeColLen = 2000;

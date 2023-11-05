@@ -1,6 +1,4 @@
 using WenYan.Service.Api;
-using WenYan.Service.Business;
-using WenYan.Service.IBusiness;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -41,7 +39,10 @@ builder.Services.AddResponseCaching();
 builder.Services.AddResponseCompression();
 //雪花算法 单例注入
 builder.Services.AddSingleton<IIdService, IdService>();
-builder.Services.AddScoped<ISys_UserBusiness,Sys_UserBusiness>();
+//当前用户
+builder.Services.AddScoped<IOperator, Operator>();
+
+builder.Services.AddScoped<ISys_UserBusiness, Sys_UserBusiness>();
 
 builder.Services.AddControllers(options =>
 {
@@ -84,6 +85,7 @@ app.UseCors(options =>
 //生产环境不显示swagger页面
 if (!app.Environment.IsProduction())
 {
+    PrintLogToAscll.PrintLog();
     app.UseSwagger();
 
     app.UseSwaggerUI(options =>

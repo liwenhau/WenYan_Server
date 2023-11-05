@@ -25,9 +25,9 @@ namespace WenYan.Service.Api
         {
             AjaxResult<T> res = new AjaxResult<T>
             {
-                Success = true,
-                Msg = "操作成功",
-                Data = data
+                success = true,
+                message = "操作成功",
+                data = data
             };
 
             return res;

@@ -4,7 +4,7 @@
     where T : ITreeModel<T, K>
     {
         K Id { get; set; }
-        K ParentId { get; set; }
+        K? ParentId { get; set; }
         List<T> Children { get; set; }
     }
     public interface ITreeModel<T> : ITreeModel<T, string>
@@ -29,7 +29,7 @@
         /// <summary>
         /// 父Id
         /// </summary>
-        public string ParentId { get; set; }
+        public string? ParentId { get; set; }
 
         /// <summary>
         /// 节点深度

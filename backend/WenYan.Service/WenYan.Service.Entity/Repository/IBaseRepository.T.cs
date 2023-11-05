@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WenYan.Service.Util
+namespace WenYan.Service.Entity
 {
     /// <summary>
     /// 基础仓储接口

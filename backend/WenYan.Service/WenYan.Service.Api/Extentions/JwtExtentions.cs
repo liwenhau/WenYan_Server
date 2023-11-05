@@ -43,10 +43,11 @@ namespace WenYan.Service.Api
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ClockSkew = TimeSpan.Zero,
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = true,//验证密钥
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateLifetime = true, //验证token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
+                    ValidateIssuer = false,//验证颁发者
+                    ValidateAudience = false//验证使用者
                 };
             });
             return services;

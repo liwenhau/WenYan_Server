@@ -40,11 +40,19 @@
         /// <summary>
         /// 个人头像
         /// </summary>
-        public string HeadPortrait { get; set; }
+        public string? Avatar { get; set; }
         /// <summary>
         /// 个人签名
         /// </summary>
-        public string Sign { get; set; }
+        public string? Sign { get; set; }
+        /// <summary>
+        /// 刷新Token
+        /// </summary>
+        public string? RefreshToken { get; set; }
+        /// <summary>
+        /// 刷新Token过期时间
+        /// </summary>
+        public DateTime? RefreshTokenExpiryTime { get; set; }
 
     }
     public partial class Sys_User : BusEntity
@@ -76,12 +84,14 @@
             builder.Property(p => p.Status).HasMaxLength(EntityDefaultConf.DefSmallColLen).IsRequired();
             builder.Property(p => p.OrgId).HasMaxLength(EntityDefaultConf.DefSmallColLen);
             builder.Property(p => p.Sex).HasMaxLength(EntityDefaultConf.DefSmallColLen);
-            builder.Property(p => p.HeadPortrait).HasMaxLength(EntityDefaultConf.DefLargeColLen);
+            builder.Property(p => p.Avatar).HasMaxLength(EntityDefaultConf.DefLargeColLen);
             builder.Property(p => p.Sign).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
+            builder.Property(p => p.RefreshToken).HasMaxLength(EntityDefaultConf.DefUrlColLen);
+            builder.Property(p => p.RefreshTokenExpiryTime);
             #endregion
 
             #region 备注
-            builder.HasComment("系统用户");
+            builder.ToTable(t => t.HasComment("系统用户"));
             builder.Property(p => p.Code).HasComment("编码");
             builder.Property(p => p.Name).HasComment("名称");
             builder.Property(p => p.UserName).HasComment("用户名");
@@ -89,12 +99,14 @@
             builder.Property(p => p.Status).HasComment("状态");
             builder.Property(p => p.OrgId).HasComment("所属组织");
             builder.Property(p => p.Sex).HasComment("性别");
-            builder.Property(p => p.HeadPortrait).HasComment("头像");
+            builder.Property(p => p.Avatar).HasComment("头像");
             builder.Property(p => p.Sign).HasComment("个人签名");
+            builder.Property(p => p.RefreshToken).HasComment("刷新Token");
+            builder.Property(p => p.RefreshTokenExpiryTime).HasComment("刷新Token过期时间");
             #endregion
 
             #region 种子数据
-            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = $"WenYan@{DateTime.Now.Year}".ToMD5String(), Status = "Enable", OrgId = "1", Sex = "Boy", HeadPortrait="", Sign="后台管理", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = $"WenYan@{DateTime.Now.Year}".ToMD5String(), Status = "Enable", OrgId = "1", Sex = "Boy", Avatar = "", Sign="后台管理", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             #endregion
         }
     }
