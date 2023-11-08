@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Serialization;
+
 using WenYan.Service.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +56,7 @@ builder.Services.AddControllers(options =>
     }
     //关闭不可为空的引用类型
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    options.Filters.Add<FormatResponseAttribute>();
 })
 .AddJsonOptions(options =>
 {   //区分大小写
@@ -61,8 +64,12 @@ builder.Services.AddControllers(options =>
 })
 .AddNewtonsoftJson(options =>
 {
-    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+    //不使用驼峰
+    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+    //忽略循环引用
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    //首字母小写 与格式化返回Json配置冲突
+    //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     //options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
 });
 //swagger

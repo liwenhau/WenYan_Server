@@ -8,17 +8,17 @@
         /// <summary>
         /// 是否成功
         /// </summary>
-        public bool success { get; set; } = true;
+        public bool Success { get; set; } = true;
 
         /// <summary>
         /// 错误代码
         /// </summary>
-        public int code { get; set; }
+        public int Code { get; set; }
 
         /// <summary>
         /// 返回消息
         /// </summary>
-        public string message { get; set; }
+        public string Message { get; set; }
     }
 
     /// <summary>
@@ -30,6 +30,6 @@
         /// <summary>
         /// 返回数据
         /// </summary>
-        public T data { get; set; }
+        public T Data { get; set; }
     }
 }

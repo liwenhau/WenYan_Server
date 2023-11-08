@@ -23,6 +23,17 @@ namespace WenYan.Service.Api
             this.Operator = this.SvcProvider.GetRequiredService<IOperator>();
             this.UserBus = this.SvcProvider.GetRequiredService<ISys_UserBusiness>();
         }
+
+        /// <summary>
+        /// 获取当前登录用户信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<UserModel> GetUserInfoAsync()
+        {
+            return await this.UserBus.GetUserInfoAsync(this.Operator.UserId);
+        }
+
         /// <summary>
         /// 登录
         /// </summary>
@@ -30,7 +41,7 @@ namespace WenYan.Service.Api
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<AjaxResult<LoginRes>> LoginAsync(LoginM data)
+        public async Task<LoginRes> LoginAsync(LoginM data)
         {
             var user = await this.UserBus.LoginAsync(data);
             var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
@@ -38,7 +49,7 @@ namespace WenYan.Service.Api
             res.AccessToken = CreateToken(user, jwtOption);
             res.RefreshToken = CreateRefreshToken();
             await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);
-            return Success(res);
+            return res;
         }
 
         /// <summary>
@@ -48,7 +59,7 @@ namespace WenYan.Service.Api
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<AjaxResult<LoginRes>> RefreshTokenAsync(LoginRes token)
+        public async Task<LoginRes> RefreshTokenAsync(LoginRes token)
         {
             var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret));
@@ -81,7 +92,7 @@ namespace WenYan.Service.Api
             res.AccessToken = CreateToken(user, jwtOption);
             res.RefreshToken = CreateRefreshToken();
             await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);
-            return Success(res);
+            return res;
         }
 
         /// <summary>

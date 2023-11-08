@@ -29,9 +29,7 @@ namespace WenYan.Service.Api
             if (entity == null) throw new Exception("用户不存在！");
             model = new UserModel()
             {
-                Id = entity.Id,
-                Name = entity.Name,
-                UserName = entity.UserName
+                Id = entity.Id
             };
             await cacheSvc.SetAsync(cacheKey, model, TimeSpan.FromDays(1));
             return model;

@@ -73,7 +73,7 @@ namespace WenYan.Service.Util
                 .Take(pageInput.PageSize)
                 .ToList();
 
-            return new PageResult<T> { data = list, total = count, pageNo = pageInput.PageNo };
+            return new PageResult<T> { Data = list, Total = count, PageNo = pageInput.PageNo };
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace WenYan.Service.Util
                 .Take(pageInput.PageSize)
                 .ToListAsync();
 
-            return new PageResult<T> { data = list, total = count, pageNo = pageInput.PageNo };
+            return new PageResult<T> { Data = list, Total = count, PageNo = pageInput.PageNo };
         }
 
         /// <summary>

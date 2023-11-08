@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace WenYan.Service.Util
@@ -10,10 +12,12 @@ namespace WenYan.Service.Util
     {
         public static JsonSerializerSettings DefaultJsonSetting = new JsonSerializerSettings
         {
-            ContractResolver = new DefaultContractResolver(),
+            //ContractResolver = new DefaultContractResolver(),
+            //首字母小写
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            DateFormatString = "yyyy-MM-dd HH:mm:ss.fff"
-        };
+            DateFormatString = "yyyy-MM-dd HH:mm:ss.fff",
+    };
 
         /// <summary>
         /// 序列化

@@ -19,5 +19,12 @@ namespace WenYan.Service.IBusiness
         /// <param name="refreshHours">刷新Token过期时间</param>
         /// <returns></returns>
         Task<int> SaveRefreshTokenAsync(Sys_User data,string refreshToken, int refreshHours);
+
+        /// <summary>
+        ///  获取用户信息
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        Task<UserModel> GetUserInfoAsync(string userId);
     }
 }
