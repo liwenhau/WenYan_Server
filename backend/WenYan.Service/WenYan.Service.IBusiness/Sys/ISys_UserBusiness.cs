@@ -26,5 +26,14 @@ namespace WenYan.Service.IBusiness
         /// <param name="userId">用户Id</param>
         /// <returns></returns>
         Task<UserModel> GetUserInfoAsync(string userId);
+
+
+        /// <summary>
+        ///  获取用户菜单权限信息
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <param name="isAllMenus">是否包含Type Button</param>
+        /// <returns></returns>
+        Task<List<UserMenuDto>> GetUserMenusAsync(string userId,bool isAllMenus);
     }
 }

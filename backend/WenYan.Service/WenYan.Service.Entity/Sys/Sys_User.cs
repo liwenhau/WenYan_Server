@@ -53,7 +53,10 @@
         /// 刷新Token过期时间
         /// </summary>
         public DateTime? RefreshTokenExpiryTime { get; set; }
-
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string? Remark { get; set; }
     }
     public partial class Sys_User : BusEntity
     {
@@ -88,6 +91,7 @@
             builder.Property(p => p.Sign).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
             builder.Property(p => p.RefreshToken).HasMaxLength(EntityDefaultConf.DefUrlColLen);
             builder.Property(p => p.RefreshTokenExpiryTime);
+            builder.Property(p => p.Remark).HasMaxLength(EntityDefaultConf.DefUrlColLen);
             #endregion
 
             #region 备注
@@ -103,10 +107,11 @@
             builder.Property(p => p.Sign).HasComment("个人签名");
             builder.Property(p => p.RefreshToken).HasComment("刷新Token");
             builder.Property(p => p.RefreshTokenExpiryTime).HasComment("刷新Token过期时间");
+            builder.Property(p => p.Remark).HasComment("描述");
             #endregion
 
             #region 种子数据
-            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = $"WenYan@{DateTime.Now.Year}".ToMD5String(), Status = "Enable", OrgId = "1", Sex = "Boy", Avatar = "", Sign="后台管理", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = $"WenYan@{DateTime.Now.Year}".ToMD5String(), Status = "Enable", OrgId = "1", Sex = "Boy", Avatar = "", Sign = "后台超级管理员", Remark = "系统初始用户", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             #endregion
         }
     }

@@ -35,6 +35,16 @@ namespace WenYan.Service.Api
         }
 
         /// <summary>
+        /// 获取当前登录用户菜单信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<List<UserMenuDto>> GetUserMenusAsync(bool isAllMenus = false)
+        {
+            return await this.UserBus.GetUserMenusAsync(this.Operator.UserId,isAllMenus);
+        }
+
+        /// <summary>
         /// 登录
         /// </summary>
         /// <param name="data">登录参数</param>

@@ -82,6 +82,56 @@ namespace WenYan.Service.Business
                 Permissions = permissions
             };
         }
+
+        /// <summary>
+        /// 获取当前用户菜单信息
+        /// </summary>
+        /// <param name="userId">用户id</param>
+        /// <param name="isAllMenus">是否包含Type Button</param>
+        /// <returns></returns>
+        public async Task<List<UserMenuDto>> GetUserMenusAsync(string userId, bool isAllMenus)
+        {
+            var user = await this.GetAsync(userId);
+            _ = user ?? throw new("用户不存在!");
+            if (user.Status == ConstDefaultConfig.Disable)
+                throw new("用户被禁用!");
+
+            var roleIds = await this.GetQueryable<Sys_UserRole>(true)
+                .Where(w => w.UserId == userId)
+                .Select(s => s.RoleId)
+                .ToListAsync();
+            var menuIds = await this.GetQueryable<Sys_RoleMenu>(true)
+                .Where(w => roleIds.Contains(w.RoleId))
+                .Select(s => s.MenuId)
+                .ToListAsync();
+
+            var menus = await this.GetQueryable<Sys_Menu>(true)
+                .Where(w => menuIds.Contains(w.Id))
+                .WhereIf(!isAllMenus, w => w.Type != ConstDefaultConfig.Button)
+                .Where(w => w.Status == ConstDefaultConfig.Enable)
+                .Select(s => new UserMenuDto
+                {
+                    Id = s.Id,
+                    ParentId = s.ParentId ?? "",
+                    Path = s.Path ?? "",
+                    Component = s.Component ?? "",
+                    Redirect = s.Redirect ?? "",
+                    Type = s.Type,
+                    Title = s.Name,
+                    SvgIcon = s.SvgIcon ?? "",
+                    Icon = s.Icon ?? "",
+                    KeepAlive = s.IsKeepAlive,
+                    Hidden = s.IsHide,
+                    Affix = s.IsAffix,
+                    Permission = s.Permission ?? "",
+                    Sort = s.Seq,
+                    Status = s.Status
+                })
+                .OrderBy(x => x.Sort)
+                .ToListAsync();
+            var treeMenus = TreeHelper.GetBaseTreeList(menus);
+            return treeMenus;
+        }
     }
 }
 

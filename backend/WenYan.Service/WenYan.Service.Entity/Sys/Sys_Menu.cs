@@ -27,6 +27,10 @@
         /// </summary>
         public string? Icon { get; set; }
         /// <summary>
+        /// Svg图标
+        /// </summary>
+        public string? SvgIcon { get; set; }
+        /// <summary>
         /// 路径
         /// </summary>
         public string? Path { get; set; }
@@ -98,6 +102,7 @@
             builder.Property(p => p.Type).HasMaxLength(EntityDefaultConf.DefSmallColLen).IsRequired();
             builder.Property(p => p.Status).HasMaxLength(EntityDefaultConf.DefSmallColLen);
             builder.Property(p => p.Icon).HasMaxLength(EntityDefaultConf.DefSmallColLen);
+            builder.Property(p => p.SvgIcon).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
             builder.Property(p => p.Path).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
             builder.Property(p => p.Component).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
             builder.Property(p => p.Redirect).HasMaxLength(EntityDefaultConf.DefMiddleColLen);
@@ -117,6 +122,7 @@
             builder.Property(p => p.Type).HasComment("菜单类型");
             builder.Property(p => p.Status).HasComment("状态");
             builder.Property(p => p.Icon).HasComment("图标");
+            builder.Property(p => p.SvgIcon).HasComment("Svg图标");
             builder.Property(p => p.Path).HasComment("路径");
             builder.Property(p => p.Component).HasComment("组件");
             builder.Property(p => p.Redirect).HasComment("跳转");
@@ -131,15 +137,15 @@
             #region 种子数据
 
             #region 分析页
-            builder.HasData(new Sys_Menu() { Id = "100", ParentId = null, Name = "分析页", Code = "Analyse", Type = "1", Icon = "", Path = "/analyse", Component = "Layout", Redirect = "analyse/index", Seq = 2, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
-            builder.HasData(new Sys_Menu() { Id = "101", ParentId = "100", Name = "分析页", Code = "AnalyseIndex", Type = "2", Status = "Enable", Icon = "menu-chart", Path = "/analyse/index", Component = "analyse/index", Redirect = null, Seq = 1, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "100", ParentId = null, Name = "分析页", Code = "Analyse", Type = "1", Icon = "", SvgIcon = "", Status = "Enable", Path = "/analyse", Component = "Layout", Redirect = "analyse/index", Seq = 2, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "101", ParentId = "100", Name = "分析页", Code = "AnalyseIndex", Type = "2", Status = "Enable", Icon = "", SvgIcon = "menu-system", Path = "/analyse/index", Component = "analyse/index", Redirect = null, Seq = 1, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             #endregion
 
             #region 系统管理
-            builder.HasData(new Sys_Menu() { Id = "900", ParentId = null, Name = "系统管理", Code = "Sys", Type = "1", Icon = "menu-system", Path = "/system", Component = "Layout", Redirect = "system/user/index", Seq = 9, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
-            builder.HasData(new Sys_Menu() { Id = "901", ParentId = "900", Name = "用户管理", Code = "Sys_User", Type = "2", Status = "Enable", Icon = "icon-user", Path = "/system/user", Component = "system/user/index", Redirect = null, Seq = 1, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
-            builder.HasData(new Sys_Menu() { Id = "902", ParentId = "900", Name = "角色管理", Code = "Sys_Role", Type = "2", Status = "Enable", Icon = "icon-common", Path = "/system/role", Component = "system/role/index", Redirect = null, Seq = 2, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
-            builder.HasData(new Sys_Menu() { Id = "903", ParentId = "900", Name = "菜单管理", Code = "Sys_Menu", Type = "2", Status = "Enable", Icon = "icon-menu", Path = "/system/menu", Component = "system/menu/index", Redirect = null, Seq = 3, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "900", ParentId = null, Name = "系统管理", Code = "Sys", Type = "1", Status = "Enable", Icon = "", SvgIcon= "menu-system", Path = "/system", Component = "Layout", Redirect = "system/user/index", Seq = 9, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "901", ParentId = "900", Name = "用户管理", Code = "Sys_User", Type = "2", Status = "Enable", Icon = "icon-user", SvgIcon = "", Path = "/system/user", Component = "system/user/index", Redirect = null, Seq = 1, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "902", ParentId = "900", Name = "角色管理", Code = "Sys_Role", Type = "2", Status = "Enable", Icon = "icon-common", SvgIcon = "", Path = "/system/role", Component = "system/role/index", Redirect = null, Seq = 2, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_Menu() { Id = "903", ParentId = "900", Name = "菜单管理", Code = "Sys_Menu", Type = "2", Status = "Enable", Icon = "icon-menu", SvgIcon = "", Path = "/system/menu", Component = "system/menu/index", Redirect = null, Seq = 3, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             #region 系统管理按钮
             builder.HasData(new Sys_Menu() { Id = "9010", ParentId = "901", Name = "新增", Code = "Sys_User_Add", Type = "3", Status = "Enable", Permission = "user:btn.add", Icon = null, Path = null, Component = null, Redirect = null, Seq = 0, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             builder.HasData(new Sys_Menu() { Id = "9011", ParentId = "901", Name = "修改", Code = "Sys_User_Update", Type = "3", Status = "Enable", Permission = "user:btn.update", Icon = null, Path = null, Component = null, Redirect = null, Seq = 0, CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });

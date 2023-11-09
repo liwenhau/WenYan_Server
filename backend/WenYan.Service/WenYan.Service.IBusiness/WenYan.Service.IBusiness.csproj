@@ -14,5 +14,6 @@
   <ItemGroup>
     <Using Include="WenYan.Service.Models" />
     <Using Include="WenYan.Service.Entity" />
+    <Using Include="WenYan.Service.Util" />
   </ItemGroup>
 </Project>
