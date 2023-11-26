@@ -45,6 +45,8 @@ builder.Services.AddSingleton<IIdService, IdService>();
 builder.Services.AddScoped<IOperator, Operator>();
 
 builder.Services.AddScoped<ISys_UserBusiness, Sys_UserBusiness>();
+builder.Services.AddScoped<ISys_MenuBusiness, Sys_MenuBusiness>();
+builder.Services.AddScoped<ISys_RoleBusiness, Sys_RoleBusiness>();
 
 builder.Services.AddControllers(options =>
 {

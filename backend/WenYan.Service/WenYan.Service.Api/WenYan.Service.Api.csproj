@@ -14,10 +14,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Folder Include="Controllers\Sys\" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.22" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

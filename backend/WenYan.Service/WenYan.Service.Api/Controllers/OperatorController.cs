@@ -39,9 +39,9 @@ namespace WenYan.Service.Api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<List<UserMenuDto>> GetUserMenusAsync(bool isAllMenus = false)
+        public async Task<List<UserMenuDto>> GetUserMenusAsync()
         {
-            return await this.UserBus.GetUserMenusAsync(this.Operator.UserId,isAllMenus);
+            return await this.UserBus.GetUserMenusAsync(this.Operator.UserId);
         }
 
         /// <summary>

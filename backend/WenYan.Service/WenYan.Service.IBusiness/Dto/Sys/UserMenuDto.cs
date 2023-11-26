@@ -6,7 +6,10 @@
         /// 路由地址
         /// </summary>
         public string? Path { get; set; }
-
+        /// <summary>
+        /// 路由名称
+        /// </summary>
+        public string? Code { get; set; }
         /// <summary>
         /// 组件路径
         /// </summary>

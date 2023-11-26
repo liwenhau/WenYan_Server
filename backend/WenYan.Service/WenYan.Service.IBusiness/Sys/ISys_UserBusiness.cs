@@ -1,8 +1,6 @@
-﻿using WenYan.Service.Util;
-
-namespace WenYan.Service.IBusiness
+﻿namespace WenYan.Service.IBusiness
 {
-    public interface ISys_UserBusiness: IBusRepository<Sys_User>
+    public interface ISys_UserBusiness: IBusRepository<Sys_User>,IScopedDependency
     {
         /// <summary>
         /// 登录
@@ -34,6 +32,6 @@ namespace WenYan.Service.IBusiness
         /// <param name="userId">用户Id</param>
         /// <param name="isAllMenus">是否包含Type Button</param>
         /// <returns></returns>
-        Task<List<UserMenuDto>> GetUserMenusAsync(string userId,bool isAllMenus);
+        Task<List<UserMenuDto>> GetUserMenusAsync(string userId);
     }
 }

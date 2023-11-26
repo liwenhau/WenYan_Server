@@ -89,7 +89,7 @@ namespace WenYan.Service.Business
         /// <param name="userId">用户id</param>
         /// <param name="isAllMenus">是否包含Type Button</param>
         /// <returns></returns>
-        public async Task<List<UserMenuDto>> GetUserMenusAsync(string userId, bool isAllMenus)
+        public async Task<List<UserMenuDto>> GetUserMenusAsync(string userId)
         {
             var user = await this.GetAsync(userId);
             _ = user ?? throw new("用户不存在!");
@@ -107,13 +107,14 @@ namespace WenYan.Service.Business
 
             var menus = await this.GetQueryable<Sys_Menu>(true)
                 .Where(w => menuIds.Contains(w.Id))
-                .WhereIf(!isAllMenus, w => w.Type != ConstDefaultConfig.Button)
-                .Where(w => w.Status == ConstDefaultConfig.Enable)
+                .Where( w => w.Type != ConstDefaultConfig.Button)
+                .Where( w => w.Status == ConstDefaultConfig.Enable)
                 .Select(s => new UserMenuDto
                 {
                     Id = s.Id,
                     ParentId = s.ParentId ?? "",
                     Path = s.Path ?? "",
+                    Code = s.Code,
                     Component = s.Component ?? "",
                     Redirect = s.Redirect ?? "",
                     Type = s.Type,
