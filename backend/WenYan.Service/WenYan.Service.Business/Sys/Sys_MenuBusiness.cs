@@ -13,9 +13,7 @@
         /// <returns></returns>
         public async Task<List<UserMenuDto>> GetAllAsync(string name, string status)
         {
-            var menus = await this.GetQueryable<Sys_Menu>(true)
-                 .WhereIf(!name.IsNullOrEmpty(), x => x.Name.Contains(name))
-                 .WhereIf(!status.IsNullOrEmpty(), x => x.Status == status)
+            var menus = this.GetQueryable<Sys_Menu>(true)
                  .Select(s => new UserMenuDto
                  {
                      Id = s.Id,
@@ -36,8 +34,15 @@
                      Status = s.Status
                  })
                  .OrderBy(x => x.Sort)
+                 .AsQueryable();
+            if (!name.IsNullOrEmpty() || !status.IsNullOrEmpty())
+            {
+                return await menus
+                 .WhereIf(!name.IsNullOrEmpty(), x => x.Title.Contains(name))
+                 .WhereIf(!status.IsNullOrEmpty(), x => x.Status == status)
                  .ToListAsync();
-            var treeMenus = TreeHelper.GetBaseTreeList(menus);
+            }
+            var treeMenus = TreeHelper.GetBaseTreeList(menus.ToList());
             return treeMenus;
         }
 

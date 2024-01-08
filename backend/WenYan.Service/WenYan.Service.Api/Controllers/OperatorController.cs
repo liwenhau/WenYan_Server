@@ -29,7 +29,7 @@ namespace WenYan.Service.Api
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<UserModel> GetUserInfoAsync()
+        public async Task<UserInfoM> GetUserInfoAsync()
         {
             return await this.UserBus.GetUserInfoAsync(this.Operator.UserId);
         }
@@ -51,11 +51,11 @@ namespace WenYan.Service.Api
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<LoginRes> LoginAsync(LoginM data)
+        public async Task<LoginResM> LoginAsync(LoginM data)
         {
             var user = await this.UserBus.LoginAsync(data);
             var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
-            var res = new LoginRes();
+            var res = new LoginResM();
             res.AccessToken = CreateToken(user, jwtOption);
             res.RefreshToken = CreateRefreshToken();
             await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);
@@ -69,7 +69,7 @@ namespace WenYan.Service.Api
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<LoginRes> RefreshTokenAsync(LoginRes token)
+        public async Task<LoginResM> RefreshTokenAsync(LoginResM token)
         {
             var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret));
@@ -98,7 +98,7 @@ namespace WenYan.Service.Api
                 throw new("用户不存在或RefreshToken无效！");
             }
             //生成新的Token和RefreshToken
-            var res = new LoginRes();
+            var res = new LoginResM();
             res.AccessToken = CreateToken(user, jwtOption);
             res.RefreshToken = CreateRefreshToken();
             await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);

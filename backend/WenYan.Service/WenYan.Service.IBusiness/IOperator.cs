@@ -13,7 +13,7 @@
         /// <summary> 
         /// 当前用户属性
         /// </summary>
-        Task<UserModel> GetCurUser();
+        Task<UserInfoM> GetCurUser();
     }
     /// <summary>
     /// 操作人员信息

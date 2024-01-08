@@ -29,7 +29,7 @@ namespace WenYan.Service.Business
         }
 
         /// <summary>
-        /// 
+        /// 保存刷新token
         /// </summary>
         /// <param name="data"></param>
         /// <param name="refreshToken"></param>
@@ -51,7 +51,7 @@ namespace WenYan.Service.Business
         /// </summary>
         /// <param name="userId">用户Id</param>
         /// <returns></returns>
-        public async Task<UserModel> GetUserInfoAsync(string userId)
+        public async Task<UserInfoM> GetUserInfoAsync(string userId)
         {
             var user = await this.GetAsync(userId);
             var roleIds = await this.GetQueryable<Sys_UserRole>(true)
@@ -71,10 +71,11 @@ namespace WenYan.Service.Business
                 .Where(w => menuIds.Contains(w.Id))
                 .ToListAsync();
             var permissions = menus.Select(s => s.Permission).ToList();
-            return new UserModel()
+            return new UserInfoM()
             {
                 Id = user.Id,
-                NickName = user.UserName,
+                Name = user.Name,
+                UserName = user.UserName,
                 Sex = user.Sex,
                 Sign = user.Sign,
                 Avatar = user.Avatar,
@@ -107,8 +108,8 @@ namespace WenYan.Service.Business
 
             var menus = await this.GetQueryable<Sys_Menu>(true)
                 .Where(w => menuIds.Contains(w.Id))
-                .Where( w => w.Type != ConstDefaultConfig.Button)
-                .Where( w => w.Status == ConstDefaultConfig.Enable)
+                .Where(w => w.Type != ConstDefaultConfig.Button)
+                .Where(w => w.Status == ConstDefaultConfig.Enable)
                 .Select(s => new UserMenuDto
                 {
                     Id = s.Id,
@@ -132,6 +133,96 @@ namespace WenYan.Service.Business
                 .ToListAsync();
             var treeMenus = TreeHelper.GetBaseTreeList(menus);
             return treeMenus;
+        }
+
+
+        /// <summary>
+        /// 获取用户信息分页数据
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public async Task<PageResult<UserInfoDto>> GetPageAsync(PageInput<UserQM> query)
+        {
+            var search = query.Search;
+            var queryable = this.GetQueryable<Sys_User>(false)
+                .Include(x => x.Org)
+                .AsSplitQuery();
+            if (!search.KeyWord.IsNullOrEmpty())
+                queryable = queryable.Where(x => x.Name.Contains(search.KeyWord)
+                || x.Code.Contains(search.KeyWord)
+                || x.UserName.Contains(search.KeyWord)
+                || x.Remark.Contains(search.KeyWord)
+                );
+            if (!search.Status.IsNullOrEmpty())
+                queryable = queryable.Where(x => x.Status == search.Status);
+            if (search.Orgs.Count() > 0)
+            {
+                var orgBus = this.SvcProvider.GetRequiredService<ISys_OrgBusiness>();
+                var orgIds = await orgBus.GetQueryable()
+                    .Where(x => search.Orgs.Contains(x.ParentId))
+                    .Select(x => x.Id)
+                    .ToListAsync();
+                var allOrgIds = orgIds.Union(search.Orgs).ToList();
+                queryable = queryable.Where(x => allOrgIds.Contains(x.OrgId));
+            }
+
+            var userInfoQuery = queryable.Select(x => new UserInfoDto()
+            {
+                Id = x.Id,
+                Code = x.Code,
+                Name = x.Name,
+                UserName = x.UserName,
+                Avatar = x.Avatar,
+                Sex = x.Sex,
+                Sign = x.Sign,
+                Status = x.Status,
+                OrgName = x.Org.Name,
+                Remark = x.Remark,
+                CreateTime = x.CreateTime,
+                ModifyTime = x.ModifyTime,
+                RefreshTokenExpiryTime = x.RefreshTokenExpiryTime,
+            });
+            return await userInfoQuery.GetPageResultAsync(query);
+        }
+
+        public async Task<UserDetailM> GetUserDetailAsync(string userId)
+        {
+            var user = await this.GetAsync(userId);
+            var roleIds = await this.GetQueryable<Sys_UserRole>(true)
+                .Where(w => w.UserId == userId)
+                .Select(s => s.RoleId)
+                .ToListAsync();
+            return new UserDetailM()
+            {
+                Id = user.Id,
+                Code = user.Code,
+                Name = user.Name,
+                UserName = user.UserName,
+                Sex = user.Sex,
+                Sign = user.Sign,
+                Avatar = user.Avatar,
+                Status = user.Status,
+                Remark = user.Remark,
+                OrgId = user.OrgId,
+                RoleIds = roleIds
+            };
+        }
+
+        public async Task<int> AddOrUpdateAsync(UserInputDto entity)
+        {
+            if (entity.Password.IsNullOrEmpty())
+                entity.Password = "123456".ToMD5String();
+            var dbEntity = await this.GetAsync(entity.Id, true);
+            if (dbEntity != null)
+            {
+                entity.Password = dbEntity.Password;
+                await this.UpdateAsync(entity);
+            }
+            else
+                await this.AddAsync(entity);
+
+            var userRoleSvc = this.SvcProvider.GetRequiredService<ISys_UserRoleBusiness>();
+            return await userRoleSvc.AddAsync(entity.Id, entity.RoleIds);
         }
     }
 }

@@ -40,8 +40,7 @@ namespace WenYan.Service.Entity
     }
     public class GDbContext : DbContext
     {
-        public GDbContext(DbContextOptions<GDbContext> options)
-  : base(options)
+        public GDbContext(DbContextOptions<GDbContext> options) : base(options)
         {
         }
 

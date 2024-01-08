@@ -18,16 +18,16 @@ namespace WenYan.Service.Api
             if (this.UserId.IsNullOrEmpty()) this.UserId = EntityDefaultConf.DefAdminUserId;
         }
 
-        public async Task<UserModel> GetCurUser()
+        public async Task<UserInfoM> GetCurUser()
         {
             var cacheSvc = this.ServiceProvider.GetRequiredService<IDistributedCache>();
             var cacheKey = $"Operator:{this.UserId}";
-            var model = await cacheSvc.GetAsync<UserModel>(cacheKey);
+            var model = await cacheSvc.GetAsync<UserInfoM>(cacheKey);
             if (model != null) return model;
             var userSvc = this.ServiceProvider.GetRequiredService<ISys_UserBusiness>();
             var entity = await userSvc.GetAsync(this.UserId);
             if (entity == null) throw new Exception("用户不存在！");
-            model = new UserModel()
+            model = new UserInfoM()
             {
                 Id = entity.Id
             };

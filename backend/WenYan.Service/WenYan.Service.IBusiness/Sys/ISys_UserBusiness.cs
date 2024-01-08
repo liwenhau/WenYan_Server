@@ -23,7 +23,14 @@
         /// </summary>
         /// <param name="userId">用户Id</param>
         /// <returns></returns>
-        Task<UserModel> GetUserInfoAsync(string userId);
+        Task<UserInfoM> GetUserInfoAsync(string userId);
+
+        /// <summary>
+        ///  获取用户详情
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        Task<UserDetailM> GetUserDetailAsync(string userId);
 
 
         /// <summary>
@@ -33,5 +40,19 @@
         /// <param name="isAllMenus">是否包含Type Button</param>
         /// <returns></returns>
         Task<List<UserMenuDto>> GetUserMenusAsync(string userId);
+
+        /// <summary>
+        /// 获取所有用户信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<PageResult<UserInfoDto>> GetPageAsync(PageInput<UserQM> query);
+
+        /// <summary>
+        /// 保存用户信息
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task<int> AddOrUpdateAsync(UserInputDto input);
     }
 }

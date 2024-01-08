@@ -3,7 +3,7 @@
     /// <summary>
     /// 用户登录返回信息
     /// </summary>
-    public class LoginRes
+    public class LoginResM
     {
         /// <summary>
         /// 令牌

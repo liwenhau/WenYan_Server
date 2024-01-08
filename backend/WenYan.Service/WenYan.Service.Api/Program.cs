@@ -47,6 +47,9 @@ builder.Services.AddScoped<IOperator, Operator>();
 builder.Services.AddScoped<ISys_UserBusiness, Sys_UserBusiness>();
 builder.Services.AddScoped<ISys_MenuBusiness, Sys_MenuBusiness>();
 builder.Services.AddScoped<ISys_RoleBusiness, Sys_RoleBusiness>();
+builder.Services.AddScoped<ISys_OrgBusiness, Sys_OrgBusiness>();
+builder.Services.AddScoped<ISys_RoleMenuBusiness, Sys_RoleMenuBusiness>();
+builder.Services.AddScoped<ISys_UserRoleBusiness, Sys_UserRoleBusiness>();
 
 builder.Services.AddControllers(options =>
 {

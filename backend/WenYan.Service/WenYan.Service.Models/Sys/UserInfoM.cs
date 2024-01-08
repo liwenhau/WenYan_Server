@@ -1,6 +1,6 @@
 ﻿namespace WenYan.Service.Models
 {
-    public class UserModel
+    public class UserInfoM
     {
         /// <summary>
         /// 用户ID
@@ -9,7 +9,11 @@
         /// <summary>
         /// 昵称
         /// </summary>
-        public string NickName { get; set; }
+        public string Name { get; set; }
+        /// <summary>
+        /// 用户名（账号）
+        /// </summary>
+        public string UserName { get; set; }
         /// <summary>
         /// 头像
         /// </summary>
