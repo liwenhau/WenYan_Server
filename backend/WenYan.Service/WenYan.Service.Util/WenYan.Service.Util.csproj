@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DatabaseType>Sqlite</DatabaseType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="7.3.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="8.3.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,7 +17,7 @@
   </PropertyGroup>
   <!--按条件引入包-->
   <ItemGroup>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" Condition="'$(DatabaseType)'=='MySql'" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.13" Condition="'$(DatabaseType)'=='Sqlite'" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.1" Condition="'$(DatabaseType)'=='MySql'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" Condition="'$(DatabaseType)'=='Sqlite'" />
   </ItemGroup>
 </Project>
