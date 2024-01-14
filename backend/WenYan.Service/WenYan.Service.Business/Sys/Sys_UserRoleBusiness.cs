@@ -1,6 +1,4 @@
-﻿using System.Security;
-
-namespace WenYan.Service.Business
+﻿namespace WenYan.Service.Business
 {
     public class Sys_UserRoleBusiness : BaseRepository<Sys_UserRole>, ISys_UserRoleBusiness, IScopedDependency
     {

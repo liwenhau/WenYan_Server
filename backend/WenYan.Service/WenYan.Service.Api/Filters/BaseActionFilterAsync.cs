@@ -17,6 +17,11 @@ namespace WenYan.Service.Api
             await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// 动作执行完成
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async virtual Task OnActionExecuted(ActionExecutedContext context)
         {
             await Task.CompletedTask;

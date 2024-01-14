@@ -1,10 +1,16 @@
-using Newtonsoft.Json.Serialization;
+using Serilog;
+
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 using WenYan.Service.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 #region 服务注册
+//使用Serilog
+builder.Host.AddSerilog();
 //自动模型状态验证，禁用默认行为　
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddDbContext<GDbContext>(options =>
@@ -64,18 +70,12 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<FormatResponseAttribute>();
 })
 .AddJsonOptions(options =>
-{   //区分大小写
-    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-})
-.AddNewtonsoftJson(options =>
-{
-    //不使用驼峰
-    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-    //忽略循环引用
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-    //首字母小写 与格式化返回Json配置冲突
-    //options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-    //options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+{   //首字母小写,null则不改变大小写
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    //所有Unicode编码不进行转义，如果需要对Html标签不进行转义 JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+    //不允许额外符号
+    options.JsonSerializerOptions.AllowTrailingCommas = false;
 });
 //swagger
 builder.Services.AddSwashbuckle();
@@ -93,13 +93,21 @@ app.UseCors(options =>
     options.AllowAnyMethod();
     options.DisallowCredentials();
 });
-
+//添加serilog请求日志
+app.UseSerilogRequestLogging((options) =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContent) =>
+    {
+        diagnosticContext.Set("IP", httpContent.Connection.RemoteIpAddress);
+    };
+    //自定义请求日志消息模板
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms IP {IP}";
+});
 //生产环境不显示swagger页面
 if (!app.Environment.IsProduction())
 {
     PrintLogToAscll.PrintLog();
     app.UseSwagger();
-
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "WenYan.Service API");

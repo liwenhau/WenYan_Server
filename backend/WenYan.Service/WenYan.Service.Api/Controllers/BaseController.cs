@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace WenYan.Service.Api
+﻿namespace WenYan.Service.Api
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
