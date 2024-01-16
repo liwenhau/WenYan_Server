@@ -1,4 +1,4 @@
-﻿namespace WenYan.Service.Models
+﻿namespace WenYan.Service.IBusiness
 {
     /// <summary>
     /// 用户详情

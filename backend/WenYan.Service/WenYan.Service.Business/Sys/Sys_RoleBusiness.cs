@@ -1,6 +1,4 @@
-﻿using WenYan.Service.Models;
-
-namespace WenYan.Service.Business
+﻿namespace WenYan.Service.Business
 {
     public class Sys_RoleBusiness : BusRepository<Sys_Role>, ISys_RoleBusiness
     {

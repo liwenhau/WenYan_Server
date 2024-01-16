@@ -1,4 +1,6 @@
-﻿namespace WenYan.Service.IBusiness
+﻿using WenYan.Service.IBusiness;
+
+namespace WenYan.Service.IBusiness
 {
     /// <summary>
     /// 当前登录用户信息

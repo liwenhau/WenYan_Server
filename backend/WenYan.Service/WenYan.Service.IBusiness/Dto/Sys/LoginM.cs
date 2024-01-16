@@ -1,11 +1,11 @@
-﻿namespace WenYan.Service.Models
+﻿namespace WenYan.Service.IBusiness
 {
     public class LoginM
     {
         /// <summary>
         /// 用户名
         /// </summary>
-        public string  UserName { get; set; }
+        public string UserName { get; set; }
         /// <summary>
         /// 密码
         /// </summary>

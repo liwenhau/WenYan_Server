@@ -1,4 +1,4 @@
-﻿namespace WenYan.Service.Models
+﻿namespace WenYan.Service.IBusiness
 {
     public class UserInfoM
     {

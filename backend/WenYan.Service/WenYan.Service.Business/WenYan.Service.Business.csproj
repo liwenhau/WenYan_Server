@@ -10,7 +10,6 @@
     <ProjectReference Include="..\WenYan.Service.IBusiness\WenYan.Service.IBusiness.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="WenYan.Service.Models" />
     <Using Include="WenYan.Service.Entity" />
     <Using Include="WenYan.Service.IBusiness" />
     <Using Include="WenYan.Service.Util" />

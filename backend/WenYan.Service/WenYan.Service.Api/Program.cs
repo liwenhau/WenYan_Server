@@ -67,7 +67,10 @@ builder.Services.AddControllers(options =>
     }
     //关闭不可为空的引用类型
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    //统一格式化返回
     options.Filters.Add<FormatResponseAttribute>();
+    //全局异常处理
+    options.Filters.Add<GloabExceptionFilterAsync>();
 })
 .AddJsonOptions(options =>
 {   //首字母小写,null则不改变大小写

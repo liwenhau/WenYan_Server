@@ -31,7 +31,6 @@
     <Using Include="WenYan.Service.Util" />
     <Using Include="WenYan.Service.IBusiness" />
     <Using Include="WenYan.Service.Business" />
-    <Using Include="WenYan.Service.Models" />
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>

@@ -8,11 +8,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WenYan.Service.Entity\WenYan.Service.Entity.csproj" />
-    <ProjectReference Include="..\WenYan.Service.Models\WenYan.Service.Models.csproj" />
   </ItemGroup>
   <!--全局Using引用-->
   <ItemGroup>
-    <Using Include="WenYan.Service.Models" />
     <Using Include="WenYan.Service.Entity" />
     <Using Include="WenYan.Service.Util" />
   </ItemGroup>
