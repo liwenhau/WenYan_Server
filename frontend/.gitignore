@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 .DS_Store
 # dist
+/dist
 dist-ssr
 coverage
 *.local
@@ -18,7 +19,7 @@ coverage
 /cypress/screenshots/
 
 # Editor directories and files
-.vscode/*
+# .vscode/*
 !.vscode/extensions.json
 .idea
 *.suo
@@ -26,4 +27,3 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-/dist

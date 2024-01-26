@@ -1,21 +1,32 @@
 <template>
   <a-layout class="main">
-    <router-view>
-      <template #default="{ Component, route }">
-        <transition :name="appStore.transitionName" mode="out-in" appear>
-          <keep-alive :include="navtabStore.cacheList">
-            <component :is="Component" :key="route.path" />
-          </keep-alive>
-        </transition>
-      </template>
+    <router-view v-slot="{ Component, route }">
+      <transition :name="transitionName(route)" mode="out-in" appear>
+        <keep-alive :include="(tabsStore.cacheList as string[])">
+          <component :is="Component" :key="route.matched?.[1]?.path" />
+        </keep-alive>
+      </transition>
     </router-view>
   </a-layout>
 </template>
 
-<script setup lang="ts" name="Main">
-import { useNavTabStore, useAppStore } from '@/store'
-const navtabStore = useNavTabStore()
+<script setup lang="ts">
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+import { useAppStore, useTabsStore } from '@/stores'
+
+defineOptions({ name: 'Main' })
 const appStore = useAppStore()
+const tabsStore = useTabsStore()
+
+// 过渡动画
+const transitionName = computed(() => {
+  return function (route: RouteLocationNormalizedLoaded) {
+    if (route?.matched?.[1]?.meta?.animation === false) {
+      return ''
+    }
+    return appStore.transitionName
+  }
+})
 </script>
 
 <style lang="scss" scoped>

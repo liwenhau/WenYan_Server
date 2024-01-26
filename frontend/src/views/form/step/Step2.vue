@@ -1,16 +1,16 @@
 <template>
   <div class="step-2">
-    <a-descriptions :column="1" size="medium">
+    <a-descriptions :column="1">
       <a-descriptions-item label="付款账户">{{ form.payAccount }}</a-descriptions-item>
       <a-descriptions-item label="收款账户">{{ form.recAccount }}</a-descriptions-item>
       <a-descriptions-item label="收款人姓名">{{ form.recName }}</a-descriptions-item>
       <a-descriptions-item label="转账金额">{{ form.amount }}</a-descriptions-item>
     </a-descriptions>
 
-    <a-divider style="border-bottom-style: dashed" />
+    <a-divider type="dashed" />
 
-    <a-form ref="formRef" size="medium" :model="step2Form" auto-label-width>
-      <a-form-item field="password" label="支付密码" :rules="rules.password">
+    <a-form ref="formRef" :model="step2Form" :rules="rules" auto-label-width>
+      <a-form-item label="支付密码" field="password">
         <a-input-password v-model="step2Form.password" placeholder="请输入支付密码" />
       </a-form-item>
       <a-form-item>
@@ -23,25 +23,22 @@
   </div>
 </template>
 
-<script setup lang="ts" name="Step2">
-import { nextTick, reactive, ref } from 'vue'
+<script setup lang="ts">
 import type { Form } from '@arco-design/web-vue'
 import type { StepForm } from './type'
-const emit = defineEmits(['next', 'prev'])
+
+defineOptions({ name: 'Step2' })
+
+const emit = defineEmits<{
+  (e: 'next', form?: StepForm): void
+  (e: 'prev'): void
+}>()
 
 interface Props {
   form: Readonly<StepForm>
 }
 
-withDefaults(defineProps<Props>(), {
-  form: () => ({
-    payAccount: '',
-    recAccount: '',
-    payType: 1,
-    recName: '',
-    amount: '0'
-  })
-})
+withDefaults(defineProps<Props>(), {})
 
 const step2Form = reactive({
   password: '123456'
@@ -55,23 +52,19 @@ const loading = ref(false)
 const formRef = ref<InstanceType<typeof Form>>()
 
 // 下一步|提交
-const next = () => {
-  nextTick(async () => {
-    try {
-      loading.value = true
-      const res = await formRef.value?.validate()
-      if (!res) {
-        setTimeout(() => {
-          emit('next')
-          loading.value = false
-        }, 1000)
-      } else {
+const next = async () => {
+  try {
+    loading.value = true
+    const res = await formRef.value?.validate()
+    if (!res) {
+      setTimeout(() => {
+        emit('next')
         loading.value = false
-      }
-    } catch (error) {
-      return error
+      }, 1000)
     }
-  })
+  } catch (error) {
+  } finally {
+  }
 }
 
 // 上一步

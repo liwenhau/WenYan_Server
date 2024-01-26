@@ -1,25 +1,28 @@
-import { fileURLToPath, URL } from 'url'
-
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import VueSetupExtend from 'vite-plugin-vue-setup-extend'
-import { viteMockServe } from 'vite-plugin-mock'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import { fileURLToPath, URL } from 'url'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import { viteMockServe } from 'vite-plugin-mock'
 import path from 'path'
 
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd())
   return {
     plugins: [
       vue(),
       vueJsx(),
-      VueSetupExtend(),
+      AutoImport({
+        // 自动导入vue相关函数，如: ref、reactive、toRef等
+        imports: ['vue', 'vue-router'],
+        dts: 'src/auto-import.d.ts'
+      }),
       Components({
-        // 指定组件位置, 默认是src/components 自动导入自定义组件
+        // 指定组件位置，默认是 src/components 自动导入自定义组件
         dirs: ['src/components'],
-        extensions: ['vue'],
+        extensions: ['vue', 'tsx'],
         // 配置文件生成位置
         dts: 'src/components.d.ts'
       }),
@@ -30,12 +33,14 @@ export default defineConfig(({ command, mode }) => {
         symbolId: 'icon-[dir]-[name]'
       }),
       viteMockServe({
-        mockPath: 'mock',
-        localEnabled: command === 'serve',
-        prodEnabled: command !== 'serve' && true,
+        mockPath: './src/mock/', // 目录位置
+        logger: true, //  是否在控制台显示请求日志
+        supportTs: true, // 是否读取ts文件模块
+        localEnabled: command === 'serve', // 设置是否启用本地mock文件
+        prodEnabled: command !== 'serve' && true, // 设置打包是否启用mock功能
         // 这样可以控制关闭mock的时候不让mock打包到最终代码内
         injectCode: `
-          import { setupProdMockServer } from '../mock/index';
+          import { setupProdMockServer } from '../src/mock/index';
           setupProdMockServer();
         `
       })
@@ -46,7 +51,7 @@ export default defineConfig(({ command, mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    base: '/gi-demo/',
+    base: env.VITE_PUBLIC_PATH,
     // 引入sass全局样式变量
     css: {
       preprocessorOptions: {
@@ -67,15 +72,27 @@ export default defineConfig(({ command, mode }) => {
     },
     // 构建
     build: {
-      outDir: 'dist', // 指定打包路径，默认为项目根目录下的 dist 目录
+      chunkSizeWarningLimit: 2000, // 消除打包大小超过500kb警告
+      outDir: 'dist', // 指定打包路径，默认为项目根目录下的dist目录
+      minify: 'terser', // Vite 2.6.x 以上需要配置 minify："terser"，terserOptions才能生效
       terserOptions: {
         compress: {
           keep_infinity: true, // 防止 Infinity 被压缩成 1/0，这可能会导致 Chrome 上的性能问题
           drop_console: true, // 生产环境去除 console
           drop_debugger: true // 生产环境去除 debugger
+        },
+        format: {
+          comments: false // 删除注释
         }
       },
-      chunkSizeWarningLimit: 1500 // chunk 大小警告的限制（以 kbs 为单位）
+      // 静态资源打包到dist下的不同目录
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'static/js/[name]-[hash].js',
+          entryFileNames: 'static/js/[name]-[hash].js',
+          assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+        }
+      }
     }
   }
 })

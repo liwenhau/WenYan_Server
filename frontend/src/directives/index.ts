@@ -1,9 +1,10 @@
 import type { App } from 'vue'
-import permission from './permission'
-import loading from './v-loading'
+import hasPerm from './permission/hasPerm'
+import hasRole from './permission/hasRole'
 
 export default {
   install(Vue: App) {
-    Vue.directive('permission', permission), Vue.directive('loading', loading)
+    Vue.directive('hasPerm', hasPerm)
+    Vue.directive('hasRole', hasRole)
   }
 }

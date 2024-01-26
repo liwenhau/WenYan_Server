@@ -8,6 +8,9 @@ export const Email = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 export const Password =
   /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[()])+$)(?!^.*[\u4E00-\u9FA5].*$)([^(0-9a-zA-Z)]|[()]|[a-z]|[A-Z]|[0-9]){8,18}$/
 
+/** @desc 正则-密码(密码为6位数字) */
+//export const Password = /^\d{6}$/
+
 /** @desc 正则-6位数字验证码正则 */
 export const Code_6 = /^\d{6}$/
 

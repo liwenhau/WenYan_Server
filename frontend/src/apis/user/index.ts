@@ -1,19 +1,24 @@
-import axios from '@/utils/http'
-const prefix = '/mock'
-import type { LoginRes } from './type'
+import http from '@/utils/http'
+import { prefix } from '../config'
+import type * as User from './type'
+import type { RouteRecordRaw } from 'vue-router'
 
 /** @desc 登录 */
-export type LoginParams = { username: string; password: string }
-export function login(data: LoginParams) {
-  return axios.post<ApiRes<LoginRes>>(`${prefix}/user/login`, data)
+export function login(data: { username: string; password: string }) {
+  return http.post<User.LoginRes>(`${prefix}/Operator/Login`, data)
 }
 
 /** @desc 退出登录 */
 export function logout() {
-  return axios.post(`${prefix}/user/logout`)
+  return http.post(`${prefix}/user/logout`)
 }
 
-/** @desc 获取动态菜单 */
-export function getMenuList() {
-  return axios.get(`${prefix}/user/menu`)
+/** @desc 获取用户信息 */
+export const getUserInfo = () => {
+  return http.get<User.UserInfo>(`${prefix}/Operator/GetUserInfo`)
+}
+
+/** @desc 获取用户路由信息 */
+export const getUserAsyncRoutes = () => {
+  return http.get<User.UserMeuns[]>(`${prefix}/Operator/GetUserMenus`)
 }

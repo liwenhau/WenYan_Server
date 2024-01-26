@@ -386,3 +386,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+/backend/WenYan.Service/WenYan.Service.Api/Files
+/frontend/public/static/audio/致你.mp3

@@ -36,9 +36,9 @@
         <a-table-column title="手机号" data-index="phone" :width="150"></a-table-column>
         <a-table-column title="创建时间" data-index="createTime" ellipsis tooltip></a-table-column>
         <a-table-column title="地址" data-index="address" ellipsis tooltip></a-table-column>
-        <a-table-column title="状态" :width="100">
+        <a-table-column title="状态" :width="100" align="center">
           <template #cell="{ record }">
-            <a-switch v-model="record.status" size="medium">
+            <a-switch v-model="record.status" type="round" size="medium">
               <template #checked>开启</template>
               <template #unchecked>关闭</template>
             </a-switch>
@@ -62,12 +62,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="CustomTable">
-import { ref } from 'vue'
+<script setup lang="ts">
 import { Message } from '@arco-design/web-vue'
 import { usePagination } from '@/hooks'
-import { getPersonList } from '@/apis'
-import type { PersonItem } from '@/apis'
+import { getPersonList, type PersonItem } from '@/apis'
+
+defineOptions({ name: 'TableCustom' })
 
 const loading = ref(false)
 const tableData = ref<PersonItem[]>([])
@@ -75,16 +75,16 @@ const tableData = ref<PersonItem[]>([])
 const { pagination, setTotal } = usePagination(() => getTableData())
 
 const getTableData = async () => {
-  loading.value = true
-  const { success, data } = await getPersonList({
-    current: pagination.current,
-    pageSize: pagination.pageSize
-  })
-  if (success) {
-    tableData.value = data.list
-    setTotal(data.total)
-    loading.value = false
-  } else {
+  try {
+    loading.value = true
+    const res = await getPersonList({
+      current: pagination.current,
+      pageSize: pagination.pageSize
+    })
+    tableData.value = res.data.list
+    setTotal(res.data.total)
+  } catch (error) {
+  } finally {
     loading.value = false
   }
 }

@@ -1,36 +1,3 @@
-// 菜单项
-interface MenuItem {
-  id: string
-  name: string
-  icon?: string
-  path?: string
-  children?: MenuItem[]
-  keepAlive?: boolean
-  hidden?: boolean
-}
-
-// 导航标签项
-interface NavTabItem {
-  name: string
-  path: string
-  componentName: string
-}
-
-// 接口返回数据格式
-interface ApiRes<T> {
-  code: number
-  message: string
-  data: T
-  success: boolean
-}
-
-// 接口返回的列表数据
-interface ApiListData<T> {
-  total: number
-  list: T
-  [propName: string]: unknown
-}
-
 interface AnyObject {
   [key: string]: unknown
 }
@@ -46,7 +13,11 @@ interface NodeOptions extends Options {
 
 type TimeRanger = [string, string]
 
-interface GeneralChart {
-  xAxis: string[]
-  data: Array<{ name: string; value: number[] }>
-}
+/** 系统管理通用状态 Disable禁用 Enable启用 */
+type Status = 'Enable' | 'Disable'
+
+/** 性别 Boy男 Girl女 */
+type Gender = 'Boy' | 'Girl女'
+
+/** 菜单类型 1目录 2菜单 3按钮*/
+type MenuType = '1' | '2' | '3'

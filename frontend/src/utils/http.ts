@@ -1,9 +1,10 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosRequestHeaders } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosRequestHeaders, ResponseType } from 'axios'
 import { Message, Notification } from '@arco-design/web-vue'
 import { getToken } from '@/utils/auth'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import router from '@/router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -29,7 +30,7 @@ const StatusCodeMessage: ICodeMessage = {
 }
 
 const http: AxiosInstance = axios.create({
-  // baseURL: process.env.VUE_APP_API_PREFIX,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 30 * 1000
 })
 
@@ -45,7 +46,8 @@ http.interceptors.request.use(
       if (!config.headers) {
         config.headers = {}
       }
-      config.headers['token'] = token
+      //config.headers['token'] = token
+      config.headers['Authorization'] = 'Bearer ' + token
     }
     return config
   },
@@ -58,19 +60,37 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response
-    const { message, success } = data
+    const { message, success, code } = data
+
+    //处理Blob文件流
+    if (response.request?.responseType === 'blob') {
+      NProgress.done()
+      return response
+    }
+    if (code === 401) {
+      // token失效
+      NProgress.done()
+      // Message.error('token失效')
+      router.replace('/login')
+      return Promise.reject(new Error('token失效'))
+    }
 
     if (!success) {
       NProgress.done()
-      Notification.error(message || '服务器端错误')
+      // 如果错误信息长度过长，使用 Notification 进行提示
+      if (message.length <= 15) {
+        Message.error(message || '服务器端错误')
+      } else {
+        Notification.error(message || '服务器端错误')
+      }
       return Promise.reject(new Error('Error'))
     }
+
     NProgress.done()
     return response
   },
   (error) => {
     NProgress.done()
-
     Message.clear()
     const response = Object.assign({}, error.response)
     response && Message.error(StatusCodeMessage[response.status] || '系统异常, 请检查网络或联系管理员！')
@@ -87,16 +107,32 @@ const request = <T = unknown>(config: AxiosRequestConfig): Promise<T> => {
   })
 }
 
-request.get = <T = unknown>(url: string, params?: object, headers?: AxiosRequestHeaders): Promise<T> => {
+request.get = <T = any>(
+  url: string,
+  params?: object,
+  headers?: AxiosRequestHeaders,
+  responseType?: ResponseType
+): Promise<ApiRes<T>> => {
   return request({
     method: 'get',
     url,
     params,
-    headers
+    headers,
+    responseType
   })
 }
 
-request.post = <T = unknown>(url: string, params?: object, headers?: AxiosRequestHeaders): Promise<T> => {
+request.getFile = <T = any>(url: string, params?: object, headers?: AxiosRequestHeaders): Promise<T> => {
+  return request({
+    method: 'get',
+    url,
+    params,
+    headers,
+    responseType: 'blob'
+  })
+}
+
+request.post = <T = any>(url: string, params?: object, headers?: AxiosRequestHeaders): Promise<ApiRes<T>> => {
   return request({
     method: 'post',
     url,
@@ -105,4 +141,16 @@ request.post = <T = unknown>(url: string, params?: object, headers?: AxiosReques
   })
 }
 
+request.delete = <T = any>(
+  url: string,
+  params?: Array<String | number>,
+  headers?: AxiosRequestHeaders
+): Promise<ApiRes<T>> => {
+  return request({
+    method: 'delete',
+    url,
+    data: params,
+    headers
+  })
+}
 export default request

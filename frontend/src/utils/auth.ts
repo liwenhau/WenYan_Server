@@ -1,19 +1,32 @@
-const TOKEN_KEY = 'token'
+const Token_Key = 'token'
+const Refresh_Token_Key = 'refreshToken'
 
 const isLogin = () => {
-  return !!localStorage.getItem(TOKEN_KEY)
+  return !!localStorage.getItem(Token_Key)
 }
 
 const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY)
+  return localStorage.getItem(Token_Key)
+}
+
+const getRefreshToken = () => {
+  return localStorage.getItem(Refresh_Token_Key)
 }
 
 const setToken = (token: string) => {
-  localStorage.setItem(TOKEN_KEY, token)
+  localStorage.setItem(Token_Key, token)
+}
+
+const setRefreshToken = (refreshToken: string) => {
+  localStorage.setItem(Refresh_Token_Key, refreshToken)
 }
 
 const clearToken = () => {
-  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(Token_Key)
 }
 
-export { isLogin, getToken, setToken, clearToken }
+const clearRefreshToken = () => {
+  localStorage.removeItem(Refresh_Token_Key)
+}
+
+export { isLogin, getToken, getRefreshToken, setToken, setRefreshToken, clearToken, clearRefreshToken }

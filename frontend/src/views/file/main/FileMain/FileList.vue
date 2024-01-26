@@ -18,6 +18,7 @@
               auto-fit-transform-origin
               position="bl"
               update-at-scroll
+              scroll-to-close
             >
               <div class="file-name" @click="handleRowClick(record)">
                 <div class="file-image">
@@ -31,8 +32,10 @@
             </a-trigger>
           </template>
         </a-table-column>
+        <a-table-column title="大小（kb）" data-index="sizeKb" :width="150"></a-table-column>
+        <a-table-column title="路径" data-index="filePath" :width="200"></a-table-column>
         <a-table-column title="扩展名" data-index="extendName" :width="100"></a-table-column>
-        <a-table-column title="更改时间" data-index="updateTime" :width="200"></a-table-column>
+        <a-table-column title="更改时间" data-index="modifyTime" :width="200"></a-table-column>
         <a-table-column title="操作" :width="120" align="center">
           <template #cell="{ record }">
             <a-popover
@@ -58,7 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
 import FileImg from './FileImg.vue'
 import FileRightMenu from './FileRightMenu.vue'
 import type { FileItem } from '@/apis'

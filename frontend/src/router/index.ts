@@ -1,91 +1,75 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import type { RouteRecordNormalized } from 'vue-router'
-import { getToken } from '@/utils/auth'
-import { DEFAULT_LAYOUT } from './base'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 
-// 路由模块化自动导入
-const modules = import.meta.globEager('./modules/*.ts')
+/** 默认布局 */
+const Layout = () => import('@/layout/index.vue')
 
-function formatModules(_modules: any, result: RouteRecordNormalized[]) {
-  Object.keys(_modules).forEach((key) => {
-    const defaultModule = _modules[key].default
-    if (!defaultModule) return
-    const moduleList = Array.isArray(defaultModule) ? [...defaultModule] : [defaultModule]
-    result.push(...moduleList)
-  })
-  return result
-}
-
-export const appRoutes: RouteRecordNormalized[] = formatModules(modules, [])
-
-const routes = [
+/** 静态路由 */
+export const constantRoutes: RouteRecordRaw[] = [
   {
-    path: '',
-    redirect: '/dashboard/workplace'
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/login/index.vue'),
-    meta: {
-      title: '登录',
-      keepAlive: false
-    }
-  },
-  {
-    path: '/layout',
-    name: 'Layout',
-    component: DEFAULT_LAYOUT,
+    path: '/redirect',
+    component: Layout,
+    meta: { hidden: true },
     children: [
       {
-        path: 'about',
-        name: 'About',
-        component: () => import('@/views/about/index.vue'),
-        meta: {
-          title: '关于',
-          keepAlive: false
-        }
-      },
-      {
-        path: 'navigation',
-        name: 'Navigation',
-        component: () => import('@/views/navigation/index.vue'),
-        meta: {
-          title: '导航',
-          keepAlive: false
-        }
-      },
-      {
-        path: 'tool',
-        name: 'Tool',
-        component: () => import('@/views/tool/index.vue'),
-        meta: {
-          title: '功能页',
-          keepAlive: true
-        }
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue')
       }
     ]
   },
-  ...appRoutes
+  {
+    path: '/login',
+    component: () => import('@/views/login/index.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('@/views/error/404.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '/403',
+    component: () => import('@/views/error/403.vue'),
+    meta: { hidden: true }
+  },
+  {
+    path: '',
+    name: 'Home',
+    component: Layout,
+    redirect: '/home',
+    children: [
+      {
+        path: '/home',
+        component: () => import('@/views/home/index.vue'),
+        name: 'Home',
+        meta: { title: '首页', icon: 'icon-dashboard', svgIcon: 'menu-home', affix: true }
+      }
+    ]
+  }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
-  routes,
+  routes: constantRoutes,
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.path === '/login') {
-    next()
-  } else {
-    const token = getToken()
-    if (!token) {
-      next('/login')
-    } else {
-      next()
-    }
+/**
+ * @description 重置路由
+ * @description 注意：所有动态路由路由必须带有 name 属性，否则可能会不能完全重置干净
+ */
+export function resetRouter() {
+  try {
+    router.getRoutes().forEach((route) => {
+      const { name, meta, path } = route
+      // console.log('name', name, path)
+      if (name && name !== 'Home') {
+        router.hasRoute(name) && router.removeRoute(name)
+      }
+    })
+  } catch (error) {
+    // 强制刷新浏览器也行，只是交互体验不是很好
+    window.location.reload()
   }
-})
+}
 
 export default router

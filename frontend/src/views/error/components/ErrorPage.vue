@@ -15,10 +15,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="ErrorPage">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-
+<script setup lang="ts">
 interface Props {
   src: string
 }
@@ -26,32 +23,33 @@ const props = withDefaults(defineProps<Props>(), {
   src: ''
 })
 
+defineOptions({ name: 'ErrorPage' })
 const router = useRouter()
 
 const countDownTime = ref(5)
-const timer = ref(0)
+let timer: NodeJS.Timeout
 
 onMounted(() => {
   onCountDownTime()
 })
 
 onBeforeUnmount(() => {
-  clearInterval(timer.value)
+  clearInterval(timer)
 })
 
 // 返回页面
 const back = () => {
-  router.back()
+  router.replace({ path: '/' })
 }
 
 // 倒计时
 const onCountDownTime = () => {
-  timer.value = setInterval(() => {
+  timer = setInterval(() => {
     if (countDownTime.value) {
       countDownTime.value--
     } else {
       // back()
-      clearInterval(timer.value)
+      clearInterval(timer)
     }
   }, 1000)
 }
@@ -75,7 +73,11 @@ const onCountDownTime = () => {
     width: 100%;
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     .img-parent {
+      max-width: 90%;
       height: 50vh;
     }
     .img-child {
@@ -110,8 +112,10 @@ const onCountDownTime = () => {
       animation-fill-mode: forwards;
     }
     .info {
+      padding: 0 30px;
       margin-bottom: 20px;
       font-size: 13px;
+      text-align: center;
       line-height: 20px;
       color: var(--color-text-2);
       opacity: 0;

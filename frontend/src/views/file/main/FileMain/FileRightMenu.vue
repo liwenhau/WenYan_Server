@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import GiOption from '@/components/GiOption.vue'
-import GiOptionItem from '@/components/GiOptionItem.vue'
+import GiOption from '@/components/GiOption/index.vue'
+import GiOptionItem from '@/components/GiOptionItem/index.vue'
 import type { FileItem } from '@/apis'
 
 interface Props {
@@ -63,7 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
     name: '',
     extendName: '',
     src: '',
-    updateTime: '',
+    modifyTime: '',
     isDir: false,
     filePath: ''
   }), // 文件数据

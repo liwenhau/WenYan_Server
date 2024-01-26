@@ -1,142 +1,140 @@
 <template>
-  <div class="data-pane">
-    <section class="gi_box pane-left">
-      <GiHead title="数据分类"></GiHead>
-      <TheLeftTree placeholder="请输入搜索关键词" @node-click="pagination.onChange(1)"></TheLeftTree>
+  <a-card :bordered="false" class="gi_card pane2">
+    <a-row justify="space-between" align="center" wrap>
+      <a-space wrap>
+        <a-alert type="normal">
+          <template #icon>
+            <icon-exclamation-circle-fill />
+          </template>
+          <span>这里采用 模板 + tsx 方式使用表格，具体看代码使用</span>
+        </a-alert>
+      </a-space>
+
+      <a-space wrap>
+        <a-button type="primary" status="success" @click="onViewCode">
+          <template #icon><icon-code /></template>
+          <span>查看代码</span>
+        </a-button>
+        <a-button type="primary">导出</a-button>
+      </a-space>
+    </a-row>
+
+    <section class="content">
+      <section class="gi_table_box">
+        <a-table
+          row-key="id"
+          size="small"
+          :loading="loading"
+          :bordered="{ cell: true }"
+          :columns="columns"
+          :data="tableData"
+          :scroll="{ x: '100%', y: '100%', minWidth: 1000 }"
+          :row-selection="{ type: 'checkbox', showCheckedAll: true }"
+          :pagination="pagination"
+          @select="select"
+          @select-all="selectAll"
+        >
+        </a-table>
+      </section>
     </section>
-    <section class="gi_box pane-right">
-      <GiHead title="数据列表"></GiHead>
-
-      <div class="content">
-        <a-row justify="space-between" style="margin-bottom: 12px">
-          <a-space>
-            <a-button type="primary" @click="onAdd">
-              <template #icon><icon-plus /></template>
-            </a-button>
-            <a-button type="primary" status="danger" @click="onMulDelete">
-              <template #icon><icon-delete /></template>
-              <template #default>删除</template>
-            </a-button>
-            <a-button type="primary" status="success" @click="onExport">
-              <template #icon><icon-export /></template>
-            </a-button>
-          </a-space>
-
-          <a-space>
-            <a-select v-model="form.status" class="gi_select_input" placeholder="请选择" allow-clear>
-              <a-option v-for="item in StatusList" :key="item.value" :value="item.value">{{ item.name }}</a-option>
-            </a-select>
-            <a-input-group>
-              <a-input v-model="form.name" placeholder="请输入搜索关键词" allow-clear> </a-input>
-              <a-button type="primary" @click="getTableData">
-                <icon-search />
-              </a-button>
-            </a-input-group>
-            <a-button type="primary" @click="getTableData">
-              <template #icon><icon-refresh /></template>
-            </a-button>
-          </a-space>
-        </a-row>
-
-        <section class="table-box">
-          <a-table
-            row-key="id"
-            size="small"
-            :loading="loading"
-            :bordered="{ cell: true }"
-            :data="tableData"
-            :scroll="{ x: '100%', y: '100%', minWidth: 1000 }"
-            :row-selection="{ type: 'checkbox', showCheckedAll: true }"
-            :pagination="pagination"
-            @select="select"
-            @select-all="selectAll"
-          >
-            <template #columns>
-              <a-table-column title="序号" :width="68">
-                <template #cell="cell">{{ cell.rowIndex + 1 }}</template>
-              </a-table-column>
-              <a-table-column title="姓名" data-index="name"></a-table-column>
-              <a-table-column title="地址" data-index="address" ellipsis tooltip></a-table-column>
-              <a-table-column title="比例" :width="200">
-                <template #cell="{ record }">
-                  <a-progress :status="getProportionColor(record.proportion)" :percent="record.proportion / 100" />
-                </template>
-              </a-table-column>
-              <a-table-column title="状态" :width="100" align="center">
-                <template #cell="{ record }">
-                  <template v-for="item in StatusList" :key="item.value">
-                    <a-tag size="small" v-if="item.value === record.status" :color="item.color">{{ item.name }}</a-tag>
-                  </template>
-                </template>
-              </a-table-column>
-              <a-table-column title="创建时间" data-index="createTime" :width="180"></a-table-column>
-              <a-table-column title="操作" :width="200" align="center" fixed="right">
-                <template #cell="{ record }">
-                  <a-space>
-                    <a-button type="primary" size="mini" @click="onEdit(record)">修改</a-button>
-                    <a-button size="mini" @click="onDetail">详情</a-button>
-                    <a-popconfirm type="warning" content="您确定要删除该项吗?" @ok="onDelete(record.id)">
-                      <a-button type="primary" status="danger" size="mini">删除</a-button>
-                    </a-popconfirm>
-                  </a-space>
-                </template>
-              </a-table-column>
-            </template>
-          </a-table>
-        </section>
-      </div>
-    </section>
-
-    <EditModal ref="EditModalRef"></EditModal>
-  </div>
+  </a-card>
 </template>
 
-<script setup lang="ts" name="DataManage">
-import { reactive, ref, onActivated } from 'vue'
-import { useRouter } from 'vue-router'
-import { Modal, Message } from '@arco-design/web-vue'
-import type { TableInstance } from '@arco-design/web-vue'
+<script lang="tsx" setup>
+import type { TableColumnData, TableInstance } from '@arco-design/web-vue'
+import { Modal } from '@arco-design/web-vue'
 import { usePagination } from '@/hooks'
-import TheLeftTree from '@/views/components/TheLeftTree/index.vue'
-import EditModal from './EditModal.vue'
 import { getPersonList } from '@/apis'
 import type { PersonItem } from '@/apis'
 import { StatusList } from '@/constant/person'
+import Pane2Code from './Pane2Code'
 
-const router = useRouter()
+const onViewCode = () => {
+  Modal.open({
+    title: '查看代码',
+    content: () => <gi-code-view type="vue" codeJson={Pane2Code}></gi-code-view>,
+    fullscreen: true
+  })
+}
+
+const columns: TableColumnData[] = [
+  {
+    title: '序号',
+    width: 68,
+    render: ({ record, column, rowIndex }) => <span>{rowIndex + 1}</span>
+  },
+  {
+    title: '姓名',
+    dataIndex: 'name'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    width: 180
+  },
+  {
+    title: '地址',
+    dataIndex: 'address',
+    ellipsis: true,
+    tooltip: true
+  },
+  {
+    title: '比例',
+    width: 68,
+    align: 'center',
+    render: ({ record }) => (
+      <a-progress size="mini" status={getProportionColor(record.proportion)} percent={record.proportion / 100} />
+    )
+  },
+  {
+    title: '状态',
+    width: 100,
+    align: 'center',
+    render: (data) => {
+      const index = StatusList.findIndex((i) => i.value === data.record.status)
+      if (index >= 0) {
+        return (
+          <a-tag size="small" color={StatusList[index].color}>
+            {StatusList[index].name}
+          </a-tag>
+        )
+      }
+    }
+  },
+  {
+    title: '操作',
+    width: 200,
+    align: 'center',
+    render: ({ record }) => (
+      <a-space>
+        <a-button type="primary" size="mini">
+          <icon-edit></icon-edit>
+        </a-button>
+        <a-button size="mini">详情</a-button>
+        <a-popconfirm type="warning" content="您确定要删除该项吗?">
+          <a-button type="primary" status="danger" size="mini">
+            <icon-delete />
+          </a-button>
+        </a-popconfirm>
+      </a-space>
+    )
+  }
+]
 
 const { pagination, setTotal } = usePagination(() => getTableData())
-
-// const form = reactive({
-//   name: '',
-//   status: '',
-//   current: pagination.current, // 此方式不会响应
-//   pageSize: pagination.pageSize // 此方式不会响应
-// })
-
-const form = reactive({
-  name: '',
-  status: ''
-})
-
 const tableData = ref<PersonItem[]>([])
 const loading = ref(false)
-
-// 比例进度条颜色
-const getProportionColor = (proportion: number) => {
-  if (proportion < 30) return 'danger'
-  if (proportion < 60) return 'warning'
-  return 'success'
-}
 
 const getTableData = async () => {
   try {
     loading.value = true
-    const res = await getPersonList({ ...form, ...{ current: pagination.current, pageSize: pagination.pageSize } })
+    const res = await getPersonList({
+      current: pagination.current,
+      pageSize: pagination.pageSize
+    })
     tableData.value = res.data.list
     setTotal(res.data.total)
   } catch (error) {
-    return error
   } finally {
     loading.value = false
   }
@@ -146,47 +144,15 @@ onActivated(() => {
   getTableData()
 })
 
-// 批量删除
-const onMulDelete = () => {
-  Modal.warning({
-    title: '提示',
-    content: '是否确认删除？',
-    hideCancel: false,
-    onOk: () => {
-      tableData.value = []
-    }
-  })
-}
-
-const EditModalRef = ref<InstanceType<typeof EditModal>>()
-
-const onAdd = () => {
-  EditModalRef.value?.add()
-}
-
-const onEdit = (item: PersonItem) => {
-  EditModalRef.value?.edit(item.id)
-}
-
-const onDetail = () => {
-  router.push({ path: '/data/detail' })
-}
-
-const onDelete = (id: string) => {
-  Message.success('删除成功')
-  getTableData()
-}
-
-const onExport = () => {
-  if (!selectRowKeys.value.length) {
-    return Message.warning('请勾选数据')
-  }
-  Message.success('点击了导出')
+// 比例进度条颜色
+const getProportionColor = (proportion: number) => {
+  if (proportion < 30) return 'danger'
+  if (proportion < 60) return 'warning'
+  return 'success'
 }
 
 // 勾选
 const selectRowKeys = ref<(string | number)[]>([])
-
 const select: TableInstance['onSelect'] = (rowKeys) => {
   selectRowKeys.value = rowKeys
 }
@@ -197,4 +163,18 @@ const selectAll: TableInstance['onSelectAll'] = (checked) => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.pane2 {
+  flex: 1;
+  margin: $margin;
+}
+.content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: var(--color-bg-1);
+  border-radius: $radius-box;
+}
+</style>

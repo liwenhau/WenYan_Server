@@ -1,3 +1,8 @@
+import { isExternal, isHttp } from '@/utils/validate'
+import fn from '@/views/demo/examples/fn-component/Message'
+import { values } from 'lodash'
+import { mapTree, browse } from 'xe-utils'
+
 /**
  * @desc 去除空格
  * @param {string} str - 字符串
@@ -191,4 +196,100 @@ export const randomHex = () => {
   return `#${Math.floor(Math.random() * 0xffffff)
     .toString(16)
     .padEnd(6, '0')}`
+}
+
+/**
+ * @description 动态路由 path 转 name
+ * @demo /system => System
+ * @demo /system/menu => SystemMenu
+ * @demo /page-gg/detail => PageGgDetail
+ */
+export const transformPathToName = (path: string) => {
+  if (!path) return ''
+  if (isExternal(path)) return ''
+  // 示例: '/page-gg/detail' =>  ['page-gg', 'detail']
+  const pathArray = path.split('/').filter((i) => i)
+  const arr = pathArray.map((i) => {
+    if (i.includes('-')) {
+      // 'page-gg' => 'PageGg'
+      const arr1 = i.split('-')
+      return arr1.map((a) => a.substring(0, 1).toUpperCase() + a.substring(1)).join('')
+    } else {
+      // 'detail' => 'Detail
+      return i.substring(0, 1).toUpperCase() + i.substring(1)
+    }
+  })
+  let name = arr.join('') // ['PageGg', 'Detail'] => PageGgDetail
+  return name
+}
+
+/**
+ * @desc 过滤树
+ * @param { values } 数组
+ */
+type FilterTree = <T extends { children?: T[] }>(
+  array: T[],
+  iterate: (item: T, index?: number, items?: T[]) => boolean
+) => T[]
+export const filterTree: FilterTree = (values, fn) => {
+  const arr = values.filter(fn)
+  const data = mapTree(arr, (item) => {
+    if (item.children && item.children.length) {
+      item.children = item.children.filter(fn)
+    }
+    return item
+  })
+  return data
+}
+
+/**
+ * @desc 深度优先过滤树
+ */
+export const dfsTree = (treeArr: any, keyword?: string) => {
+  let arr: any[] = []
+  if (!Array.isArray(treeArr)) return arr
+  for (let item of treeArr) {
+    if (item.name.includes(keyword)) {
+      if (item.children && Array.isArray(item.children) && item.children.length > 0) {
+        item.children = dfsTree(item.children, keyword)
+      }
+      arr.push(item)
+    } else if (item.children && Array.isArray(item.children) && item.children.length > 0) {
+      item.children = dfsTree(item.children, keyword)
+      if (item.children.length) {
+        arr.push(item)
+      }
+    }
+  }
+  return arr
+}
+
+type SortTree = <T extends { sort: number; children?: T[] }>(array: T[]) => T[]
+/**
+ * @desc 排序树
+ * @param { values } 数组
+ */
+export const sortTree: SortTree = (values) => {
+  values?.sort((a, b) => (a?.sort ?? 0) - (b?.sort ?? 0)) // 排序
+  return mapTree(values, (item) => {
+    item.children?.sort((a, b) => (a?.sort ?? 0) - (b?.sort ?? 0)) // 排序
+    return item
+  })
+}
+
+/** @desc 是否是h5环境 */
+export const isPhone = () => {
+  return browse().isMobile
+}
+
+/**
+ * @desc 获取字符串首个字符
+ */
+export const firstChar = (value: string) => {
+  return value.length > 0 ? value.charAt(0) : value
+}
+
+export const getFileUrl = (path: string | null) => {
+  if (path && isHttp(path)) return path
+  return `${import.meta.env.VITE_API_BASE_URL}api/Sys_File/GetFileByPath?path=${path}`
 }

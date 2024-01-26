@@ -1,11 +1,11 @@
 <template>
   <div class="file-main">
     <!-- 面包屑导航 -->
-    <FileNavPath></FileNavPath>
+    <FileNavPath @click="handleClickFileNav" :data="fileNavs"></FileNavPath>
 
     <a-row justify="space-between" class="row-operate">
       <!-- 左侧区域 -->
-      <a-space>
+      <a-space wrap>
         <a-dropdown>
           <a-button type="primary" shape="round">
             <template #icon><icon-upload /></template>
@@ -32,19 +32,15 @@
               <template #default>{{ item.name }}</template>
             </a-option>
           </a-select>
-          <a-input placeholder="请输入关键词..." allow-clear> </a-input>
-          <a-button type="primary">
-            <template #icon><icon-search /></template>
-            <template #default>搜索</template>
-          </a-button>
+          <a-input-search placeholder="请输入关键词..." v-model="queryParam.keyWord" allow-clear> </a-input-search>
         </a-input-group>
       </a-space>
 
       <!-- 右侧区域 -->
-      <a-space v-if="windowWidth > 715">
+      <a-space wrap>
         <a-button
           v-if="isBatchMode"
-          :disabled="!fileStore.selectedFileIdList.length"
+          :disabled="!fileStore.selectedFileIds.length"
           type="primary"
           status="danger"
           @click="handleMulDelete"
@@ -82,12 +78,12 @@
     </a-row>
 
     <!-- 文件列表-宫格模式 -->
-    <section class="file-wrap" v-loading="loading">
+    <a-spin class="file-wrap" :loading="loading">
       <FileGrid
         v-show="fileList.length && fileStore.viewMode == 'grid'"
         :data="fileList"
         :isBatchMode="isBatchMode"
-        :selectedFileIdList="fileStore.selectedFileIdList"
+        :selectedFileIds="fileStore.selectedFileIds"
         @click="handleClickFile"
         @check="handleCheckFile"
         @right-menu-click="handleRightMenuClick"
@@ -103,79 +99,118 @@
       ></FileList>
 
       <a-empty v-show="!fileList.length"></a-empty>
-    </section>
+    </a-spin>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { Message, Modal } from '@arco-design/web-vue'
-import { fileTypeList, imageTypeList } from '@/libs/file/file-map'
-import { useFileStore } from '@/store'
-import { useWindowSize } from '@vueuse/core'
+import { fileTypeList, imageTypeList } from '@/constant/file'
+import { useFileStore } from '@/stores'
 import { api as viewerApi } from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 import FileNavPath from './FileNavPath.vue'
 import FileGrid from './FileGrid.vue'
 import FileList from './FileList.vue'
-import ThePreviewVideo from '@/views/components/ThePreviewVideo/index'
-import ThePreviewAudio from '@/views/components/ThePreviewAudio/index'
-import TheFileRename from '@/views/components/TheFileRename/index'
-import TheFileMove from '@/views/components/TheFileMove/index'
-import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router'
 import { getFileList } from '@/apis'
-import type { FileItem } from '@/apis'
-const route = useRoute()
+import type { FileItem, FileNav } from '@/apis'
+import { getFileUrl } from '@/utils/common'
+import {
+  openFileMoveModal,
+  openFileRenameModal,
+  previewFileVideoModal,
+  previewFileAudioModal
+} from '../../components/index'
 const router = useRouter()
 
-const { width: windowWidth } = useWindowSize()
 const fileStore = useFileStore()
 
 const loading = ref(false)
 // 文件列表数据
 const fileList = ref<FileItem[]>([])
-const fileType = ref('0')
-fileType.value = route.query.fileType?.toString() || '0'
+const fileType = ref('')
+const fileNavs = ref<FileNav[]>([{ name: '文件根目录', path: '/', dirID: '0' }])
+// 批量操作
+const isBatchMode = ref(false)
+const queryParam = reactive({ keyWord: '', type: '', isRootDir: true, dirId: '', status: '' })
 
-const getListData = async () => {
+const getListData = async (queryParam: object) => {
   try {
     loading.value = true
     isBatchMode.value = false
-    const res = await getFileList({ fileType: fileType.value })
-    fileList.value = res.data.list
+    const res = await getFileList(queryParam)
+    fileList.value = res.data
   } catch (error) {
     return error
   } finally {
     loading.value = false
   }
 }
-
+//监听查询参数
+watch(queryParam, () => {
+  console.log('触发查询')
+  getListData(queryParam)
+})
+//加载文件列表数据
 onMounted(() => {
-  getListData()
+  getListData(queryParam)
 })
 
 onBeforeRouteUpdate((to) => {
   if (!to.query.fileType) return
   fileType.value = to.query.fileType?.toString()
-  getListData()
+  getListData(queryParam)
 })
 
-// 批量操作
-const isBatchMode = ref(false)
+const handleClickFileNav = (fielNav: FileNav) => {
+  let fieldataNavs = fileNavs.value
+  if (fielNav.path == '/') {
+    queryParam.isRootDir = true
+  }
+  const index = fieldataNavs.findIndex((i) => i.path === fielNav.path)
+  const length = fieldataNavs.length
+  //如果是当前目录则不处理
+  if (fielNav.path === fieldataNavs[length - 1].path) return
+  //不是当前目录更新导航
+  if (index != -1) {
+    fieldataNavs.splice(index + 1, fieldataNavs.length - index)
+  }
+  if (queryParam.isRootDir == false) queryParam.dirId = fielNav.dirID
+}
 
 // 点击文件
 const handleClickFile = (item: FileItem) => {
   Message.success(`点击了文件-${item.name}`)
+  if (item.isDir) {
+    if (item.filePath != '/') {
+      queryParam.isRootDir = false
+      queryParam.dirId = item.id
+      //添加文件导航
+      if (fileNavs.value.findIndex((i) => i.path === item.filePath) == -1)
+        fileNavs.value.push({
+          name: item.name,
+          path: item.filePath,
+          dirID: item.id
+        })
+    }
+  }
+  item.src = getFileUrl(item.filePath) || ''
   if (imageTypeList.includes(item.extendName)) {
-    if (item.src) {
-      const imgList: string[] = fileList.value
+    if (item.filePath) {
+      const imgList: any[] = fileList.value
         .filter((i) => imageTypeList.includes(i.extendName))
-        .map((a) => a.src || '')
-      const index = imgList.findIndex((i) => i === item.src)
+        .map((a) => {
+          return {
+            src: a.src,
+            title: a.name
+          }
+        })
+      const index = imgList.findIndex((i) => i.src.concat(item.filePath))
       if (imgList.length) {
         viewerApi({
           options: {
-            initialViewIndex: index
+            initialViewIndex: index,
+            title: false
           },
           images: imgList
         })
@@ -183,13 +218,12 @@ const handleClickFile = (item: FileItem) => {
     }
   }
   if (item.extendName === 'mp4') {
-    ThePreviewVideo(item)
+    previewFileVideoModal(item)
   }
   if (item.extendName === 'mp3') {
-    ThePreviewAudio(item)
+    previewFileAudioModal(item)
   }
 }
-
 // 勾选文件
 const handleCheckFile = (item: FileItem) => {
   fileStore.addSelectedFileItem(item)
@@ -205,10 +239,10 @@ const handleRightMenuClick = (mode: string, fileInfo: FileItem) => {
     })
   }
   if (mode === 'rename') {
-    TheFileRename(fileInfo)
+    openFileRenameModal(fileInfo)
   }
   if (mode === 'move') {
-    TheFileMove(fileInfo)
+    openFileMoveModal(fileInfo)
   }
   if (mode === 'detail') {
     router.push({ path: '/file/detail' })
@@ -227,9 +261,8 @@ const handleMulDelete = () => {
 
 <style lang="scss" scoped>
 .file-main {
-  flex: 1;
+  height: 100%;
   background: var(--color-bg-1);
-  margin: $margin;
   border-radius: $radius-box;
   display: flex;
   flex-direction: column;
@@ -237,10 +270,6 @@ const handleMulDelete = () => {
   .row-operate {
     border-bottom: 1px dashed var(--color-border-3);
     margin: 0 $padding;
-    padding-bottom: 12px;
-    > * {
-      margin-top: 12px;
-    }
   }
   .file-wrap {
     flex: 1;
