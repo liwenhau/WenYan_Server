@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WenYan.Service.Entity;
 
@@ -10,116 +11,14 @@ using WenYan.Service.Entity;
 namespace WenYan.Service.Entity.Migrations
 {
     [DbContext(typeof(GDbContext))]
-    partial class GDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231212163118_UpdateSys_Org")]
+    partial class UpdateSys_Org
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
-
-            modelBuilder.Entity("WenYan.Service.Entity.Sys_File", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("主键");
-
-                    b.Property<DateTime>("CreateTime")
-                        .HasColumnType("TEXT")
-                        .HasComment("创建时间");
-
-                    b.Property<string>("CreateUserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("创建人");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false)
-                        .HasComment("是否删除");
-
-                    b.Property<string>("DirId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("上级目录id");
-
-                    b.Property<string>("ExtendName")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件扩展名");
-
-                    b.Property<string>("FileMd5")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件MD5");
-
-                    b.Property<string>("FilePath")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件路径");
-
-                    b.Property<bool>("IsDir")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(false)
-                        .HasComment("是否目录");
-
-                    b.Property<DateTime>("ModifyTime")
-                        .HasColumnType("TEXT")
-                        .HasComment("修改时间");
-
-                    b.Property<string>("ModifyUserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("修改人");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件名称");
-
-                    b.Property<string>("SizeKb")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件大小KB");
-
-                    b.Property<string>("Src")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT")
-                        .HasComment("外链地址");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件类型");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Deleted");
-
-                    b.ToTable("Sys_File", t =>
-                        {
-                            t.HasComment("系统文件");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            CreateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUserId = "1",
-                            Deleted = false,
-                            FilePath = "/",
-                            IsDir = true,
-                            ModifyTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifyUserId = "1",
-                            Name = "Files",
-                            Type = "Dir"
-                        });
-                });
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
 
             modelBuilder.Entity("WenYan.Service.Entity.Sys_Menu", b =>
                 {
@@ -850,7 +749,7 @@ namespace WenYan.Service.Entity.Migrations
                             ModifyUserId = "1",
                             Name = "Admin",
                             OrgId = "1",
-                            Password = "9ce20d2bc2d67cbda4918e1d5d3100fa",
+                            Password = "1a50207b5dc3aade372204b6169bd01a",
                             Remark = "系统初始用户",
                             Sex = "Boy",
                             Sign = "后台超级管理员",

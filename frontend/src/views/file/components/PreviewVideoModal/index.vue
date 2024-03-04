@@ -1,5 +1,13 @@
 <template>
-  <a-modal title="视频播放" width="auto" draggable v-model:visible="visible" @close="close">
+  <a-modal width="auto" draggable :footer="false" v-model:visible="visible" @close="close">
+    <template #title>
+      <a-tag color="magenta">
+        <template #icon>
+          <icon-xigua-color />
+        </template>
+        {{ props.fileInfo?.name }}.{{ props.fileInfo?.extendName }}
+      </a-tag>
+    </template>
     <div id="videoId"></div>
   </a-modal>
 </template>

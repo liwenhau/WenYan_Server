@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WenYan.Service.Entity;
 
@@ -10,9 +11,11 @@ using WenYan.Service.Entity;
 namespace WenYan.Service.Entity.Migrations
 {
     [DbContext(typeof(GDbContext))]
-    partial class GDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240117150053_AddSys_File")]
+    partial class AddSys_File
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -48,11 +51,6 @@ namespace WenYan.Service.Entity.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT")
                         .HasComment("文件扩展名");
-
-                    b.Property<string>("FileMd5")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT")
-                        .HasComment("文件MD5");
 
                     b.Property<string>("FilePath")
                         .HasMaxLength(256)
@@ -118,6 +116,23 @@ namespace WenYan.Service.Entity.Migrations
                             ModifyUserId = "1",
                             Name = "Files",
                             Type = "Dir"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            CreateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUserId = "1",
+                            Deleted = false,
+                            DirId = "1",
+                            ExtendName = ".jpg",
+                            FilePath = "/Files/avatar01.jpg",
+                            IsDir = false,
+                            ModifyTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ModifyUserId = "1",
+                            Name = "头像1",
+                            SizeKb = "120",
+                            Src = "https://avatars.githubusercontent.com/u/43628298?v=4",
+                            Type = "Image"
                         });
                 });
 
