@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace WenYan.Service.Business
+﻿namespace WenYan.Service.Business
 {
     public class Sys_UserBusiness : BusRepository<Sys_User>, ISys_UserBusiness
     {
@@ -16,7 +14,6 @@ namespace WenYan.Service.Business
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public async Task<Sys_User> LoginAsync(LoginM data)
         {
             var user = await this.GetAsync(x => x.UserName == data.UserName
@@ -211,7 +208,7 @@ namespace WenYan.Service.Business
         public async Task<int> AddOrUpdateAsync(UserInputDto entity)
         {
             if (entity.Password.IsNullOrEmpty())
-                entity.Password = "123456".ToMD5String();
+                entity.Password = ConstDefaultConfig.DefaultPwd;
             var dbEntity = await this.GetAsync(entity.Id, true);
             if (dbEntity != null)
             {

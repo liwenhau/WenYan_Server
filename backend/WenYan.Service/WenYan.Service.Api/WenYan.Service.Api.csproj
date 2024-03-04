@@ -13,9 +13,13 @@
     <DefineConstants>$(DatabaseType);</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Files\**" />
     <Compile Remove="Logs\**" />
+    <Content Remove="Files\**" />
     <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Files\**" />
     <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Files\**" />
     <None Remove="Logs\**" />
   </ItemGroup>
   
@@ -33,6 +37,7 @@
     <Using Include="WenYan.Service.Business" />
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.AspNetCore.Mvc" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
   
   <ItemGroup>

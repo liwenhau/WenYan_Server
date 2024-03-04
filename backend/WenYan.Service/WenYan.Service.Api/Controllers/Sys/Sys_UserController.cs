@@ -2,11 +2,11 @@
 {
     public class Sys_UserController : BaseController
     {
-        private ISys_UserBusiness Bus { get; set; }
+        private ISys_UserBusiness _bus { get; set; }
 
         public Sys_UserController(ISys_UserBusiness bus)
         {
-            Bus = bus;
+            _bus = bus;
         }
 
         /// <summary>
@@ -17,7 +17,7 @@
         [HttpPost]
         public async Task<PageResult<UserInfoDto>> GetPageAsync(PageInput<UserQM> query)
         {
-            return await Bus.GetPageAsync(query);
+            return await _bus.GetPageAsync(query);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@
         [HttpGet]
         public async Task<UserInfoM> GetAsync(string id)
         {
-            return await Bus.GetUserInfoAsync(id);
+            return await _bus.GetUserInfoAsync(id);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@
         [HttpGet]
         public async Task<UserDetailM> GetUserDetailAsync(string id)
         {
-            return await Bus.GetUserDetailAsync(id);
+            return await _bus.GetUserDetailAsync(id);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@
         public async Task<int> SaveAsync(UserInputDto data)
         {
             this.InitBusEntity(data);
-            return await this.Bus.AddOrUpdateAsync(data);
+            return await this._bus.AddOrUpdateAsync(data);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@
         [HttpDelete]
         public Task<int> DeleteAsync(List<string> ids)
         {
-            return this.Bus.DeleteAsync(ids);
+            return this._bus.DeleteAsync(ids);
         }
     }
 }

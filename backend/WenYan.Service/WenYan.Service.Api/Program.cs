@@ -9,8 +9,6 @@ using WenYan.Service.Api;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 #region 服务注册
-//使用Serilog
-builder.Host.AddSerilog();
 //自动模型状态验证，禁用默认行为　
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddDbContext<GDbContext>(options =>
@@ -56,6 +54,7 @@ builder.Services.AddScoped<ISys_RoleBusiness, Sys_RoleBusiness>();
 builder.Services.AddScoped<ISys_OrgBusiness, Sys_OrgBusiness>();
 builder.Services.AddScoped<ISys_RoleMenuBusiness, Sys_RoleMenuBusiness>();
 builder.Services.AddScoped<ISys_UserRoleBusiness, Sys_UserRoleBusiness>();
+builder.Services.AddScoped<ISys_FileBusiness, Sys_FileBusiness>();
 
 builder.Services.AddControllers(options =>
 {
@@ -84,6 +83,10 @@ builder.Services.AddControllers(options =>
 builder.Services.AddSwashbuckle();
 //JWT认证
 builder.Services.AddJWT(builder.Configuration);
+//文件服务
+builder.Services.AddFileServer(builder.Configuration, builder.Environment);
+//Serilog
+builder.Host.AddSerilog();
 #endregion
 var app = builder.Build();
 // Configure the HTTP request pipeline.

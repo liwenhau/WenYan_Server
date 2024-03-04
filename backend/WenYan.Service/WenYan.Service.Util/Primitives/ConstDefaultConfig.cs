@@ -22,5 +22,17 @@
         /// 按钮
         /// </summary>
         public const string Button = "3";
+        /// <summary>
+        /// 应用名
+        /// </summary>
+        public const string AppName = "WenYan";
+        /// <summary>
+        /// 默认密码
+        /// </summary>
+        public static string DefaultPwd = AppName + DateTime.Now.ToString("yyyy");
+        /// <summary>
+        /// 约定分片文件扩展
+        /// </summary>
+        public const string FilePartName = ".WenYanPart-";
     }
 }

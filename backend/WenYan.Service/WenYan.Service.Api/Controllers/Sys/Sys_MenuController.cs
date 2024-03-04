@@ -2,10 +2,10 @@
 {
     public class Sys_MenuController : BaseController
     {
-        private ISys_MenuBusiness Bus { get; set; }
+        private ISys_MenuBusiness _bus { get; set; }
         public Sys_MenuController(ISys_MenuBusiness bus)
         {
-            Bus = bus;
+            _bus = bus;
         }
 
         /// <summary>
@@ -16,7 +16,7 @@
         [HttpGet]
         public async Task<Sys_Menu> GetAsync(string id)
         {
-            return await this.Bus.GetAsync(id);
+            return await this._bus.GetAsync(id);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@
         [HttpGet]
         public async Task<List<UserMenuDto>> GetAllAsync(string name,string status)
         {
-            return await this.Bus.GetAllAsync(name, status);
+            return await this._bus.GetAllAsync(name, status);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@
             {
                 data.ParentId = null;
             }
-            return await this.Bus.AddOrUpdateAsync(data);
+            return await this._bus.AddOrUpdateAsync(data);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@
         [HttpGet]
         public Task<List<MenuTreeDto>> GetTreeAsync()
         {
-            return this.Bus.GetTreeAsync();
+            return this._bus.GetTreeAsync();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@
         [HttpDelete]
         public Task<int> DeleteAsync(List<string> ids)
         {
-            return this.Bus.DeleteAsync(ids);
+            return this._bus.DeleteAsync(ids);
         }
     }
 }

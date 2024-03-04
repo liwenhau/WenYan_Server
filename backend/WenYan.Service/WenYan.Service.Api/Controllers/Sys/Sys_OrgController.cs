@@ -2,11 +2,11 @@
 {
     public class Sys_OrgController : BaseController
     {
-        private ISys_OrgBusiness Bus { get; set; }
+        private ISys_OrgBusiness _bus { get; set; }
 
         public Sys_OrgController(ISys_OrgBusiness bus)
         {
-            Bus = bus;
+            _bus = bus;
         }
 
         /// <summary>
@@ -17,7 +17,7 @@
         [HttpGet]
         public async Task<Sys_Org> GetAsync(string id)
         {
-            return await this.Bus.GetAsync(id);
+            return await this._bus.GetAsync(id);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@
         [HttpGet]
         public async Task<List<OrgTreeDto>> GetAllAsync(string name, string status)
         {
-            return await this.Bus.GetAllAsync(name, status);
+            return await this._bus.GetAllAsync(name, status);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@
             {
                 data.ParentId = null;
             }
-            return await this.Bus.AddOrUpdateAsync(data);
+            return await this._bus.AddOrUpdateAsync(data);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@
         [HttpDelete]
         public Task<int> DeleteAsync(List<string> ids)
         {
-            return this.Bus.DeleteAsync(ids);
+            return this._bus.DeleteAsync(ids);
         }
     }
 }
