@@ -60,6 +60,8 @@ const save = async () => {
   } catch (error) {
     return false
   }
+
+  Message.success('模拟保存成功')
 }
 </script>
 

@@ -7,7 +7,6 @@
       :bordered="false"
       :pagination="false"
       :row-selection="isBatchMode ? rowSelection : undefined"
-      @select="handleRowCheckFile"
     >
       <template #columns>
         <a-table-column title="名称">
@@ -69,32 +68,24 @@ import type { TableInstance, TableRowSelection } from '@arco-design/web-vue'
 
 interface Props {
   data?: FileItem[]
-  selectedFileIds?: string[]
   isBatchMode?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  selectedFileIds: () => [],
   data: () => [], // 文件数据
   isBatchMode: false // 是否是批量模式
 })
 
 const rowSelection: TableRowSelection = reactive({
   type: 'checkbox',
-  showCheckedAll: false
+  showCheckedAll: true
 })
 
-const emit = defineEmits(['click', 'right-menu-click', 'check'])
+const emit = defineEmits(['click', 'right-menu-click'])
 
 // 行点击事件
 const handleRowClick = (row: FileItem) => {
   emit('click', row)
-}
-
-//行选择事件
-const handleRowCheckFile = (rowKeys: (string | number)[], rowKey: string | number) => {
-  const data = props.data.find((x) => x.id == rowKey)
-  emit('check', data)
 }
 
 // 右键菜单点击事件

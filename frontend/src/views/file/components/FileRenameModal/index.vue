@@ -20,28 +20,22 @@
 
 <script setup lang="ts">
 import type { FileItem } from '@/apis'
-import { Message, type FormInstance, type Modal } from '@arco-design/web-vue'
-import { fileReName } from '@/apis'
+import type { FormInstance, Modal } from '@arco-design/web-vue'
 
 interface Props {
   fileInfo: FileItem
   onClose: Function
-  onRefresh: Function
 }
 const props = withDefaults(defineProps<Props>(), {})
 
 const visible = ref(false)
-//判断是否需要更新数据
-const refresh = ref(false)
-type Form = { name: string; id: string }
+type Form = { name: string }
 const form: Form = reactive({
-  name: '',
-  id: ''
+  name: ''
 })
 
 onMounted(() => {
   form.name = props.fileInfo?.name || ''
-  form.id = props.fileInfo.id
   visible.value = true
 })
 
@@ -50,24 +44,12 @@ const cancel = () => {
   props.onClose && props.onClose()
 }
 
+// 模拟接口
 const saveApi = (): Promise<boolean> => {
   return new Promise((resolve) =>
-    fileReName(form)
-      .then((res) => {
-        if (res.data) {
-          Message.success('文件重命名成功！')
-          refresh.value = res.data as boolean
-          resolve(refresh.value)
-        } else {
-          Message.error(`文件重命名失败：${res.message}`)
-          resolve(false)
-        }
-      })
-      .finally(() => {
-        cancel()
-        //通知刷新
-        props.onRefresh && props.onRefresh(refresh.value)
-      })
+    setTimeout(() => {
+      resolve(true)
+    }, 2000)
   )
 }
 

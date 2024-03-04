@@ -7,33 +7,33 @@
       <!-- 左侧区域 -->
       <a-space wrap>
         <a-dropdown>
-          <a-button type="primary" shape="round" v-hasPerm="['file:btn:upload']">
+          <a-button type="primary" shape="round">
             <template #icon><icon-upload /></template>
             <template #default>上传</template>
           </a-button>
           <template #content>
-            <a-doption @click="handleClickUpload(false)">
+            <a-doption>
               <template #icon><GiSvgIcon name="upload-file" /></template>
               <span>上传文件</span>
             </a-doption>
-            <a-doption @click="handleClickUpload(true)">
+            <a-doption>
               <template #icon><GiSvgIcon name="upload-folder" /></template>
               <span>上传文件夹</span>
             </a-doption>
           </template>
         </a-dropdown>
 
-        <!-- <a-input-group>
-          <a-select v-model="queryParam.type" style="width: 150px" placeholder="请选择">
-            <a-option v-for="item in fileTypeList" :key="item.value" :value="item.value">
+        <a-input-group>
+          <a-select style="width: 150px" placeholder="请选择">
+            <a-option v-for="item in fileTypeList" :key="item.value">
               <template #icon>
                 <component :is="item.icon" size="18" color="#999"></component>
               </template>
               <template #default>{{ item.name }}</template>
             </a-option>
           </a-select>
-        </a-input-group> -->
-        <a-input-search placeholder="请输入关键词..." v-model="queryParam.keyWord" allow-clear> </a-input-search>
+          <a-input-search placeholder="请输入关键词..." v-model="queryParam.keyWord" allow-clear> </a-input-search>
+        </a-input-group>
       </a-space>
 
       <!-- 右侧区域 -->
@@ -44,7 +44,6 @@
           type="primary"
           status="danger"
           @click="handleMulDelete"
-          v-hasPerm="['file:btn:delete']"
           ><template #icon><icon-delete /></template
         ></a-button>
         <a-button type="primary" @click="isBatchMode = !isBatchMode">
@@ -52,13 +51,6 @@
           <template #default>{{ isBatchMode ? '取消批量' : '批量操作' }}</template>
         </a-button>
         <a-button-group>
-          <a-tooltip content="刷新" position="bottom">
-            <a-button @click="getListData(queryParam)">
-              <template #icon>
-                <icon-refresh />
-              </template>
-            </a-button>
-          </a-tooltip>
           <a-tooltip content="传输列表" position="bottom">
             <a-button @click="loading = !loading">
               <template #icon>
@@ -103,7 +95,6 @@
         :data="fileList"
         :isBatchMode="isBatchMode"
         @click="handleClickFile"
-        @check="handleCheckFile"
         @right-menu-click="handleRightMenuClick"
       ></FileList>
 
@@ -114,30 +105,22 @@
 
 <script setup lang="ts">
 import { Message, Modal } from '@arco-design/web-vue'
-import { imageTypeList } from '@/constant/file'
+import { fileTypeList, imageTypeList } from '@/constant/file'
 import { useFileStore } from '@/stores'
 import { api as viewerApi } from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 import FileNavPath from './FileNavPath.vue'
 import FileGrid from './FileGrid.vue'
 import FileList from './FileList.vue'
-import { getFileList, deleteFile } from '@/apis'
+import { getFileList } from '@/apis'
 import type { FileItem, FileNav } from '@/apis'
 import { getFileUrl } from '@/utils/common'
 import {
   openFileMoveModal,
   openFileRenameModal,
   previewFileVideoModal,
-  previewFileAudioModal,
-  openFileUploadModal
+  previewFileAudioModal
 } from '../../components/index'
-
-interface Props {
-  fileType?: string
-}
-const props = withDefaults(defineProps<Props>(), {
-  fileType: () => '' // 文件导航数据
-})
 const router = useRouter()
 
 const fileStore = useFileStore()
@@ -145,9 +128,8 @@ const fileStore = useFileStore()
 const loading = ref(false)
 // 文件列表数据
 const fileList = ref<FileItem[]>([])
-const fileNavs = ref<FileNav[]>([{ name: '根目录', path: '/', dirID: '0' }])
-//文件上传目录默认为根目录
-const uploadDirPath = ref('')
+const fileType = ref('')
+const fileNavs = ref<FileNav[]>([{ name: '文件根目录', path: '/', dirID: '0' }])
 // 批量操作
 const isBatchMode = ref(false)
 const queryParam = reactive({ keyWord: '', type: '', isRootDir: true, dirId: '', status: '' })
@@ -165,30 +147,24 @@ const getListData = async (queryParam: object) => {
   }
 }
 //监听查询参数
-/* watch([queryParam, () => props.fileType], (newValue, oldValue) => {
-  //防止重复请求
-  queryParam.type = newValue[1]
-  getListData(queryParam)
-}) */
 watch(queryParam, () => {
+  console.log('触发查询')
   getListData(queryParam)
 })
-watch(
-  () => props.fileType,
-  (newValue) => {
-    queryParam.type = newValue
-  }
-)
 //加载文件列表数据
 onMounted(() => {
   getListData(queryParam)
 })
 
+onBeforeRouteUpdate((to) => {
+  if (!to.query.fileType) return
+  fileType.value = to.query.fileType?.toString()
+  getListData(queryParam)
+})
+
 const handleClickFileNav = (fielNav: FileNav) => {
   let fieldataNavs = fileNavs.value
-  uploadDirPath.value = fielNav.path
   if (fielNav.path == '/') {
-    uploadDirPath.value = ''
     queryParam.isRootDir = true
   }
   const index = fieldataNavs.findIndex((i) => i.path === fielNav.path)
@@ -202,21 +178,13 @@ const handleClickFileNav = (fielNav: FileNav) => {
   if (queryParam.isRootDir == false) queryParam.dirId = fielNav.dirID
 }
 
-//点击上传
-const handleClickUpload = (isDirectory: boolean) => {
-  openFileUploadModal(isDirectory, uploadDirPath.value).then((res) => {
-    if (res as boolean) getListData(queryParam)
-  })
-}
-
 // 点击文件
 const handleClickFile = (item: FileItem) => {
-  if (item.type === 'Other') Message.info('文件不支持预览')
+  Message.success(`点击了文件-${item.name}`)
   if (item.isDir) {
     if (item.filePath != '/') {
       queryParam.isRootDir = false
       queryParam.dirId = item.id
-      uploadDirPath.value = item.filePath
       //添加文件导航
       if (fileNavs.value.findIndex((i) => i.path === item.filePath) == -1)
         fileNavs.value.push({
@@ -233,11 +201,11 @@ const handleClickFile = (item: FileItem) => {
         .filter((i) => imageTypeList.includes(i.extendName))
         .map((a) => {
           return {
-            src: a.src || getFileUrl(a.filePath),
+            src: a.src,
             title: a.name
           }
         })
-      const index = imgList.findIndex((i) => i.src.includes(item.filePath))
+      const index = imgList.findIndex((i) => i.src.concat(item.filePath))
       if (imgList.length) {
         viewerApi({
           options: {
@@ -253,7 +221,6 @@ const handleClickFile = (item: FileItem) => {
     previewFileVideoModal(item)
   }
   if (item.extendName === 'mp3') {
-    //函数式调用组件
     previewFileAudioModal(item)
   }
 }
@@ -263,22 +230,16 @@ const handleCheckFile = (item: FileItem) => {
 }
 // 鼠标右键
 const handleRightMenuClick = (mode: string, fileInfo: FileItem) => {
+  Message.success('点击了' + mode)
   if (mode === 'delete') {
     Modal.warning({
       title: '提示',
       content: '是否删除该文件？',
-      hideCancel: false,
-      onOk: () => {
-        const ids = []
-        ids.push(fileInfo.id)
-        deleteFileSvc(ids)
-      }
+      hideCancel: false
     })
   }
   if (mode === 'rename') {
-    openFileRenameModal(fileInfo).then((res) => {
-      if (res as boolean) getListData(queryParam)
-    })
+    openFileRenameModal(fileInfo)
   }
   if (mode === 'move') {
     openFileMoveModal(fileInfo)
@@ -293,23 +254,7 @@ const handleMulDelete = () => {
   Modal.warning({
     title: '提示',
     content: '是否确认删除？',
-    hideCancel: false,
-    onOk: () => {
-      deleteFileSvc(fileStore.selectedFileIds)
-    }
-  })
-}
-const deleteFileSvc = (ids: (string | number)[]) => {
-  deleteFile(ids).then((res) => {
-    if (res && res.success) {
-      if (res.data > 0) {
-        getListData(queryParam)
-        Message.success('删除文件成功！')
-      }
-    } else {
-      Message.error(`删除文件失败：${res.message}`)
-    }
-    console.log(res)
+    hideCancel: false
   })
 }
 </script>

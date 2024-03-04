@@ -39,7 +39,7 @@
       <template #icon><GiSvgIcon name="menu-detail"></GiSvgIcon> </template>
       <span>详情</span>
     </GiOptionItem>
-    <GiOptionItem @click="onClickItem('delete')" v-hasPerm="['file:btn:delete']">
+    <GiOptionItem @click="onClickItem('delete')">
       <template #icon><GiSvgIcon name="menu-delete"></GiSvgIcon> </template>
       <span>删除</span>
     </GiOptionItem>

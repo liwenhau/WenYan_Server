@@ -4,7 +4,7 @@
       <section style="padding: 10px 14px 14px 14px">
         <div class="head" ref="audioHeadRef">
           <div class="name">
-            <icon-music :size="16" />
+            <icon-music :size="16" spin />
             <span>{{ props.fileInfo?.name }}.{{ props.fileInfo?.extendName }}</span>
           </div>
           <div class="close-icon" @click="close">

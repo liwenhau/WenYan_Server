@@ -130,7 +130,7 @@ const logout = () => {
 
 // 跳转项目地址
 const toGitPath = () => {
-  window.open('https://github.com/liwenhau/WenYan_Server')
+  window.open('https://gitee.com/lin0716/gi-demo')
 }
 </script>
 
