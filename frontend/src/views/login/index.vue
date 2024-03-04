@@ -77,7 +77,7 @@ const userStore = useUserStore()
 
 const form = reactive({
   username: 'admin',
-  password: ''
+  password: 'WenYan@2024'
 })
 
 const rules: FormInstance['rules'] = {

@@ -51,10 +51,6 @@
 
 <script setup lang="ts">
 import { fileTypeList, type fileTypeListItem } from '@/constant/file'
-
-const route = useRoute()
-const router = useRouter()
-
 const selectedKey = ref('0')
 const filePercentList = [
   { label: '图片', value: 0.7, color: '#4F6BF6' },
@@ -65,22 +61,12 @@ const filePercentList = [
 ]
 const showPercent = ref(false)
 
-// 监听路由变化
-watch(
-  () => route.query,
-  () => {
-    if (route.query.fileType) {
-      selectedKey.value = route.query.fileType as string
-    }
-  },
-  {
-    immediate: true
-  }
-)
+const emit = defineEmits(['click'])
 
 // 点击事件
 const onClickItem = (item: fileTypeListItem) => {
-  router.push({ path: '/file', query: { fileType: item.value } })
+  selectedKey.value = item.value as string
+  emit('click', item.value)
 }
 </script>
 

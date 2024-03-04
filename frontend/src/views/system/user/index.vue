@@ -286,7 +286,6 @@ const onOrgSelect = (keys: any) => {
 
 const onOrgSearch = async (value?: string) => {
   //deptList.value = [...cloneDeptList.value]
-  console.log(cloneDeptList)
   deptList.value = JSON.parse(JSON.stringify(cloneDeptList.value))
   //deptList.value = cloneDeptList.value
   deptList.value = dfsTree(deptList.value, value)
