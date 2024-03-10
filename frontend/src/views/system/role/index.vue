@@ -5,7 +5,7 @@
         <a-input v-model="queryParam.keyword" placeholder="输入角色名搜索" allow-clear style="width: 250px">
           <template #prefix><icon-search /></template>
         </a-input>
-        <a-button type="primary" @click="search">
+        <a-button type="primary" @click="search" v-hasPerm="['role:btn:query']">
           <template #icon><icon-search /></template>
           <span>查询</span>
         </a-button>
@@ -17,11 +17,11 @@
 
       <a-row>
         <a-space wrap>
-          <a-button type="primary" v-hasPerm="['role:btn.add']" @click="onAdd">
+          <a-button type="primary" v-hasPerm="['role:btn:add']" @click="onAdd">
             <template #icon><icon-plus /></template>
             <span>新增</span>
           </a-button>
-          <a-button type="primary" status="danger" v-hasPerm="['role:btn.delete']" @click="onMulDelete">
+          <a-button type="primary" status="danger" v-hasPerm="['role:btn:delete']" @click="onMulDelete">
             <template #icon><icon-delete /></template>
             <span>删除</span>
           </a-button>
@@ -49,7 +49,7 @@
               type="primary"
               size="mini"
               :disabled="record.disabled"
-              v-hasPerm="['role:btn.edit']"
+              v-hasPerm="['role:btn:edit']"
               @click="onEdit(record)"
             >
               <template #icon><icon-edit /></template>
@@ -60,7 +60,7 @@
               status="success"
               size="mini"
               :disabled="record.disabled"
-              v-hasPerm="['role:btn.permission']"
+              v-hasPerm="['role:btn:permission']"
               @click="onPerm(record)"
             >
               <template #icon><icon-safe /></template>
@@ -71,7 +71,7 @@
                 type="primary"
                 status="danger"
                 size="mini"
-                v-hasPerm="['role:btn.delete']"
+                v-hasPerm="['role:btn:delete']"
                 :disabled="record.disabled"
               >
                 <template #icon><icon-delete /></template>

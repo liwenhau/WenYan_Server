@@ -12,7 +12,7 @@
         <stop offset="1" :stop-color="endColor" stop-opacity="1" />
       </linearGradient>
     </defs>
-    <g opacity="1">
+    <g opacity="0.7">
       <use xlink:href="#path-1" fill="url(#linearGradient-2)" fill-opacity="1" />
     </g>
   </svg>
@@ -25,8 +25,8 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  startColor: '#28aff0',
-  endColor: '#120fc4'
+  startColor: 'rgb(171, 184, 195)',
+  endColor: 'rgb(171, 184, 195)'
 })
 </script>
 

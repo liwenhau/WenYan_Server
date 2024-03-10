@@ -1,11 +1,13 @@
 <template>
   <section class="system-logo" :class="{ collapsed: props.collapsed }" @click="toHome">
-    <img class="logo" src="@/assets/images/logo.gif" />
+    <WyLottie :data="logo_dark" class="logo"></WyLottie>
     <span class="system-name">WenYan Admin</span>
   </section>
 </template>
 
 <script setup lang="ts">
+import WyLottie from '@/components/WyLottie/index.vue'
+import { logo, logo_dark } from '@/assets/lotties'
 interface Props {
   collapsed?: boolean
 }
@@ -49,12 +51,13 @@ const toHome = () => {
     }
   }
   .logo {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 6px;
     transition: all 0.2s;
     overflow: hidden;
     flex-shrink: 0;
+    margin: 0px 0px 0px 0px;
   }
   .system-name {
     padding-left: 10px;

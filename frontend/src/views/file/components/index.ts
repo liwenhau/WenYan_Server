@@ -95,7 +95,7 @@ export function openFileUploadModal(isDirectory: boolean, uploadDir: string) {
       isDirectory: isDirectory,
       uploadDir: uploadDir,
       title: isDirectory ? '上传文件夹' : '上传文件',
-      onRefresh: (res) => {
+      onRefresh: (res: any) => {
         resolve(res)
       }
     })

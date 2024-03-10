@@ -32,12 +32,12 @@
         <a-col :xs="24" :md="18" :lg="18" :xl="18" :xxl="20">
           <a-row justify="space-between">
             <a-space wrap>
-              <a-button type="primary" @click="onAdd">
+              <a-button type="primary" @click="onAdd" v-hasPerm="['user:btn:add']">
                 <template #icon><icon-plus /></template>
                 <span>新增</span>
               </a-button>
 
-              <a-button type="primary" status="danger" @click="onMulDelete">
+              <a-button type="primary" status="danger" @click="onMulDelete" v-hasPerm="['user:btn:delete']">
                 <template #icon><icon-delete /></template>
                 <span>删除</span>
               </a-button>
@@ -52,7 +52,7 @@
                 <a-input v-model="queryParam.keyword" placeholder="输入用户名搜索" allow-clear style="max-width: 250px">
                 </a-input>
               </a-input-group>
-              <a-button type="primary" @click="search">
+              <a-button type="primary" @click="search" v-hasPerm="['user:btn:query']">
                 <template #icon><icon-search /></template>
                 <span>查询</span>
               </a-button>
@@ -97,12 +97,18 @@
             </template>
             <template #action="{ record }">
               <a-space>
-                <a-button type="primary" size="mini" @click="onEdit(record)">
+                <a-button type="primary" size="mini" @click="onEdit(record)" v-hasPerm="['user:btn:edit']">
                   <template #icon><icon-edit /></template>
                   <span>编辑</span>
                 </a-button>
                 <a-popconfirm type="warning" content="确定删除该用户吗?">
-                  <a-button type="primary" status="danger" size="mini" :disabled="record.disabled">
+                  <a-button
+                    type="primary"
+                    status="danger"
+                    size="mini"
+                    :disabled="record.disabled"
+                    v-hasPerm="['user:btn:delete']"
+                  >
                     <template #icon><icon-delete /></template>
                     <span>删除</span>
                   </a-button>

@@ -25,5 +25,6 @@ declare module 'vue' {
     ParentView: typeof import('./components/ParentView/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    WyLottie: typeof import('./components/WyLottie/index.vue')['default']
   }
 }

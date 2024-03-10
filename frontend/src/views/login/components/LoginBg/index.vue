@@ -1,22 +1,31 @@
 <template>
   <div class="login-bg">
     <div class="corner-top-box">
-      <CornerTop></CornerTop>
+      <CornerTop :start-color="startColor" :end-color="endColor"></CornerTop>
     </div>
     <div class="corner-bottom-box">
-      <CornerBottom></CornerBottom>
+      <CornerBottom :start-color="startColor" :end-color="endColor"></CornerBottom>
     </div>
 
-    <div class="fly bg-fly-circle1"></div>
+    <!--     <div class="fly bg-fly-circle1"></div>
     <div class="fly bg-fly-circle2"></div>
     <div class="fly bg-fly-circle3"></div>
-    <div class="fly bg-fly-circle4"></div>
+    <div class="fly bg-fly-circle4"></div> -->
   </div>
 </template>
 
 <script setup lang="ts">
+import { useAppStore } from '@/stores'
 import CornerTop from './CornerTop.vue'
 import CornerBottom from './CornerBottom.vue'
+const appStore = useAppStore()
+const themeColor = appStore.themeColor
+const startColor = ref('')
+const endColor = ref('')
+if (themeColor) {
+  startColor.value = themeColor
+  endColor.value = themeColor
+}
 </script>
 
 <style lang="scss" scoped>
@@ -54,7 +63,7 @@ import CornerBottom from './CornerBottom.vue'
 }
 
 .bg-fly-circle2 {
-  left: 15%;
+  left: 16%;
   bottom: 5%;
   width: 150px;
   height: 150px;

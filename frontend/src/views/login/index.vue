@@ -8,7 +8,7 @@
               width: '100%',
               height: '100%'
             }"
-            :auto-play="true"
+            :auto-play="{ interval: 5000 }"
             indicator-type="line"
             show-arrow="hover"
           >
@@ -29,9 +29,11 @@
             :label-col-style="{ display: 'none' }"
             :wrapper-col-style="{ flex: 1 }"
           >
-            <h3 class="login-form-title"><img class="logo" src="@/assets/images/logo.gif" /><span>Wen Yan</span></h3>
+            <h3 class="login-form-title">
+              <Logo></Logo>
+            </h3>
             <a-form-item field="username">
-              <a-input v-model="form.username" placeholder="账号 admin/user" size="large" allow-clear>
+              <a-input v-model="form.username" placeholder="账号" size="large" allow-clear>
                 <template #prefix><icon-user :stroke-width="1" :style="{ fontSize: '20px' }" /></template>
               </a-input>
             </a-form-item>
@@ -71,6 +73,7 @@ import LoginBg from './components/LoginBg/index.vue'
 import * as Regexp from '@/utils/regexp'
 import { isPhone } from '@/utils/common'
 import { Md5 } from 'ts-md5'
+import Logo from '@/layout/components/Asider/Logo.vue'
 defineOptions({ name: 'Login' })
 const router = useRouter()
 const userStore = useUserStore()
@@ -93,7 +96,6 @@ const getimg = async () => {
   images.value.push((await import('@/assets/svgs/1.svg')).default)
   images.value.push((await import('@/assets/svgs/2.svg')).default)
   images.value.push((await import('@/assets/svgs/3.svg')).default)
-  //images.value.push((await import('@/assets/svgs/4.svg')).default)
 }
 onMounted(() => {
   getimg()
@@ -148,9 +150,9 @@ const login = async () => {
   justify-content: center;
   align-items: center;
   .logo {
-    width: 32px;
-    height: 32px;
-    margin-right: 6px;
+    width: 50px;
+    height: 50px;
+    margin: 0px 10px 0px 0px;
   }
 }
 
@@ -173,6 +175,7 @@ const login = async () => {
     height: 380px;
     display: flex;
     z-index: 999;
+    border-radius: 5px;
     box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.08);
   }
 }
@@ -185,10 +188,10 @@ const login = async () => {
   align-items: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(60deg, rgb(var(--primary-6)), rgb(var(--primary-3)));
+  background: linear-gradient(60deg, rgb(var(--primary-6), 0.8), rgb(var(--primary-3), 0.8));
   .login-img {
     width: 100%;
-    height: 95%;
+    height: 100%;
   }
 }
 

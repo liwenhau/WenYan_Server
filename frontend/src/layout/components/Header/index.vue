@@ -76,6 +76,12 @@
                   </template>
                   <span>项目地址</span>
                 </a-doption>
+                <a-doption @click="handleChangePwd">
+                  <template #icon>
+                    <span class="doption-icon primary"><icon-unlock /></span>
+                  </template>
+                  <span>修改密码</span>
+                </a-doption>
                 <a-divider style="margin: 0" />
                 <a-doption @click="logout">
                   <template #icon>
@@ -91,6 +97,7 @@
     </a-row>
 
     <SettingDrawer ref="SettingDrawerRef"></SettingDrawer>
+    <ChangePassword ref="ChangePasswordRef"></ChangePassword>
   </a-layout-header>
 </template>
 
@@ -100,15 +107,16 @@ import { useAppStore, useUserStore } from '@/stores'
 import { useFullScreen } from '@/hooks'
 import SettingDrawer from './SettingDrawer.vue'
 import Message from './Message.vue'
+import ChangePassword from './ChangePassword.vue'
 import { isPhone } from '@/utils/common'
-
+import { Md5 } from 'ts-md5'
 defineOptions({ name: 'Header' })
 const router = useRouter()
 const appStore = useAppStore()
 const userStore = useUserStore()
 const { isFullScreen, toggleFullScreen } = useFullScreen()
 const SettingDrawerRef = ref<InstanceType<typeof SettingDrawer>>()
-
+const ChangePasswordRef = ref<InstanceType<typeof ChangePassword>>()
 // 跳转个人中心
 const toUser = () => {
   router.push('/multilevel/index/user')
@@ -131,6 +139,11 @@ const logout = () => {
 // 跳转项目地址
 const toGitPath = () => {
   window.open('https://github.com/liwenhau/WenYan_Server')
+}
+
+//修改密码
+const handleChangePwd = () => {
+  ChangePasswordRef.value?.open()
 }
 </script>
 

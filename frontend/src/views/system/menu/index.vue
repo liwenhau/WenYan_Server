@@ -30,7 +30,7 @@
             <a-option :value="'Enable'">启用</a-option>
             <a-option :value="'Disable'">禁用</a-option>
           </a-select>
-          <a-button type="primary" @click="search">
+          <a-button type="primary" @click="search" v-hasPerm="['menu:btn:query']">
             <template #icon><icon-search /></template>
             <span>搜索</span>
           </a-button>

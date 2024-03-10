@@ -9,7 +9,7 @@
           <a-option :value="'Enable'">正常</a-option>
           <a-option :value="'Disable'">禁用</a-option>
         </a-select>
-        <a-button type="primary" @click="search" v-hasPerm="['org:btn.query']">
+        <a-button type="primary" @click="search" v-hasPerm="['org:btn:query']">
           <template #icon><icon-search /></template>
           <span>搜索</span>
         </a-button>
@@ -21,11 +21,11 @@
 
       <a-row>
         <a-space wrap>
-          <a-button type="primary" @click="onAdd()" v-hasPerm="['org:btn.add']">
+          <a-button type="primary" @click="onAdd()" v-hasPerm="['org:btn:add']">
             <template #icon><icon-plus /></template>
             <span>新增</span>
           </a-button>
-          <a-button type="primary" status="danger" @click="onMulDelete" v-hasPerm="['org:btn.delete']">
+          <a-button type="primary" status="danger" @click="onMulDelete" v-hasPerm="['org:btn:delete']">
             <template #icon><icon-delete /></template>
             <span>删除</span>
           </a-button>
@@ -55,7 +55,7 @@
         </template>
         <template #action="{ record }">
           <a-space>
-            <a-button type="primary" size="mini" @click="onEdit(record)" v-hasPerm="['org:btn.edit']">
+            <a-button type="primary" size="mini" @click="onEdit(record)" v-hasPerm="['org:btn:edit']">
               <template #icon><icon-edit /></template>
               <span>编辑</span>
             </a-button>
@@ -65,13 +65,13 @@
               status="success"
               size="mini"
               @click="onAdd(record.id)"
-              v-hasPerm="['org:btn.add']"
+              v-hasPerm="['org:btn:add']"
             >
               <template #icon><icon-plus /></template>
               <span>新增</span>
             </a-button>
             <a-popconfirm type="warning" content="您确定要删除该项吗?" @ok="onDelete([record])">
-              <a-button type="primary" status="danger" size="mini" v-hasPerm="['org:btn.delete']">
+              <a-button type="primary" status="danger" size="mini" v-hasPerm="['org:btn:delete']">
                 <template #icon><icon-delete /></template>
                 <span>删除</span>
               </a-button>
