@@ -10,13 +10,13 @@
   >
     <a-form ref="FormRef" :model="form" :rules="rules" size="medium" auto-label-width>
       <a-form-item label="原密码" field="oldPassword">
-        <a-input-password v-model="form.oldPassword" placeholder="原密码"></a-input-password>
+        <a-input-password v-model="form.oldPassword" autocomplete="off" placeholder="原密码"></a-input-password>
       </a-form-item>
       <a-form-item label="新密码" field="newPassword" tooltip="密码为8-18位数字/字符/符号的组合">
-        <a-input-password v-model="form.newPassword" placeholder="新密码"></a-input-password>
+        <a-input-password v-model="form.newPassword" autocomplete="off" placeholder="新密码"></a-input-password>
       </a-form-item>
       <a-form-item label="确认密码" field="cnfPassword" tooltip="再次输入您的新密码">
-        <a-input-password v-model="form.cnfPassword" placeholder="确认密码"></a-input-password>
+        <a-input-password v-model="form.cnfPassword" autocomplete="off" placeholder="确认密码"></a-input-password>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -53,7 +53,6 @@ const rules = {
     { match: Regexp.Password, message: '输入密码格式不正确' },
     {
       validator: (value: any, cb: any) => {
-        console.log(value)
         if (value !== form.newPassword) {
           cb('两次密码不一致，请重新输入')
         } else {

@@ -241,7 +241,6 @@ const columns: TableColumnData[] = [
 const { deptList, getDeptList } = useDept({
   onSuccess: () => {
     cloneDeptList.value = JSON.parse(JSON.stringify(deptList.value))
-    console.log(cloneDeptList)
     nextTick(() => {
       TreeRef.value?.expandAll(true)
     })

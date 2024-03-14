@@ -33,10 +33,11 @@ import 'virtual:svg-icons-register'
 
 // 自定义指令
 import directives from './directives'
+/** 添加 passive，来阻止 touchstart 事件，让页面更加流畅*/
+//import 'default-passive-events'
 
 const app = createApp(App)
 Modal._context = app._context
-
 app.use(router)
 app.use(pinia)
 app.use(ArcoVue)

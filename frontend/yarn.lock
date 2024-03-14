@@ -1224,6 +1224,21 @@
     "@volar/language-core" "1.10.10"
     path-browserify "^1.0.1"
 
+"@vue-office/docx@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@vue-office/docx/-/docx-1.6.0.tgz#af451d20c24b9075da1506c6b7024e8846e173bd"
+  integrity sha512-OKEapOPq223uszA8mRSOWPhdfBchJa6sIqP46eMrMMe5RSUrG9m3QE/o0JBIaMgxDrtNd7aI9CvF2kDvb7G2hw==
+
+"@vue-office/excel@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@vue-office/excel/-/excel-1.7.0.tgz#36cc9e19819c9c70abba423a692c6658b197f5a0"
+  integrity sha512-ujN++L3XRjzdn744KUQ4SNkOVaLM2Z3+9W53xIZScnOVFBxrpK4PAc/jkT+t7tcW5IiCLOaw2mJ/ToF7ZjN5kQ==
+
+"@vue-office/pdf@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@vue-office/pdf/-/pdf-1.6.3.tgz#cb68114a36790813f2a352e3b44e207a15c5353b"
+  integrity sha512-AEbLEqeTknsvBVS0FO2QyT5b6apfV3+SnbxXmRdzI4Ok/uC8he0OZqUtyBOfi5MpD5Dn0ETuqc9nbl3yT3RQgg==
+
 "@vue/babel-helper-vue-transform-on@^1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@vue/babel-helper-vue-transform-on/-/babel-helper-vue-transform-on-1.1.5.tgz#a976486b21e108e545524fe41ffe3fc9bbc28c7f"

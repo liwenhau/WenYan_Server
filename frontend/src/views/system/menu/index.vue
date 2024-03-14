@@ -115,6 +115,7 @@ import { Drawer, Message, type TableColumnData, type TableInstance } from '@arco
 import { isExternal } from '@/utils/validate'
 import { isPhone } from '@/utils/common'
 import GiCodeView from '@/components/GiCodeView/index.vue'
+import { useWindowSize } from '@vueuse/core'
 defineOptions({ name: 'SystemMenu' })
 
 const AddMenuModalRef = ref<InstanceType<typeof AddMenuModal>>()
@@ -126,7 +127,7 @@ const onExpanded = () => {
   isExpanded.value = !isExpanded.value
   TableRef.value?.expandAll(isExpanded.value)
 }
-
+const { width: windowWidth } = useWindowSize()
 const form = reactive({ name: '', status: '' })
 const menuList = ref<MenuItem[]>([])
 //#region 列配置
@@ -266,7 +267,7 @@ const onViewCode = () => {
   Drawer.open({
     title: '数据结构',
     content: () => h(GiCodeView, { codeJson: JSON.stringify(menuList.value, null, '\t') }),
-    width: 560
+    width: isPhone() ? windowWidth.value : 500
   })
 }
 

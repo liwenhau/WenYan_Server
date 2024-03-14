@@ -114,7 +114,7 @@
 
 <script setup lang="ts">
 import { Message, Modal } from '@arco-design/web-vue'
-import { imageTypeList } from '@/constant/file'
+import { imageTypeList, previewOfficeFileType } from '@/constant/file'
 import { useFileStore } from '@/stores'
 import { api as viewerApi } from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
@@ -129,7 +129,8 @@ import {
   openFileRenameModal,
   previewFileVideoModal,
   previewFileAudioModal,
-  openFileUploadModal
+  openFileUploadModal,
+  previewOfficeFileDrawer
 } from '../../components/index'
 
 interface Props {
@@ -256,6 +257,10 @@ const handleClickFile = (item: FileItem) => {
     //函数式调用组件
     previewFileAudioModal(item)
   }
+  //预览文档
+  if (previewOfficeFileType.includes(item.extendName)) {
+    previewOfficeFileDrawer(item)
+  }
 }
 // 勾选文件
 const handleCheckFile = (item: FileItem) => {
@@ -309,7 +314,6 @@ const deleteFileSvc = (ids: (string | number)[]) => {
     } else {
       Message.error(`删除文件失败：${res.message}`)
     }
-    console.log(res)
   })
 }
 </script>

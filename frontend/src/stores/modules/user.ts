@@ -3,7 +3,7 @@ import { ref, reactive, computed } from 'vue'
 import { resetRouter } from '@/router'
 import { login as loginApi, logout as logoutApi, getUserInfo as getUserInfoApi } from '@/apis'
 import type { UserInfo } from '@/apis'
-import { setToken, clearToken, getToken } from '@/utils/auth'
+import { setToken, clearToken, getToken, setRefreshToken, getRefreshToken, clearRefreshToken } from '@/utils/auth'
 import { resetHasRouteFlag } from '@/router/permission'
 
 const storeSetup = () => {
@@ -25,6 +25,7 @@ const storeSetup = () => {
   const resetToken = () => {
     token.value = ''
     clearToken()
+    clearRefreshToken()
     resetHasRouteFlag()
   }
 
@@ -32,6 +33,7 @@ const storeSetup = () => {
   const login = async (params: any) => {
     const res = await loginApi(params)
     setToken(res.data.accessToken)
+    setRefreshToken(res.data.refreshToken)
     token.value = res.data.accessToken
   }
 
@@ -65,7 +67,20 @@ const storeSetup = () => {
     setToken(token.value)
   }
 
-  return { userInfo, name, avatar, token, roles, permissions, login, logout, getInfo, resetToken, editToken }
+  return {
+    userInfo,
+    name,
+    avatar,
+    token,
+    roles,
+    permissions,
+    login,
+    logout,
+    getInfo,
+    resetToken,
+    getRefreshToken,
+    editToken
+  }
 }
 
 export const useUserStore = defineStore('user', storeSetup, {

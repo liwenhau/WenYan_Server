@@ -26,5 +26,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     WyLottie: typeof import('./components/WyLottie/index.vue')['default']
+    WyPlayer: typeof import('./components/WyPlayer/index.vue')['default']
   }
 }

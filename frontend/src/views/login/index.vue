@@ -38,7 +38,7 @@
               </a-input>
             </a-form-item>
             <a-form-item field="password">
-              <a-input-password v-model="form.password" placeholder="密码" size="large" allow-clear>
+              <a-input-password v-model="form.password" autocomplete="off" placeholder="密码" size="large" allow-clear>
                 <template #prefix><icon-lock :stroke-width="1" :style="{ fontSize: '20px' }" /></template>
               </a-input-password>
             </a-form-item>

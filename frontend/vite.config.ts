@@ -93,6 +93,9 @@ export default defineConfig(({ command, mode }) => {
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
         }
       }
+    },
+    esbuild: {
+      target: 'esnext'
     }
   }
 })

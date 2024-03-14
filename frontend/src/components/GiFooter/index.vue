@@ -1,5 +1,5 @@
 <template>
-  <div class="gi-footer">Copyright {{ year }} Gi Admin Pro</div>
+  <div class="gi-footer">Copyright {{ year }} WenYan Admin</div>
 </template>
 
 <script lang="ts" setup>

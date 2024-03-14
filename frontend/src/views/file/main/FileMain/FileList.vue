@@ -34,8 +34,12 @@
           </template>
         </a-table-column>
         <a-table-column title="大小（kb）" data-index="sizeKb" :width="150"></a-table-column>
-        <a-table-column title="路径" data-index="filePath" :width="200"></a-table-column>
-        <a-table-column title="扩展名" data-index="extendName" :width="100"></a-table-column>
+        <a-table-column title="路径" data-index="filePath" :width="300"></a-table-column>
+        <a-table-column title="扩展名" data-index="extendName" :width="100">
+          <template #cell="{ record }">
+            <a-tag color="arcoblue" v-if="record.extendName">{{ record.extendName }}</a-tag>
+          </template>
+        </a-table-column>
         <a-table-column title="更改时间" data-index="modifyTime" :width="200"></a-table-column>
         <a-table-column title="操作" :width="120" align="center">
           <template #cell="{ record }">

@@ -2,9 +2,9 @@ import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosRequestHeaders, ResponseType } from 'axios'
 import { Message, Notification } from '@arco-design/web-vue'
 import { getToken } from '@/utils/auth'
+import { addRequest, refreshToken } from './refresh'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import router from '@/router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -58,24 +58,23 @@ http.interceptors.request.use(
 
 // 响应拦截器
 http.interceptors.response.use(
-  (response: AxiosResponse) => {
-    const { data } = response
+  async (response: AxiosResponse) => {
+    const { data, config } = response
     const { message, success, code } = data
-
     //处理Blob文件流
     if (response.request?.responseType === 'blob') {
       NProgress.done()
       return response
     }
+    //无感刷新，双token机制
     if (code === 401) {
       // token失效
       NProgress.done()
-      // Message.error('token失效')
-      router.replace('/login')
-      return Promise.reject(new Error('token失效'))
-    }
-
-    if (!success) {
+      new Promise((resolve) => {
+        addRequest({ config, resolve })
+      })
+      refreshToken()
+    } else if (!success) {
       NProgress.done()
       // 如果错误信息长度过长，使用 Notification 进行提示
       if (message.length <= 15) {
@@ -84,10 +83,10 @@ http.interceptors.response.use(
         Notification.error(message || '服务器端错误')
       }
       return Promise.reject(new Error('Error'))
+    } else {
+      NProgress.done()
+      return response
     }
-
-    NProgress.done()
-    return response
   },
   (error) => {
     NProgress.done()

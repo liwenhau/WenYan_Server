@@ -1,5 +1,6 @@
 <template>
   <a-modal
+    width="90%"
     draggable
     v-model:visible="visible"
     modal-animation-name="el-fade"

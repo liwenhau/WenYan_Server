@@ -1,5 +1,12 @@
 <template>
-  <a-drawer v-model:visible="visible" title="项目配置" width="300px" unmount-on-close :footer="false">
+  <a-drawer
+    v-model:visible="visible"
+    title="项目配置"
+    width="98%"
+    :drawer-style="{ maxWidth: '300px' }"
+    unmount-on-close
+    :footer="false"
+  >
     <a-space :size="15" direction="vertical" fill>
       <a-divider orientation="center">系统主题</a-divider>
       <a-row justify="center">

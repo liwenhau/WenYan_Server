@@ -9,6 +9,7 @@ import FileRenameModal from './FileRenameModal/index.vue'
 import FileUploadModal from './FileUploadModal/index.vue'
 import PreviewVideoModal from './PreviewVideoModal/index.vue'
 import PreviewAudioModal from './PreviewAudioModal/index.vue'
+import PreviewOfficeFileDrawer from './PreviewOfficeFileDrawer/index.vue'
 
 //
 function createModal<T extends { callback?: () => void }>(component: Component, options?: T) {
@@ -78,6 +79,14 @@ export function previewFileAudioModal(fileItem: FileItem) {
     callback: () => {
       fileAudioId = ''
     }
+  })
+}
+/**预览 文档文件 抽屉 */
+export function previewOfficeFileDrawer(fileItem: FileItem) {
+  return createModal<TFileOptions>(PreviewOfficeFileDrawer, {
+    fileInfo: fileItem,
+    // 关闭的回调
+    callback: () => {}
   })
 }
 
