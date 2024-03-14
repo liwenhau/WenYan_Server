@@ -58,7 +58,9 @@ namespace WenYan.Service.Api
             var res = new LoginResM();
             res.AccessToken = CreateToken(user, jwtOption);
             res.RefreshToken = CreateRefreshToken();
-            await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);
+            //登录时更新刷新令牌时间
+            user.RefreshTokenExpiryTime = DateTime.Now.AddHours(jwtOption.RefreshHours);
+            await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken);
             return res;
         }
 
@@ -69,40 +71,53 @@ namespace WenYan.Service.Api
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<LoginResM> RefreshTokenAsync(LoginResM token)
+        public async Task<AjaxResult<LoginResM>> RefreshTokenAsync(LoginResM token)
         {
-            var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret));
-            //根据过期token获取SecurityToken
-            var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token.AccessToken, new TokenValidationParameters()
+            var result = new AjaxResult<LoginResM>() { Code = 200, Message = "请求成功", Success = true };
+            try
             {
-                ClockSkew = TimeSpan.Zero,
-                ValidateIssuerSigningKey = true,//验证密钥
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret)),
-                ValidateLifetime = false, //验证token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
-                ValidateIssuer = false,//验证颁发者
-                ValidateAudience = false//验证使用者
-            }, out SecurityToken validateToken);
+                var jwtOption = this.Config.GetSection("JwtAuth").Get<JwtOptions>();
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret));
+                //根据过期token获取SecurityToken
+                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token.AccessToken, new TokenValidationParameters()
+                {
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateIssuerSigningKey = true,//验证密钥
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Secret)),
+                    ValidateLifetime = false, //验证token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
+                    ValidateIssuer = false,//验证颁发者
+                    ValidateAudience = false//验证使用者
+                }, out SecurityToken validateToken);
 
-            if (validateToken is not JwtSecurityToken jwtSecurityToken ||
-                                     !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Token不合法！");
+                if (validateToken is not JwtSecurityToken jwtSecurityToken ||
+                                         !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new Exception("Token不合法！");
+                }
+                //判断RefreshToken是该用户生成
+                var userId = claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
+                _ = userId ?? throw new SecurityTokenException("过期Token信息不存在！");
+                var user = await this.UserBus.GetAsync(x => x.Id == userId);
+                if (user is null || user.RefreshToken != token.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                {
+                    throw new Exception("用户不存在或刷新令牌无效！");
+                }
+                //生成新的Token和RefreshToken
+                var res = new LoginResM();
+                res.AccessToken = CreateToken(user, jwtOption);
+                res.RefreshToken = CreateRefreshToken();
+                await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken);
+                //4000 刷新令牌成功
+                result.Code = 4000;
+                result.Data = res;
             }
-            //判断RefreshToken是该用户生成
-            var userId = claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
-            _ = userId ?? throw new SecurityTokenException("过期Token信息不存在！");
-            var user = await this.UserBus.GetAsync(x => x.Id == userId);
-            if (user is null || user.RefreshToken != token.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            catch (Exception ex)
             {
-                throw new("用户不存在或RefreshToken无效！");
+                //4001 刷新令牌过期
+                result.Code = 4001;
+                result.Message = ex.Message;
             }
-            //生成新的Token和RefreshToken
-            var res = new LoginResM();
-            res.AccessToken = CreateToken(user, jwtOption);
-            res.RefreshToken = CreateRefreshToken();
-            await this.UserBus.SaveRefreshTokenAsync(user, res.RefreshToken, jwtOption.RefreshHours);
-            return res;
+            return result;
         }
 
         /// <summary>

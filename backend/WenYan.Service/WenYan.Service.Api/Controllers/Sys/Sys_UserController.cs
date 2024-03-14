@@ -64,5 +64,16 @@
         {
             return this._bus.DeleteAsync(ids);
         }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<int> ChangePasswordAsync(ChangePwdDto data)
+        {
+            return await this._bus.ChangePasswordAsync(data);
+        }
     }
 }

@@ -14,9 +14,8 @@
         /// </summary>
         /// <param name="data">用户</param>
         /// <param name="refreshToken">刷新Token</param>
-        /// <param name="refreshHours">刷新Token过期时间</param>
         /// <returns></returns>
-        Task<int> SaveRefreshTokenAsync(Sys_User data,string refreshToken, int refreshHours);
+        Task<int> SaveRefreshTokenAsync(Sys_User data,string refreshToken);
 
         /// <summary>
         ///  获取用户信息
@@ -54,5 +53,11 @@
         /// <param name="input"></param>
         /// <returns></returns>
         Task<int> AddOrUpdateAsync(UserInputDto input);
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        Task<int> ChangePasswordAsync(ChangePwdDto data);
     }
 }

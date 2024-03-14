@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
+using System.Net;
 using System.Text;
 
 namespace WenYan.Service.Api
@@ -48,6 +49,25 @@ namespace WenYan.Service.Api
                     ValidateLifetime = true, //验证token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
                     ValidateIssuer = false,//验证颁发者
                     ValidateAudience = false//验证使用者
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    //401 自定义返回结果 https://stackoverflow.com/questions/48649717/addjwtbearer-onauthenticationfailed-return-custom-error
+                    OnChallenge = context =>
+                    {
+                        //终止.Net默认的返回类型和数据结果
+                        context.HandleResponse();
+                        //自定义数据返回结果
+                        var result = new AjaxResult()
+                        {
+                            Code = (int)HttpStatusCode.Unauthorized,
+                            Message = "身份验证失败！",
+                            Success = false
+                        };
+                        context.Response.ContentType = "application/json";
+                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                        return context.Response.WriteAsync(result.ToJson());
+                    }
                 };
             });
             return services;

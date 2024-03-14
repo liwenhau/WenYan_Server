@@ -3,14 +3,19 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <!--隐式Using自动在构建的项目类型添加通用的全局using指令-->
     <ImplicitUsings>enable</ImplicitUsings>
-    <DatabaseType>Sqlite</DatabaseType>
+    <DatabaseType>MySql</DatabaseType>
     <UserSecretsId>00000000-0000-0000-0000-00000000000</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   
   <!--条件编译-->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DatabaseType);</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DatabaseType)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Files\**" />
@@ -25,6 +30,7 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -45,6 +51,12 @@
     <ProjectReference Include="..\WenYan.Service.Entity\WenYan.Service.Entity.csproj" />
     <ProjectReference Include="..\WenYan.Service.Business\WenYan.Service.Business.csproj" />
     <ProjectReference Include="..\WenYan.Service.Util\WenYan.Service.Util.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

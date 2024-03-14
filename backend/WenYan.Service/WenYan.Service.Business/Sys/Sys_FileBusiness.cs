@@ -77,7 +77,7 @@ namespace WenYan.Service.Business
             {
                 var opSvc = this._svcProvider.GetRequiredService<IOperator>();
                 fileInfo.Name = data.Name;
-                fileInfo.ModifyUserId = opSvc.UserId; 
+                fileInfo.ModifyUserId = opSvc.UserId;
                 fileInfo.ModifyTime = DateTime.Now;
                 await this.UpdateAsync(fileInfo);
                 return true;
@@ -87,6 +87,7 @@ namespace WenYan.Service.Business
                 throw new Exception($"没有找到文件信息");
             }
         }
+
         public override async Task<int> DeleteAsync(List<string> ids)
         {
             int count = 0;
@@ -102,14 +103,24 @@ namespace WenYan.Service.Business
                 }
                 else
                 {
-                    if (file == null || !file.Exists
-                        )
+                    if (file == null || !file.Exists)
                     {
                         _logger.LogError($"删除物理文件发生异常,文件名：{item.Name}，文件不存在");
                         continue;
                     }
-                    var fileInfo = new FileInfo(file.PhysicalPath);
-                    fileInfo.Delete();
+                    try
+                    {
+                        var fileInfo = new FileInfo(file.PhysicalPath);
+                        fileInfo.Attributes = FileAttributes.Normal;
+                        fileInfo.Delete();
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError($"删除物理文件发生异常,文件名：{item.Name}，异常信息：{ex.Message}");
+                        throw new Exception($"文件：{item.Name}，正在被使用，请稍后删除");
+                    }
+                    
+
                 }
                 count += await base.DeleteAsync(item);
             }

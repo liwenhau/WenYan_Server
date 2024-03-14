@@ -177,15 +177,13 @@
                 }
                 else
                 {
-                    Console.WriteLine($"{filepath},路径不存在");
-                    return false;
+                    throw new Exception($"{filepath},路径不存在");
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"删除文件路径发生异常，文件路径:{filepath}，异常信息：{ex.Message}");
-                return false;
+                throw new Exception($"删除文件路径发生异常，文件路径:{filepath}，异常信息：{ex.Message}");            
             }
         }
     }

@@ -24,7 +24,7 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<List<UserMenuDto>> GetAllAsync(string name,string status)
+        public async Task<List<UserMenuDto>> GetAllAsync(string name, string status)
         {
             return await this._bus.GetAllAsync(name, status);
         }

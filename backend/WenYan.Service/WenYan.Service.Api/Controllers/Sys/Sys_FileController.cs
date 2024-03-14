@@ -144,7 +144,10 @@ namespace WenYan.Service.Api.Controllers
                 throw new Exception($"文件不存在，文件路径:{path}");
             this._contentTypeProvider.TryGetContentType(fileInfo.PhysicalPath, out string contentType);
             if (contentType == null) throw new Exception($"文件没有匹配到对应的MIME类型，文件路径：{fileInfo.PhysicalPath}");
-            return new FileStreamResult(fileInfo.CreateReadStream(), contentType);
+            var fileStream = new FileStreamResult(fileInfo.CreateReadStream(), contentType);
+            //启用对按范围返回文件流的支持
+            fileStream.EnableRangeProcessing = true;
+            return fileStream;
         }
 
         /// <summary>
@@ -165,7 +168,10 @@ namespace WenYan.Service.Api.Controllers
                 throw new Exception($"文件不存在，文件路径:{fileData.FilePath}");
             this._contentTypeProvider.TryGetContentType(fileInfo.PhysicalPath, out string contentType);
             if (contentType == null) throw new Exception($"文件没有匹配到对应的MIME类型，文件路径：{fileInfo.PhysicalPath}");
-            return new FileStreamResult(fileInfo.CreateReadStream(), contentType);
+            var fileStream = new FileStreamResult(fileInfo.CreateReadStream(), contentType);
+            //启用对按范围返回文件流的支持
+            fileStream.EnableRangeProcessing = true;
+            return fileStream;
         }
         /// <summary>
         /// 批量删除数据

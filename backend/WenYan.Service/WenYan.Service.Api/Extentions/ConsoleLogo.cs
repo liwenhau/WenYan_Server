@@ -3,10 +3,12 @@
     /// <summary>
     /// 打印Ascll编码Log
     /// </summary>
-    public static class PrintLogToAscll
+    public static class ConsoleLogo
     {
-        public static void PrintLog()
+        //打印Logo
+        public static void PrintLog(this IServiceCollection services)
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(@"
       ___           ___           ___                                ___           ___     
      /\  \         /\__\         /\  \                              /\  \         /\  \    

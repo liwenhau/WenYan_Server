@@ -45,6 +45,10 @@
             );
 
             builder.HasData(
+               new Sys_RoleMenu() { RoleId = "1", MenuId = "200" },
+                new Sys_RoleMenu() { RoleId = "1", MenuId = "201" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "2010" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "2011" },
                 new Sys_RoleMenu() { RoleId = "1", MenuId = "900" },
                 new Sys_RoleMenu() { RoleId = "1", MenuId = "901" },
                     new Sys_RoleMenu() { RoleId = "1", MenuId = "9010" },
@@ -52,7 +56,22 @@
                     new Sys_RoleMenu() { RoleId = "1", MenuId = "9012" },
                     new Sys_RoleMenu() { RoleId = "1", MenuId = "9013" },
                 new Sys_RoleMenu() { RoleId = "1", MenuId = "902" },
-                new Sys_RoleMenu() { RoleId = "1", MenuId = "903" }
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9020" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9021" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9022" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9023" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9024" },
+                new Sys_RoleMenu() { RoleId = "1", MenuId = "903" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9030" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9031" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9032" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9033" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9034" },
+                new Sys_RoleMenu() { RoleId = "1", MenuId = "904" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9040" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9041" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9042" },
+                    new Sys_RoleMenu() { RoleId = "1", MenuId = "9043" }
             );
             #endregion
         }

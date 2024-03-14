@@ -2,11 +2,11 @@
 {
     public class Sys_UserBusiness : BusRepository<Sys_User>, ISys_UserBusiness
     {
-        private IServiceProvider SvcProvider { get; set; }
+        private IServiceProvider _svcProvider { get; set; }
         public Sys_UserBusiness(GDbContext context, IServiceProvider svcProvider)
             : base(context)
         {
-            SvcProvider = svcProvider;
+            _svcProvider = svcProvider;
         }
 
         /// <summary>
@@ -32,12 +32,11 @@
         /// <param name="refreshToken"></param>
         /// <param name="refreshHours"></param>
         /// <returns></returns>
-        public async Task<int> SaveRefreshTokenAsync(Sys_User data, string refreshToken, int refreshHours)
+        public async Task<int> SaveRefreshTokenAsync(Sys_User data, string refreshToken)
         {
-            var opSvc = this.SvcProvider.GetRequiredService<IOperator>();
+            var opSvc = this._svcProvider.GetRequiredService<IOperator>();
             //更新RefreshToken
             data.RefreshToken = refreshToken;
-            data.RefreshTokenExpiryTime = DateTime.Now.AddHours(refreshHours);
             data.ModifyTime = DateTime.Now;
             data.ModifyUserId = opSvc.UserId;
             return await this.UpdateAsync(data);
@@ -51,6 +50,7 @@
         public async Task<UserInfoM> GetUserInfoAsync(string userId)
         {
             var user = await this.GetAsync(userId);
+            if (user == null) throw new Exception("用户不存在");
             var roleIds = await this.GetQueryable<Sys_UserRole>(true)
                 .Where(w => w.UserId == userId)
                 .Select(s => s.RoleId)
@@ -154,7 +154,7 @@
                 queryable = queryable.Where(x => x.Status == search.Status);
             if (search.Orgs.Count() > 0)
             {
-                var orgBus = this.SvcProvider.GetRequiredService<ISys_OrgBusiness>();
+                var orgBus = this._svcProvider.GetRequiredService<ISys_OrgBusiness>();
                 var orgIds = await orgBus.GetQueryable()
                     .Where(x => search.Orgs.Contains(x.ParentId))
                     .Select(x => x.Id)
@@ -218,8 +218,32 @@
             else
                 await this.AddAsync(entity);
 
-            var userRoleSvc = this.SvcProvider.GetRequiredService<ISys_UserRoleBusiness>();
+            var userRoleSvc = this._svcProvider.GetRequiredService<ISys_UserRoleBusiness>();
             return await userRoleSvc.AddAsync(entity.Id, entity.RoleIds);
+        }
+
+        public async Task<int> ChangePasswordAsync(ChangePwdDto data)
+        {
+            var user = await this.GetAsync(data.Id, true);
+            if (user != null)
+            {
+                if (user.Password == data.OldPassword)
+                {
+                    var opSvc = this._svcProvider.GetRequiredService<IOperator>();
+                    user.Password = data.NewPassword;
+                    user.ModifyTime = DateTime.UtcNow;
+                    user.ModifyUserId = opSvc.UserId;
+                    return await this.UpdateAsync(user);
+                }
+                else
+                {
+                    throw new Exception("原密码不正确，请检查");
+                }
+            }
+            else
+            {
+                throw new Exception("用户不存在");
+            }
         }
     }
 }

@@ -19,8 +19,8 @@ builder.Services.AddDbContext<GDbContext>(options =>
                             options.LogTo((str) => { Console.WriteLine(str.Replace("[", "").Replace("]", "")); }, minimumLevel: LogLevel.Information);
 #endif
 #if MySql
-                            options.UseMySql(connString, ServerVersion.AutoDetect(connString));
-                            options.LogTo((str) => { Console.WriteLine(str.Replace("`", "")); }, minimumLevel: LogLevel.Information);
+    options.UseMySql(connString, ServerVersion.AutoDetect(connString));
+    options.LogTo((str) => { Console.WriteLine(str.Replace("`", "")); }, minimumLevel: LogLevel.Information);
 #endif
 #if Oracle
                             options.UseOracle(connString);
@@ -78,6 +78,8 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
     //不允许额外符号
     options.JsonSerializerOptions.AllowTrailingCommas = false;
+    //自定义日期格式转换 请求时解析
+    options.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter("yyyy-MM-dd HH:mm:ss.fff"));
 });
 //swagger
 builder.Services.AddSwashbuckle();
@@ -85,12 +87,17 @@ builder.Services.AddSwashbuckle();
 builder.Services.AddJWT(builder.Configuration);
 //文件服务
 builder.Services.AddFileServer(builder.Configuration, builder.Environment);
+//控制台Log
+builder.Services.PrintLog();
 //Serilog
 builder.Host.AddSerilog();
 #endregion
+
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 #region 中间件
+//app.UseException();
 //允许跨域
 app.UseCors(options =>
 {
@@ -99,6 +106,7 @@ app.UseCors(options =>
     options.AllowAnyMethod();
     options.DisallowCredentials();
 });
+
 //添加serilog请求日志
 app.UseSerilogRequestLogging((options) =>
 {
@@ -109,10 +117,10 @@ app.UseSerilogRequestLogging((options) =>
     //自定义请求日志消息模板
     options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms IP {IP}";
 });
+
 //生产环境不显示swagger页面
 if (!app.Environment.IsProduction())
 {
-    PrintLogToAscll.PrintLog();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -120,13 +128,16 @@ if (!app.Environment.IsProduction())
         options.DefaultModelsExpandDepth(0);
     });
 }
+
 if (app.Environment.IsDevelopment())
 {
     //开发人员错误页面
     app.UseDeveloperExceptionPage();
 }
+
 //压缩响应中间件
 app.UseResponseCompression();
+
 //响应缓存中间件
 app.UseResponseCaching();
 
