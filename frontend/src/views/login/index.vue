@@ -32,6 +32,7 @@
             <h3 class="login-form-title">
               <Logo></Logo>
             </h3>
+            <a-form-item><WyTyped :data="textdata" :speed="150" loop></WyTyped></a-form-item>
             <a-form-item field="username">
               <a-input v-model="form.username" placeholder="账号" size="large" allow-clear>
                 <template #prefix><icon-user :stroke-width="1" :style="{ fontSize: '20px' }" /></template>
@@ -74,6 +75,7 @@ import * as Regexp from '@/utils/regexp'
 import { isPhone } from '@/utils/common'
 import { Md5 } from 'ts-md5'
 import Logo from '@/layout/components/Asider/Logo.vue'
+import WyTyped from '@/components/WyTyped/index.vue'
 defineOptions({ name: 'Login' })
 const router = useRouter()
 const userStore = useUserStore()
@@ -100,6 +102,11 @@ const getimg = async () => {
 onMounted(() => {
   getimg()
 })
+const textdata = [
+  '<strong>己所不欲🦖，勿施于人🐳</strong>',
+  '<strong>大梦一场终须醒，神不渡我我自渡</strong>',
+  '<strong>道阻且长，行则将至。</strong>'
+]
 // 记住密码
 const checked = ref(false)
 // 登录加载
@@ -171,8 +178,8 @@ const login = async () => {
   background-color: var(--color-bg-5);
   &-box {
     width: 86%;
-    max-width: 800px;
-    height: 380px;
+    max-width: 850px;
+    height: 430px;
     display: flex;
     z-index: 999;
     border-radius: 5px;

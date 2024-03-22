@@ -1,9 +1,7 @@
 <template>
-  <div class="data-chart">
-    <a-card title="数据图表" :bordered="false">
-      <GiChart height="289px" :option="chartOption"></GiChart>
-    </a-card>
-  </div>
+  <a-card title="数据图表" :bordered="false" class="gi_card_title">
+    <GiChart height="289px" :option="option"></GiChart>
+  </a-card>
 </template>
 
 <script lang="ts" setup>
@@ -28,7 +26,7 @@ const { loading, setLoading } = useLoading(true)
 const xAxis = ref<string[]>([])
 const chartsData = ref<number[]>([])
 const graphicElements = ref([graphicFactory({ left: '2.6%' }), graphicFactory({ right: 0 })])
-const { chartOption } = useChart(() => {
+const { option } = useChart(() => {
   return {
     grid: {
       left: '40',

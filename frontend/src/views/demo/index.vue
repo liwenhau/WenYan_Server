@@ -110,7 +110,7 @@ const menuList = [
     flex: 1;
     height: 100%;
     padding: $padding;
-    background: var(--color-bg-1);
+    //background: var(--color-bg-1);
     margin-left: $margin;
     border-radius: $radius-box;
     box-sizing: border-box;
@@ -119,3 +119,4 @@ const menuList = [
   }
 }
 </style>
+../monitor/index.vue

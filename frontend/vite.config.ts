@@ -68,6 +68,10 @@ export default defineConfig(({ command, mode }) => {
           secure: false, // 支持https
           rewrite: (path) => path.replace(/^\/api/, '/api')
         }
+        /* '/chart': {
+          target: 'ws://localhost:5089', // 后台服务器地址
+          ws: true
+        } */
       }
     },
     // 构建

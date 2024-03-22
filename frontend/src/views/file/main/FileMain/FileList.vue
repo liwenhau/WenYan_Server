@@ -10,7 +10,7 @@
       @select="handleRowCheckFile"
     >
       <template #columns>
-        <a-table-column title="名称">
+        <a-table-column title="名称" :width="400">
           <template #cell="{ record }">
             <a-trigger
               trigger="contextMenu"

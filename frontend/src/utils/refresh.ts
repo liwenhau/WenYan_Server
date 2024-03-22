@@ -35,7 +35,6 @@ export const refreshToken = () => {
         refreshToken: getRefreshToken()
       })
       .then((res) => {
-        console.log(res)
         if (res.code === 4001) {
           //刷新令牌失效
           clearToken()

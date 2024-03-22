@@ -1,5 +1,5 @@
 <template>
-  <GiChart height="50px" :option="chartOption"></GiChart>
+  <GiChart height="50px" :option="option"></GiChart>
 </template>
 
 <script lang="ts" setup>
@@ -24,7 +24,7 @@ const { loading, setLoading } = useLoading(true)
 const xAxis = ref<string[]>([])
 const chartsData = ref<number[]>([])
 const graphicElements = ref([graphicFactory({ left: '2.6%' }), graphicFactory({ right: 0 })])
-const { chartOption } = useChart(() => {
+const { option } = useChart(() => {
   return {
     grid: {
       left: '2.6%',

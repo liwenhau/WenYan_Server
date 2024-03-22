@@ -5,7 +5,6 @@ import { constantRoutes } from '@/router'
 import Layout from '@/layout/index.vue'
 import ParentView from '@/components/ParentView/index.vue'
 import { getUserAsyncRoutes } from '@/apis'
-import Has from '@/utils/has'
 import { mapTree } from 'xe-utils'
 // 匹配 views 里面所有的.vue文件
 const modules = import.meta.glob('@/views/**/*.vue')

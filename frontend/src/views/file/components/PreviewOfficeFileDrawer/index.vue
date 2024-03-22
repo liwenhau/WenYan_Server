@@ -82,14 +82,14 @@ onMounted(() => {
   extendName.value = props.fileInfo.extendName
   fileIconName.value = extendName.value == 'docx' ? 'file-wps' : extendName.value === 'xlsx' ? 'file-excel' : 'file-pdf'
 })
-//全屏
+/** 全屏 */
 const handleFullscreen = () => {
   if (isFullscreen.value) return
   drawerWidth.value = windowWidth.value
   renderingComponents()
   isFullscreen.value = true
 }
-//推出全屏
+/** 退出全屏 */
 const handleFullscreenExit = () => {
   if (!isFullscreen.value) return
   drawerWidth.value = windowWidth.value / 2
