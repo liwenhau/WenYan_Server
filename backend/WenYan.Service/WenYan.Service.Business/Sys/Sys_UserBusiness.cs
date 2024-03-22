@@ -1,6 +1,6 @@
 ﻿namespace WenYan.Service.Business
 {
-    public class Sys_UserBusiness : BusRepository<Sys_User>, ISys_UserBusiness
+    public class Sys_UserBusiness : BusRepository<Sys_User>, ISys_UserBusiness, IScopedDependency
     {
         private IServiceProvider _svcProvider { get; set; }
         public Sys_UserBusiness(GDbContext context, IServiceProvider svcProvider)

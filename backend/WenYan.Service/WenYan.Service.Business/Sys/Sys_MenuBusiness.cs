@@ -1,6 +1,6 @@
 ﻿namespace WenYan.Service.Business
 {
-    public class Sys_MenuBusiness : BusRepository<Sys_Menu>, ISys_MenuBusiness
+    public class Sys_MenuBusiness : BusRepository<Sys_Menu>, ISys_MenuBusiness, IScopedDependency
     {
         public Sys_MenuBusiness(GDbContext context) : base(context)
         {

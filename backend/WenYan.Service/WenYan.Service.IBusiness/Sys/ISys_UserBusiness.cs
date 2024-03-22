@@ -1,6 +1,6 @@
 ﻿namespace WenYan.Service.IBusiness
 {
-    public interface ISys_UserBusiness: IBusRepository<Sys_User>,IScopedDependency
+    public interface ISys_UserBusiness: IBusRepository<Sys_User>
     {
         /// <summary>
         /// 登录

@@ -5,7 +5,7 @@ namespace WenYan.Service.Api
     /// <summary>
     /// 当前系统操作员
     /// </summary>
-    public class Operator : IOperator
+    public class Operator : IOperator, IScopedDependency
     {
         public string UserId { get; }
         private IServiceProvider ServiceProvider { get; set; }

@@ -43,19 +43,9 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddResponseCaching();
 //压缩响应中间件
 builder.Services.AddResponseCompression();
-//雪花算法 单例注入
-builder.Services.AddSingleton<IIdService, IdService>();
-//当前用户
-builder.Services.AddScoped<IOperator, Operator>();
-
-builder.Services.AddScoped<ISys_UserBusiness, Sys_UserBusiness>();
-builder.Services.AddScoped<ISys_MenuBusiness, Sys_MenuBusiness>();
-builder.Services.AddScoped<ISys_RoleBusiness, Sys_RoleBusiness>();
-builder.Services.AddScoped<ISys_OrgBusiness, Sys_OrgBusiness>();
-builder.Services.AddScoped<ISys_RoleMenuBusiness, Sys_RoleMenuBusiness>();
-builder.Services.AddScoped<ISys_UserRoleBusiness, Sys_UserRoleBusiness>();
+//注册文件服务
 builder.Services.AddScoped<ISys_FileBusiness, Sys_FileBusiness>();
-
+builder.Services.AddHostedService<MonitoringSystemService>();
 builder.Services.AddControllers(options =>
 {
     //缓存全局配置
@@ -79,7 +69,7 @@ builder.Services.AddControllers(options =>
     //不允许额外符号
     options.JsonSerializerOptions.AllowTrailingCommas = false;
     //自定义日期格式转换 请求时解析
-    options.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter("yyyy-MM-dd HH:mm:ss.fff"));
+    options.JsonSerializerOptions.Converters.Add(new DateTimeJsonConverter("yyyy-MM-dd HH:mm:ss"));
 });
 //swagger
 builder.Services.AddSwashbuckle();
@@ -91,6 +81,10 @@ builder.Services.AddFileServer(builder.Configuration, builder.Environment);
 builder.Services.PrintLog();
 //Serilog
 builder.Host.AddSerilog();
+//动态注入服务
+builder.Services.AddDynamicinjectionService();
+//即时消息SignalR注册
+builder.Services.AddSignalRSercice();
 #endregion
 
 var app = builder.Build();
@@ -98,6 +92,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 #region 中间件
 //app.UseException();
+
 //允许跨域
 app.UseCors(options =>
 {
@@ -145,7 +140,11 @@ app.UseResponseCaching();
 app.UseAuthentication();
 //授权
 app.UseAuthorization();
-
+app.MapHub<ChartHub>("/chart").RequireCors(t =>
+                                    t.SetIsOriginAllowed((host) => true)
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader()
+                                    .AllowCredentials());
 app.MapControllers().RequireAuthorization();
 #endregion
 

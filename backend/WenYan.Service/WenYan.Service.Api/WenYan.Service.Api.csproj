@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <!--隐式Using自动在构建的项目类型添加通用的全局using指令-->
     <ImplicitUsings>enable</ImplicitUsings>
-    <DatabaseType>MySql</DatabaseType>
+    <DatabaseType>Sqlite</DatabaseType>
     <UserSecretsId>00000000-0000-0000-0000-00000000000</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
@@ -32,7 +32,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
   <!--全局Using引用-->

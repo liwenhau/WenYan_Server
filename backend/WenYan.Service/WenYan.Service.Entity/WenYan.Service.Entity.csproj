@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <DatabaseType>MySql</DatabaseType>
+    <DatabaseType>Sqlite</DatabaseType>
     <UserSecretsId>00000000-0000-0000-0000-00000000000</UserSecretsId>
   </PropertyGroup>
   <!--条件编译-->

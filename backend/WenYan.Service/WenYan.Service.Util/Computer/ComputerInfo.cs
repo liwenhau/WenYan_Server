@@ -17,8 +17,8 @@ namespace WenYan.Service.Util
             memoryMetrics.FreeRam = Math.Round(memoryMetrics.Free / 1024, 2) + "GB";
             memoryMetrics.UsedRam = Math.Round(memoryMetrics.Used / 1024, 2) + "GB";
             memoryMetrics.TotalRam = Math.Round(memoryMetrics.Total / 1024, 2) + "GB";
-            memoryMetrics.RamRate = Math.Ceiling(100 * memoryMetrics.Used / memoryMetrics.Total).ToString() + "%";
-            memoryMetrics.CpuRate = Math.Ceiling(GetCPURate().ParseToDouble()) + "%";
+            memoryMetrics.RamRate = Math.Ceiling(100 * memoryMetrics.Used / memoryMetrics.Total);
+            memoryMetrics.CpuRate = Math.Ceiling(GetCPURate().ParseToDouble());
             return memoryMetrics;
         }
 
@@ -158,7 +158,7 @@ namespace WenYan.Service.Util
         /// <summary>
         /// CPU使用率%
         /// </summary>
-        public string CpuRate { get; set; }
+        public double CpuRate { get; set; }
 
         /// <summary>
         /// 总内存 GB
@@ -168,7 +168,7 @@ namespace WenYan.Service.Util
         /// <summary>
         /// 内存使用率 %
         /// </summary>
-        public string RamRate { get; set; }
+        public double RamRate { get; set; }
 
         /// <summary>
         /// 空闲内存

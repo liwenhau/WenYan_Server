@@ -23,7 +23,7 @@ namespace WenYan.Service.Util
             // 不允许结尾有逗号的不标准json
             AllowTrailingCommas = false,
             //自定义日期格式转换
-            Converters = { new DateTimeJsonConverter("yyyy-MM-dd HH:mm:ss.fff")}
+            Converters = { new DateTimeJsonConverter("yyyy-MM-dd HH:mm:ss")}
         };
 
         //

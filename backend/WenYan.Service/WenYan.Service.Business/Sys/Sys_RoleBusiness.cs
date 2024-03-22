@@ -1,6 +1,6 @@
 ﻿namespace WenYan.Service.Business
 {
-    public class Sys_RoleBusiness : BusRepository<Sys_Role>, ISys_RoleBusiness
+    public class Sys_RoleBusiness : BusRepository<Sys_Role>, ISys_RoleBusiness, IScopedDependency
     {
         public Sys_RoleBusiness(GDbContext context) : base(context)
         {

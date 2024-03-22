@@ -2,7 +2,10 @@
 
 namespace WenYan.Service.Util
 {
-    public class IdService : IIdService
+    /// <summary>
+    /// 雪花算法 单例注入
+    /// </summary>
+    public class IdService : IIdService, ISingletonDependency
     {
         private IConfiguration Configuration { get; set; }
         private SnowflakeIdHelper IdHelper { get; set; }
