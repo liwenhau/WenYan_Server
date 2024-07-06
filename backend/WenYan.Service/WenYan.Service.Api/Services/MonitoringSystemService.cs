@@ -17,14 +17,22 @@ namespace WenYan.Service.Api
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var delay =  10 * 1000;
+            var delay = 10 * 1000;
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = _scopeFactory.CreateScope();
-                var charthub = scope.ServiceProvider.GetRequiredService<IHubContext<ChartHub, IChartHub>>();
-                await charthub.Clients.All.GetDiskInfos(ComputerInfo.GetDiskInfos());
-                await charthub.Clients.All.GetMemoryMetrics(ComputerInfo.GetComputerInfo());
-                await Task.Delay(delay, stoppingToken);
+                try
+                {
+                    using var scope = _scopeFactory.CreateScope();
+                    var charthub = scope.ServiceProvider.GetRequiredService<IHubContext<ChartHub, IChartHub>>();
+                    await charthub.Clients.All.GetDiskInfos(ComputerInfo.GetDiskInfos());
+                    await charthub.Clients.All.GetMemoryMetrics(ComputerInfo.GetComputerInfo());
+                    await Task.Delay(delay, stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"监控系统服务发生错误：{ex.Message}");
+                    await Task.Delay(delay, stoppingToken);
+                }
             }
         }
     }

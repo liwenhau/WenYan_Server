@@ -12,7 +12,19 @@ namespace WenYan.Service.Util
         public static MemoryMetrics GetComputerInfo()
         {
             MemoryMetricsClient client = new();
-            MemoryMetrics memoryMetrics = IsUnix() ? client.GetUnixMetrics() : client.GetWindowsMetrics();
+            MemoryMetrics memoryMetrics;
+            if (IsMacOS())
+            {
+                memoryMetrics = client.GetMacOSMetrics();
+            }
+            else if (IsUnix())
+            {
+                memoryMetrics = client.GetUnixMetrics();
+            }
+            else
+            {
+                memoryMetrics = client.GetWindowsMetrics();
+            }
 
             memoryMetrics.FreeRam = Math.Round(memoryMetrics.Free / 1024, 2) + "GB";
             memoryMetrics.UsedRam = Math.Round(memoryMetrics.Used / 1024, 2) + "GB";
@@ -28,22 +40,41 @@ namespace WenYan.Service.Util
         /// <returns></returns>
         public static List<DiskInfo> GetDiskInfos()
         {
-            List<DiskInfo> diskInfos = new();
+            var diskInfos = new List<DiskInfo>();
+            if (IsMacOS())
+            {
+                var output = ShellHelper.Bash(@"df -m | awk '/^\/dev\/disk/ {print $1,$2,$3,$4,$5}'");
+                var disks = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                if (disks.Length < 1) return diskInfos;
+                foreach (var item in disks)
+                {
+                    var disk = item.Split(' ', (char)StringSplitOptions.RemoveEmptyEntries);
+                    if (disk == null || disk.Length < 5)
+                        continue;
 
-            if (IsUnix())
+                    var diskInfo = new DiskInfo()
+                    {
+                        DiskName = disk[0],
+                        TypeName = ShellHelper.Bash("diskutil info " + disk[0] + " | awk '/File System Personality/ {print $4}'").Replace("\n", string.Empty),
+                        TotalSize = long.Parse(disk[1]) / 1024,
+                        Used = long.Parse(disk[2]) / 1024,
+                        AvailableFreeSpace = long.Parse(disk[3]) / 1024,
+                        AvailablePercent = decimal.Parse(disk[4].Replace("%", ""))
+                    };
+                    diskInfos.Add(diskInfo);
+                }
+            }
+            else if (IsUnix())
             {
                 var output = ShellHelper.Bash(@"df -mT | awk '/^\/dev\/(sd|vd|xvd|nvme|sda|vda)/ {print $1,$2,$3,$4,$5,$6}'");
+                //var output = "/dev/vda2 ext4 40204 7130 31318 19%";
                 var disks = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                if (disks.Length == 0) return diskInfos;
-
-                var rootDisk = disks[1].Split(' ', (char)StringSplitOptions.RemoveEmptyEntries);
-                if (rootDisk == null || rootDisk.Length == 0)
-                    return diskInfos;
+                if (disks.Length < 1) return diskInfos;
 
                 foreach (var item in disks)
                 {
                     var disk = item.Split(' ', (char)StringSplitOptions.RemoveEmptyEntries);
-                    if (disk == null || disk.Length == 0)
+                    if (disk == null || disk.Length < 6)
                         continue;
 
                     var diskInfo = new DiskInfo()
@@ -97,10 +128,20 @@ namespace WenYan.Service.Util
             return RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         }
 
+        public static bool IsMacOS()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        }
+
         public static string GetCPURate()
         {
             string cpuRate;
-            if (IsUnix())
+            if (IsMacOS())
+            {
+                string output = ShellHelper.Bash("top -l 1 | grep \"CPU usage\" | awk '{print $3 + $5}'");
+                cpuRate = output.Trim();
+            }
+            else if (IsUnix())
             {
                 string output = ShellHelper.Bash("top -b -n1 | grep \"Cpu(s)\" | awk '{print $2 + $4}'");
                 cpuRate = output.Trim();
@@ -247,13 +288,14 @@ namespace WenYan.Service.Util
         public MemoryMetrics GetUnixMetrics()
         {
             string output = ShellHelper.Bash("free -m | awk '{print $2,$3,$4,$5,$6}'");
+            //string output = "1963 799 110 2 1053\r\n0 0 0";
             var metrics = new MemoryMetrics();
             var lines = output.Split('\n', (char)StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length <= 0) return metrics;
 
             if (lines != null && lines.Length > 0)
             {
-                var memory = lines[1].Split(' ', (char)StringSplitOptions.RemoveEmptyEntries);
+                var memory = lines[0].Split(' ', (char)StringSplitOptions.RemoveEmptyEntries);
                 if (memory.Length >= 3)
                 {
                     metrics.Total = double.Parse(memory[0]);
@@ -261,6 +303,23 @@ namespace WenYan.Service.Util
                     metrics.Free = double.Parse(memory[2]);//m
                 }
             }
+            return metrics;
+        }
+
+        /// <summary>
+        /// macOS系统获取
+        /// </summary>
+        /// <returns></returns>
+        public MemoryMetrics GetMacOSMetrics()
+        {
+            var metrics = new MemoryMetrics();
+            //物理内存大小
+            var total = ShellHelper.Bash("sysctl -n hw.memsize | awk '{printf \"%.2f\", $1/1024/1024}'");
+            metrics.Total = float.Parse(total.Replace("%", string.Empty));
+            //TODO:占用内存，检查效率
+            var free = ShellHelper.Bash("top -l 1 -s 0 | awk '/PhysMem/ {print $6+$8}'");
+            metrics.Free = float.Parse(free);
+            metrics.Used = metrics.Total - metrics.Free;
             return metrics;
         }
     }
