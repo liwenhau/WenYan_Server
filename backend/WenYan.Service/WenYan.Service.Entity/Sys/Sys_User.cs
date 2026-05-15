@@ -1,4 +1,6 @@
-﻿namespace WenYan.Service.Entity
+﻿using System.Text;
+
+namespace WenYan.Service.Entity
 {
     /// <summary>
     /// 系统用户
@@ -111,7 +113,7 @@
             #endregion
 
             #region 种子数据
-            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = $"WenYan@{DateTime.Now.Year}".ToMD5String(), Status = "Enable", OrgId = "1", Sex = "Boy", Avatar = "", Sign = "后台超级管理员", Remark = "系统初始用户", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
+            builder.HasData(new Sys_User { Id = EntityDefaultConf.DefAdminUserId, Code = "U0000", Name = "Admin", UserName = "admin", Password = PasswordHelper.HashPassword($"WenYan@{DateTime.Now.Year}".ToMD5String(), Encoding.UTF8.GetBytes("WenYanAdminSeed")), Status = "Enable", OrgId = "1", Sex = "Boy", Avatar = "", Sign = "后台超级管理员", Remark = "系统初始用户", CreateUserId = EntityDefaultConf.DefAdminUserId, ModifyUserId = EntityDefaultConf.DefAdminUserId });
             #endregion
         }
     }

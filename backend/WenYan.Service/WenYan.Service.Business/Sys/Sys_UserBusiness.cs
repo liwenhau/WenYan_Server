@@ -1,4 +1,4 @@
-﻿namespace WenYan.Service.Business
+namespace WenYan.Service.Business
 {
     public class Sys_UserBusiness : BusRepository<Sys_User>, ISys_UserBusiness, IScopedDependency
     {
@@ -16,9 +16,10 @@
         /// <returns></returns>
         public async Task<Sys_User> LoginAsync(LoginM data)
         {
-            var user = await this.GetAsync(x => x.UserName == data.UserName
-            && x.Password == data.Password);
+            var user = await this.GetAsync(x => x.UserName == data.UserName);
             _ = user ?? throw new Exception("用户名不存在或密码错误！");
+            if (!PasswordHelper.VerifyPassword(data.Password, user.Password))
+                throw new Exception("用户名不存在或密码错误！");
             // 账号是否被冻结
             if (user.Status == "Disable")
                 throw new Exception("用户名已被冻结，请联系管理员！"); ;
@@ -207,8 +208,6 @@
 
         public async Task<int> AddOrUpdateAsync(UserInputDto entity)
         {
-            if (entity.Password.IsNullOrEmpty())
-                entity.Password = ConstDefaultConfig.DefaultPwd;
             var dbEntity = await this.GetAsync(entity.Id, true);
             if (dbEntity != null)
             {
@@ -216,7 +215,12 @@
                 await this.UpdateAsync(entity);
             }
             else
+            {
+                if (entity.Password.IsNullOrEmpty())
+                    entity.Password = ConstDefaultConfig.DefaultPwd.ToMD5String();
+                entity.Password = PasswordHelper.HashPassword(entity.Password);
                 await this.AddAsync(entity);
+            }
 
             var userRoleSvc = this._svcProvider.GetRequiredService<ISys_UserRoleBusiness>();
             return await userRoleSvc.AddAsync(entity.Id, entity.RoleIds);
@@ -227,10 +231,10 @@
             var user = await this.GetAsync(data.Id, true);
             if (user != null)
             {
-                if (user.Password == data.OldPassword)
+                if (PasswordHelper.VerifyPassword(data.OldPassword, user.Password))
                 {
                     var opSvc = this._svcProvider.GetRequiredService<IOperator>();
-                    user.Password = data.NewPassword;
+                    user.Password = PasswordHelper.HashPassword(data.NewPassword);
                     user.ModifyTime = DateTime.UtcNow;
                     user.ModifyUserId = opSvc.UserId;
                     return await this.UpdateAsync(user);
