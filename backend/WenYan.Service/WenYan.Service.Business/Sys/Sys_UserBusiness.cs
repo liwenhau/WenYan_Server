@@ -211,7 +211,10 @@ namespace WenYan.Service.Business
             var dbEntity = await this.GetAsync(entity.Id, true);
             if (dbEntity != null)
             {
-                entity.Password = dbEntity.Password;
+                if (entity.Password.IsNullOrEmpty())
+                    entity.Password = dbEntity.Password;
+                else
+                    entity.Password = PasswordHelper.HashPassword(entity.Password);
                 await this.UpdateAsync(entity);
             }
             else
